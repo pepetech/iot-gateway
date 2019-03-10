@@ -1,0 +1,21 @@
+Pad	Group	Parity	EXTI #	Obs.
+
+PE3	1	odd	EXTI0
+PB1	1	odd	EXTI1	Optional
+PB2	1	even	EXTI2	Optional
+PB3	1	odd	EXTI3	Optional
+
+PA6	2	even	EXTI4
+PA7	2	odd	EXTI5
+PC4	2	even	EXTI6
+PC7	2	even	EXTI7
+
+PA8	3	even	EXTI8
+PE9	3	odd	EXTI9
+PF11	3	odd	EXTI10
+-	-	-	EXTI11	Free
+
+PA13	4	odd	EXTI12
+PE15	4	odd	EXTI13
+PF12	4	even	EXTI14
+-	-	-	EXTI15	Free
