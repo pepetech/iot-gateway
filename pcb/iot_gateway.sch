@@ -4171,7 +4171,7 @@ Source: http://www.hirose.co.jp/cataloge_hp/e58618038.pdf</description>
 </deviceset>
 </devicesets>
 </library>
-<library name="Supply Synbol">
+<library name="Supply Symbol">
 <packages>
 </packages>
 <symbols>
@@ -7248,116 +7248,116 @@ Source: &lt;a href="http://www.littelfuse.com/~/media/electronics/datasheets/tvs
 </part>
 <part name="U1" library="EFM32" deviceset="EFM32GG11B4XX_Q100" device=""/>
 <part name="C8" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="1uF"/>
-<part name="GND11" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="GND12" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="3V312" library="Supply Synbol" deviceset="3V3" device=""/>
+<part name="GND11" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="GND12" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="3V312" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="C1" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="100nF"/>
-<part name="3V31" library="Supply Synbol" deviceset="3V3" device=""/>
+<part name="3V31" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="C2" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="100nF"/>
-<part name="GND3" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="3V34" library="Supply Synbol" deviceset="3V3" device=""/>
+<part name="GND3" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="3V34" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="C3" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="100nF"/>
-<part name="GND4" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="3V36" library="Supply Synbol" deviceset="3V3" device=""/>
+<part name="GND4" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="3V36" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="C4" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="100nF"/>
-<part name="GND6" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="3V38" library="Supply Synbol" deviceset="3V3" device=""/>
+<part name="GND6" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="3V38" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="SHEET1" library="Frame" deviceset="A3-LANDSCAPE" device=""/>
 <part name="R1" library="Resistor" deviceset="RESISTOR" device="-0603" value="10K Ohms"/>
-<part name="3V32" library="Supply Synbol" deviceset="3V3" device=""/>
+<part name="3V32" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="R4" library="Resistor" deviceset="RESISTOR" device="-0603" value="10K Ohms"/>
-<part name="3V35" library="Supply Synbol" deviceset="3V3" device=""/>
+<part name="3V35" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="CON1" library="JST" deviceset="6P" device="-SH-TOP"/>
-<part name="GND17" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="3V318" library="Supply Synbol" deviceset="3V3" device=""/>
+<part name="GND17" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="3V318" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="SHEET2" library="Frame" deviceset="A3-LANDSCAPE" device=""/>
 <part name="R15" library="Resistor" deviceset="RESISTOR" device="-0603" value="100K Ohms"/>
-<part name="3V323" library="Supply Synbol" deviceset="3V3" device=""/>
-<part name="GND22" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="3V322" library="Supply Synbol" deviceset="3V3" device=""/>
+<part name="3V323" library="Supply Symbol" deviceset="3V3" device=""/>
+<part name="GND22" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="3V322" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="Y3" library="Crystal" deviceset="CRYSTAL" device="2-SMD-5X3" value="24 MHz">
 <attribute name="OCLCSC" value="C112570"/>
 </part>
 <part name="C20" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="20pF"/>
 <part name="C19" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="20pF"/>
-<part name="GND34" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="GND33" library="Supply Synbol" deviceset="GND" device=""/>
+<part name="GND34" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="GND33" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="C13" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="100nF"/>
-<part name="GND19" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="GND20" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="3V319" library="Supply Synbol" deviceset="3V3" device=""/>
-<part name="3V320" library="Supply Synbol" deviceset="3V3" device=""/>
+<part name="GND19" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="GND20" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="3V319" library="Supply Symbol" deviceset="3V3" device=""/>
+<part name="3V320" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="C14" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="100nF"/>
-<part name="GND21" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="3V321" library="Supply Synbol" deviceset="3V3" device=""/>
+<part name="GND21" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="3V321" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="C15" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="100nF"/>
-<part name="GND23" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="3V324" library="Supply Synbol" deviceset="3V3" device=""/>
+<part name="GND23" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="3V324" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="C12" library="Capacitor" deviceset="TANTALUM-CAPACITOR" device="-CASE-A-EIA3216" value="10uF"/>
 <part name="C16" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="100nF"/>
-<part name="GND24" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="3V325" library="Supply Synbol" deviceset="3V3" device=""/>
+<part name="GND24" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="3V325" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="U4" library="Espressif" deviceset="ESP8266EX" device=""/>
-<part name="3V327" library="Supply Synbol" deviceset="3V3" device=""/>
+<part name="3V327" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="R19" library="Resistor" deviceset="RESISTOR" device="-0603" value="12K Ohms"/>
-<part name="GND31" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="GND30" library="Supply Synbol" deviceset="GND" device=""/>
+<part name="GND31" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="GND30" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="C17" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="4pF"/>
-<part name="GND27" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="GND25" library="Supply Synbol" deviceset="GND" device=""/>
+<part name="GND27" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="GND25" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="L1" library="Inductor" deviceset="INDUCTOR" device="-0603" value="1.8nH">
 <attribute name="OCLCSC" value="C142206"/>
 </part>
 <part name="C18" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="4.7pF"/>
 <part name="E1" library="Microstrip Antenna" deviceset="2.4GHZ" device="TRACE-15.2MM"/>
-<part name="GND26" library="Supply Synbol" deviceset="GND" device=""/>
+<part name="GND26" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="R16" library="Resistor" deviceset="RESISTOR" device="-0603" value="0 Ohms"/>
 <part name="R18" library="Resistor" deviceset="RESISTOR" device="-0603" value="10K Ohms"/>
 <part name="R17" library="Resistor" deviceset="RESISTOR" device="-0603" value="10K Ohms"/>
-<part name="3V326" library="Supply Synbol" deviceset="3V3" device=""/>
-<part name="GND28" library="Supply Synbol" deviceset="GND" device=""/>
+<part name="3V326" library="Supply Symbol" deviceset="3V3" device=""/>
+<part name="GND28" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="R20" library="Resistor" deviceset="RESISTOR" device="-0603" value="10K Ohms"/>
 <part name="R22" library="Resistor" deviceset="RESISTOR" device="-0603" value="10K Ohms"/>
-<part name="3V328" library="Supply Synbol" deviceset="3V3" device=""/>
-<part name="3V329" library="Supply Synbol" deviceset="3V3" device=""/>
+<part name="3V328" library="Supply Symbol" deviceset="3V3" device=""/>
+<part name="3V329" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="R21" library="Resistor" deviceset="RESISTOR" device="-0603" value="10K Ohms"/>
-<part name="GND32" library="Supply Synbol" deviceset="GND" device=""/>
+<part name="GND32" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="SHEET5" library="Frame" deviceset="A3-LANDSCAPE" device=""/>
-<part name="GND52" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="3V334" library="Supply Synbol" deviceset="3V3" device=""/>
+<part name="GND52" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="3V334" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="C28" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="100nF"/>
 <part name="U3" library="Microchip" deviceset="SST26VF016B" device=""/>
 <part name="U10" library="AMS" deviceset="CCS811" device=""/>
-<part name="3V339" library="Supply Synbol" deviceset="3V3" device=""/>
-<part name="GND56" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="GND61" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="3V338" library="Supply Synbol" deviceset="3V3" device=""/>
+<part name="3V339" library="Supply Symbol" deviceset="3V3" device=""/>
+<part name="GND56" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="GND61" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="3V338" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="R36" library="Resistor" deviceset="RESISTOR" device="-0603" value="10K Ohms"/>
-<part name="3V343" library="Supply Synbol" deviceset="3V3" device=""/>
+<part name="3V343" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="R37" library="Resistor" deviceset="RESISTOR" device="-0603" value="10K Ohms"/>
 <part name="R38" library="Resistor" deviceset="RESISTOR" device="-0603" value="100K Ohms"/>
 <part name="U7" library="Silicon Labs" deviceset="SI7021" device=""/>
-<part name="3V340" library="Supply Synbol" deviceset="3V3" device=""/>
-<part name="GND57" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="GND53" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="3V335" library="Supply Synbol" deviceset="3V3" device=""/>
+<part name="3V340" library="Supply Symbol" deviceset="3V3" device=""/>
+<part name="GND57" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="GND53" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="3V335" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="C29" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="100nF"/>
 <part name="SHEET4" library="Frame" deviceset="A3-LANDSCAPE" device=""/>
-<part name="GND40" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="4V21" library="Supply Synbol" deviceset="4V2" device="" value="4V2"/>
+<part name="GND40" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="4V21" library="Supply Symbol" deviceset="4V2" device="" value="4V2"/>
 <part name="C23" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="100nF"/>
-<part name="GND41" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="4V22" library="Supply Synbol" deviceset="4V2" device="" value="4V2"/>
+<part name="GND41" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="4V22" library="Supply Symbol" deviceset="4V2" device="" value="4V2"/>
 <part name="C22" library="Capacitor" deviceset="TANTALUM-CAPACITOR" device="-CASE-A-EIA3216" value="10uF"/>
 <part name="E2" library="Microstrip Antenna" deviceset="2.4GHZ" device="TRACE-15.2MM"/>
-<part name="GND47" library="Supply Synbol" deviceset="GND" device=""/>
+<part name="GND47" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="R35" library="Resistor" deviceset="RESISTOR" device="-0603" value="0 Ohms"/>
 <part name="C24" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="100uF"/>
-<part name="GND42" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="4V23" library="Supply Synbol" deviceset="4V2" device="" value="4V2"/>
+<part name="GND42" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="4V23" library="Supply Symbol" deviceset="4V2" device="" value="4V2"/>
 <part name="U6" library="SimCom" deviceset="SIM800C" device=""/>
 <part name="R34" library="Resistor" deviceset="RESISTOR" device="-0603" value="0 Ohms"/>
-<part name="GND49" library="Supply Synbol" deviceset="GND" device=""/>
+<part name="GND49" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="C27" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="33pF"/>
 <part name="C26" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="33pF"/>
 <part name="R27" library="Resistor" deviceset="RESISTOR" device="-0603" value="22 Ohms"/>
@@ -7383,42 +7383,42 @@ Source: &lt;a href="http://www.littelfuse.com/~/media/electronics/datasheets/tvs
 </part>
 <part name="D2" library="LED" deviceset="LED" device="1206" value="RED"/>
 <part name="C25" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="1uF"/>
-<part name="GND44" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="GND43" library="Supply Synbol" deviceset="GND" device=""/>
+<part name="GND44" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="GND43" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="T5" library="Generic BJT" deviceset="BC817" device="">
 <attribute name="MF" value="FAIRCHILD SEMICONDUCTOR"/>
 </part>
 <part name="R33" library="Resistor" deviceset="RESISTOR" device="-0603" value="10K Ohms">
 <attribute name="MF" value="VISHAY"/>
 </part>
-<part name="GND46" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="4V24" library="Supply Synbol" deviceset="4V2" device="" value="4V2"/>
+<part name="GND46" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="4V24" library="Supply Symbol" deviceset="4V2" device="" value="4V2"/>
 <part name="TP1" library="PADs" deviceset="TESTPOINT" device=""/>
 <part name="TP2" library="PADs" deviceset="TESTPOINT" device=""/>
 <part name="TP3" library="PADs" deviceset="TESTPOINT" device=""/>
 <part name="TP4" library="PADs" deviceset="TESTPOINT" device=""/>
-<part name="GND51" library="Supply Synbol" deviceset="GND" device=""/>
+<part name="GND51" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="TP5" library="PADs" deviceset="TESTPOINT" device=""/>
 <part name="SHEET3" library="Frame" deviceset="A3-LANDSCAPE" device=""/>
 <part name="C21" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="100nF"/>
-<part name="GND36" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="3V330" library="Supply Synbol" deviceset="3V3" device=""/>
+<part name="GND36" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="3V330" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="U5" library="HopeRF" deviceset="RFM69H" device="W"/>
-<part name="GND38" library="Supply Synbol" deviceset="GND" device=""/>
+<part name="GND38" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="R25" library="Resistor" deviceset="RESISTOR" device="-0603" value="100K Ohms"/>
-<part name="3V331" library="Supply Synbol" deviceset="3V3" device=""/>
-<part name="3V332" library="Supply Synbol" deviceset="3V3" device=""/>
+<part name="3V331" library="Supply Symbol" deviceset="3V3" device=""/>
+<part name="3V332" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="R24" library="Resistor" deviceset="RESISTOR" device="-0603" value="10K Ohms"/>
-<part name="GND37" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="GND9" library="Supply Synbol" deviceset="GND" device=""/>
+<part name="GND37" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="GND9" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="T1" library="Generic BJT" deviceset="BC817" device="">
 <attribute name="MF" value="FAIRCHILD SEMICONDUCTOR"/>
 </part>
 <part name="R3" library="Resistor" deviceset="RESISTOR" device="-0603" value="1K Ohms">
 <attribute name="MF" value="VISHAY"/>
 </part>
-<part name="3V33" library="Supply Synbol" deviceset="3V3" device=""/>
-<part name="GND2" library="Supply Synbol" deviceset="GND" device=""/>
+<part name="3V33" library="Supply Symbol" deviceset="3V3" device=""/>
+<part name="GND2" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="SHEET6" library="Frame" deviceset="A3-LANDSCAPE" device=""/>
 <part name="D6" library="Generic Diode" deviceset="DSK24" device="" value="DSK24"/>
 <part name="D4" library="Generic Diode" deviceset="SK54L" device="" value="SK54L">
@@ -7434,19 +7434,19 @@ Source: &lt;a href="http://www.littelfuse.com/~/media/electronics/datasheets/tvs
 <part name="R45" library="Resistor" deviceset="RESISTOR" device="-0603" value="953 Ohms"/>
 <part name="R39" library="Resistor" deviceset="RESISTOR" device="-0603" value="10M Ohm"/>
 <part name="R40" library="Resistor" deviceset="RESISTOR" device="-0603" value="10K Ohms"/>
-<part name="GND81" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="3V347" library="Supply Synbol" deviceset="3V3" device=""/>
-<part name="4V26" library="Supply Synbol" deviceset="4V2" device="" value="4V2"/>
-<part name="3V345" library="Supply Synbol" deviceset="3V3" device=""/>
-<part name="GND77" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="GND70" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="GND73" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="GND67" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="GND64" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="GND62" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="5V04" library="Supply Synbol" deviceset="5V0" device=""/>
-<part name="VIN1" library="Supply Synbol" deviceset="VIN" device=""/>
-<part name="VBAT1" library="Supply Synbol" deviceset="VBAT" device=""/>
+<part name="GND81" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="3V347" library="Supply Symbol" deviceset="3V3" device=""/>
+<part name="4V26" library="Supply Symbol" deviceset="4V2" device="" value="4V2"/>
+<part name="3V345" library="Supply Symbol" deviceset="3V3" device=""/>
+<part name="GND77" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="GND70" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="GND73" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="GND67" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="GND64" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="GND62" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="5V04" library="Supply Symbol" deviceset="5V0" device=""/>
+<part name="VIN1" library="Supply Symbol" deviceset="VIN" device=""/>
+<part name="VBAT1" library="Supply Symbol" deviceset="VBAT" device=""/>
 <part name="D5" library="Generic Diode" deviceset="SK54L" device="" value="SK54L">
 <attribute name="OCLCSC" value="C129854"/>
 </part>
@@ -7459,69 +7459,69 @@ Source: &lt;a href="http://www.littelfuse.com/~/media/electronics/datasheets/tvs
 <part name="R49" library="Resistor" deviceset="RESISTOR" device="-0603" value="1.2K Ohms"/>
 <part name="R42" library="Resistor" deviceset="RESISTOR" device="-0603" value="10M Ohm"/>
 <part name="R43" library="Resistor" deviceset="RESISTOR" device="-0603" value="10K Ohms"/>
-<part name="GND80" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="GND72" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="GND75" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="GND68" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="GND66" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="GND63" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="VIN2" library="Supply Synbol" deviceset="VIN" device=""/>
+<part name="GND80" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="GND72" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="GND75" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="GND68" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="GND66" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="GND63" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="VIN2" library="Supply Symbol" deviceset="VIN" device=""/>
 <part name="R50" library="Resistor" deviceset="RESISTOR" device="-0603" value="10K Ohms"/>
-<part name="GND82" library="Supply Synbol" deviceset="GND" device=""/>
+<part name="GND82" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="D7" library="Generic Diode" deviceset="DSK24" device="" value="DSK24"/>
-<part name="VBAT2" library="Supply Synbol" deviceset="VBAT" device=""/>
+<part name="VBAT2" library="Supply Symbol" deviceset="VBAT" device=""/>
 <part name="R53" library="Resistor" deviceset="RESISTOR" device="-0603" value="10K Ohms"/>
-<part name="GND85" library="Supply Synbol" deviceset="GND" device=""/>
+<part name="GND85" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="U13" library="Microchip" deviceset="MIC39101" device=""/>
-<part name="GND88" library="Supply Synbol" deviceset="GND" device=""/>
+<part name="GND88" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="C46" library="Capacitor" deviceset="TANTALUM-CAPACITOR" device="-CASE-A-EIA3216" value="10uF"/>
-<part name="GND93" library="Supply Synbol" deviceset="GND" device=""/>
+<part name="GND93" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="C42" library="Capacitor" deviceset="TANTALUM-CAPACITOR" device="-CASE-A-EIA3216" value="10uF"/>
-<part name="GND86" library="Supply Synbol" deviceset="GND" device=""/>
+<part name="GND86" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="C37" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="100nF"/>
 <part name="C43" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="100nF"/>
-<part name="GND87" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="GND78" library="Supply Synbol" deviceset="GND" device=""/>
+<part name="GND87" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="GND78" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="C38" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="100nF"/>
-<part name="GND79" library="Supply Synbol" deviceset="GND" device=""/>
+<part name="GND79" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="C47" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="100nF"/>
-<part name="GND94" library="Supply Synbol" deviceset="GND" device=""/>
+<part name="GND94" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="U15" library="TP4056" deviceset="TP4056" device=""/>
 <part name="C48" library="Capacitor" deviceset="TANTALUM-CAPACITOR" device="-CASE-A-EIA3216" value="10uF"/>
-<part name="VBAT6" library="Supply Synbol" deviceset="VBAT" device=""/>
-<part name="5V06" library="Supply Synbol" deviceset="5V0" device=""/>
-<part name="GND100" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="3V349" library="Supply Synbol" deviceset="3V3" device=""/>
-<part name="3V348" library="Supply Synbol" deviceset="3V3" device=""/>
+<part name="VBAT6" library="Supply Symbol" deviceset="VBAT" device=""/>
+<part name="5V06" library="Supply Symbol" deviceset="5V0" device=""/>
+<part name="GND100" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="3V349" library="Supply Symbol" deviceset="3V3" device=""/>
+<part name="3V348" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="R61" library="Resistor" deviceset="RESISTOR" device="-0603" value="100K Ohms"/>
 <part name="R60" library="Resistor" deviceset="RESISTOR" device="-0603" value="100K Ohms"/>
-<part name="GND97" library="Supply Synbol" deviceset="GND" device=""/>
+<part name="GND97" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="R62" library="Resistor" deviceset="RESISTOR" device="-0603" value="1.5K Ohms"/>
-<part name="GND96" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="GND101" library="Supply Synbol" deviceset="GND" device=""/>
+<part name="GND96" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="GND101" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="C50" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="100nF"/>
-<part name="5V07" library="Supply Synbol" deviceset="5V0" device=""/>
+<part name="5V07" library="Supply Symbol" deviceset="5V0" device=""/>
 <part name="Q2" library="Alpha Omega" deviceset="AO3401" device=""/>
 <part name="Q1" library="Alpha Omega" deviceset="AO3401" device=""/>
 <part name="U14" library="Fortune" deviceset="FS312F-G" device=""/>
-<part name="GND98" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="VBAT4" library="Supply Synbol" deviceset="VBAT" device=""/>
+<part name="GND98" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="VBAT4" library="Supply Symbol" deviceset="VBAT" device=""/>
 <part name="R63" library="Resistor" deviceset="RESISTOR" device="-0603" value="10M Ohm"/>
 <part name="R59" library="Resistor" deviceset="RESISTOR" device="-0603" value="100 Ohms"/>
 <part name="R58" library="Resistor" deviceset="RESISTOR" device="-0603" value="1K Ohms"/>
-<part name="GND95" library="Supply Synbol" deviceset="GND" device=""/>
+<part name="GND95" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="C49" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="100nF"/>
-<part name="VBAT7" library="Supply Synbol" deviceset="VBAT" device=""/>
+<part name="VBAT7" library="Supply Symbol" deviceset="VBAT" device=""/>
 <part name="U16" library="Fortune" deviceset="FS8205" device=""/>
-<part name="VBAT5" library="Supply Synbol" deviceset="VBAT" device=""/>
-<part name="GND71" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="VIN3" library="Supply Synbol" deviceset="VIN" device=""/>
-<part name="GND65" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="3V346" library="Supply Synbol" deviceset="3V3" device=""/>
+<part name="VBAT5" library="Supply Symbol" deviceset="VBAT" device=""/>
+<part name="GND71" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="VIN3" library="Supply Symbol" deviceset="VIN" device=""/>
+<part name="GND65" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="3V346" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="R41" library="Resistor" deviceset="RESISTOR" device="-0603" value="100K Ohms"/>
 <part name="F1" library="PTC Fuses" deviceset="PTC" device="1812" value="2.6A Hold"/>
 <part name="D3" library="TVS" deviceset="SMAJ*A" device="" technology="12"/>
-<part name="GND69" library="Supply Synbol" deviceset="GND" device=""/>
+<part name="GND69" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="R54" library="Resistor" deviceset="RESISTOR" device="-0603" value="100K Ohms"/>
 <part name="R56" library="Resistor" deviceset="RESISTOR" device="-0603" value="100K Ohms"/>
 <part name="R57" library="Resistor" deviceset="RESISTOR" device="-0603" value="100K Ohms"/>
@@ -7530,107 +7530,107 @@ Source: &lt;a href="http://www.littelfuse.com/~/media/electronics/datasheets/tvs
 <part name="R47" library="Resistor" deviceset="RESISTOR" device="-0603" value="47K Ohms"/>
 <part name="R46" library="Resistor" deviceset="RESISTOR" device="-0603" value="300K Ohms"/>
 <part name="R55" library="Resistor" deviceset="RESISTOR" device="-0603" value="47K Ohms"/>
-<part name="GND89" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="GND90" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="GND83" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="GND74" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="5V05" library="Supply Synbol" deviceset="5V0" device=""/>
-<part name="VBAT3" library="Supply Synbol" deviceset="VBAT" device=""/>
-<part name="4V25" library="Supply Synbol" deviceset="4V2" device="" value="4V2"/>
-<part name="VIN4" library="Supply Synbol" deviceset="VIN" device=""/>
+<part name="GND89" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="GND90" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="GND83" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="GND74" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="5V05" library="Supply Symbol" deviceset="5V0" device=""/>
+<part name="VBAT3" library="Supply Symbol" deviceset="VBAT" device=""/>
+<part name="4V25" library="Supply Symbol" deviceset="4V2" device="" value="4V2"/>
+<part name="VIN4" library="Supply Symbol" deviceset="VIN" device=""/>
 <part name="C44" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="470pF"/>
 <part name="C45" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="470pF"/>
 <part name="C41" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="470pF"/>
 <part name="C35" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="470pF"/>
-<part name="GND91" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="GND92" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="GND84" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="GND76" library="Supply Synbol" deviceset="GND" device=""/>
+<part name="GND91" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="GND92" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="GND84" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="GND76" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="CON2" library="JST" deviceset="6P" device="-SH-TOP"/>
-<part name="GND35" library="Supply Synbol" deviceset="GND" device=""/>
+<part name="GND35" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="U9" library="Bosch" deviceset="BMP280" device=""/>
-<part name="3V341" library="Supply Synbol" deviceset="3V3" device=""/>
-<part name="GND58" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="GND54" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="3V336" library="Supply Synbol" deviceset="3V3" device=""/>
+<part name="3V341" library="Supply Symbol" deviceset="3V3" device=""/>
+<part name="GND58" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="GND54" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="3V336" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="C30" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="100nF"/>
-<part name="3V344" library="Supply Synbol" deviceset="3V3" device=""/>
-<part name="GND60" library="Supply Synbol" deviceset="GND" device=""/>
+<part name="3V344" library="Supply Symbol" deviceset="3V3" device=""/>
+<part name="GND60" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="U8" library="Silicon Labs" deviceset="SI7210" device=""/>
-<part name="3V342" library="Supply Synbol" deviceset="3V3" device=""/>
-<part name="GND59" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="GND55" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="3V337" library="Supply Synbol" deviceset="3V3" device=""/>
+<part name="3V342" library="Supply Symbol" deviceset="3V3" device=""/>
+<part name="GND59" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="GND55" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="3V337" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="C31" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="100nF"/>
-<part name="GND99" library="Supply Synbol" deviceset="GND" device=""/>
+<part name="GND99" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="J2" library="DC Jack" deviceset="DCJACK" device="-SMD"/>
 <part name="D1" library="LED" deviceset="WS2812B" device="-SMD" value="WS2812B"/>
-<part name="GND10" library="Supply Synbol" deviceset="GND" device=""/>
+<part name="GND10" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="C7" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="100nF"/>
-<part name="5V02" library="Supply Synbol" deviceset="5V0" device=""/>
-<part name="5V03" library="Supply Synbol" deviceset="5V0" device=""/>
-<part name="5V01" library="Supply Synbol" deviceset="5V0" device=""/>
+<part name="5V02" library="Supply Symbol" deviceset="5V0" device=""/>
+<part name="5V03" library="Supply Symbol" deviceset="5V0" device=""/>
+<part name="5V01" library="Supply Symbol" deviceset="5V0" device=""/>
 <part name="T2" library="Generic BJT" deviceset="BC817" device="">
 <attribute name="MF" value="FAIRCHILD SEMICONDUCTOR"/>
 </part>
-<part name="GND5" library="Supply Synbol" deviceset="GND" device=""/>
+<part name="GND5" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="R6" library="Resistor" deviceset="RESISTOR" device="-0603" value="10K Ohms"/>
-<part name="3V37" library="Supply Synbol" deviceset="3V3" device=""/>
+<part name="3V37" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="R7" library="Resistor" deviceset="RESISTOR" device="-0603" value="10K Ohms"/>
-<part name="3V39" library="Supply Synbol" deviceset="3V3" device=""/>
+<part name="3V39" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="R5" library="Resistor" deviceset="RESISTOR" device="-0603" value="100K Ohms"/>
 <part name="R2" library="Resistor" deviceset="RESISTOR" device="-0603" value="10K Ohms"/>
 <part name="R8" library="Resistor" deviceset="RESISTOR" device="-0603" value="100K Ohms"/>
-<part name="3V314" library="Supply Synbol" deviceset="3V3" device=""/>
-<part name="GND13" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="3V313" library="Supply Synbol" deviceset="3V3" device=""/>
+<part name="3V314" library="Supply Symbol" deviceset="3V3" device=""/>
+<part name="GND13" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="3V313" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="U2" library="Microchip" deviceset="SST26VF064B" device=""/>
 <part name="C6" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="100nF"/>
-<part name="GND8" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="3V311" library="Supply Synbol" deviceset="3V3" device=""/>
+<part name="GND8" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="3V311" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="SHEET7" library="Frame" deviceset="A3-LANDSCAPE" device=""/>
 <part name="U17" library="BuyDisplay" deviceset="ER-TFT035-6" device=""/>
 <part name="C52" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="100nF"/>
-<part name="GND102" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="GND103" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="3V350" library="Supply Synbol" deviceset="3V3" device=""/>
-<part name="3V351" library="Supply Synbol" deviceset="3V3" device=""/>
+<part name="GND102" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="GND103" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="3V350" library="Supply Symbol" deviceset="3V3" device=""/>
+<part name="3V351" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="C53" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="100nF"/>
-<part name="GND104" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="3V352" library="Supply Synbol" deviceset="3V3" device=""/>
+<part name="GND104" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="3V352" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="C54" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="100nF"/>
-<part name="GND105" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="3V353" library="Supply Synbol" deviceset="3V3" device=""/>
+<part name="GND105" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="3V353" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="C51" library="Capacitor" deviceset="TANTALUM-CAPACITOR" device="-CASE-A-EIA3216" value="10uF"/>
-<part name="3V354" library="Supply Synbol" deviceset="3V3" device=""/>
-<part name="3V355" library="Supply Synbol" deviceset="3V3" device=""/>
-<part name="GND110" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="GND108" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="GND109" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="3V357" library="Supply Synbol" deviceset="3V3" device=""/>
-<part name="3V356" library="Supply Synbol" deviceset="3V3" device=""/>
+<part name="3V354" library="Supply Symbol" deviceset="3V3" device=""/>
+<part name="3V355" library="Supply Symbol" deviceset="3V3" device=""/>
+<part name="GND110" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="GND108" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="GND109" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="3V357" library="Supply Symbol" deviceset="3V3" device=""/>
+<part name="3V356" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="R66" library="Resistor" deviceset="RESISTOR" device="-0603" value="100K Ohms"/>
-<part name="3V358" library="Supply Synbol" deviceset="3V3" device=""/>
+<part name="3V358" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="Q3" library="Alpha Omega" deviceset="AO3400" device=""/>
 <part name="R65" library="Resistor" deviceset="RESISTOR" device="-0603" value="0 Ohms"/>
 <part name="R64" library="Resistor" deviceset="RESISTOR" device="-0603" value="0 Ohms"/>
 <part name="Q4" library="Alpha Omega" deviceset="AO3400" device=""/>
-<part name="GND107" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="GND106" library="Supply Synbol" deviceset="GND" device=""/>
+<part name="GND107" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="GND106" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="S1" library="Switch" deviceset="TAC_SWITCH" device="SMD"/>
 <part name="S2" library="Switch" deviceset="TAC_SWITCH" device="SMD_4.5X4.5"/>
 <part name="S3" library="Switch" deviceset="TAC_SWITCH" device="SMD_4.5X4.5"/>
 <part name="S4" library="Switch" deviceset="TAC_SWITCH" device="SMD_4.5X4.5"/>
-<part name="GND18" library="Supply Synbol" deviceset="GND" device=""/>
+<part name="GND18" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="R9" library="Resistor" deviceset="RESISTOR" device="-0603" value="1 MOhms"/>
 <part name="R10" library="Resistor" deviceset="RESISTOR" device="-0603" value="1 MOhms"/>
 <part name="R11" library="Resistor" deviceset="RESISTOR" device="-0603" value="1 MOhms"/>
-<part name="3V315" library="Supply Synbol" deviceset="3V3" device=""/>
-<part name="GND16" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="GND15" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="GND14" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="3V316" library="Supply Synbol" deviceset="3V3" device=""/>
-<part name="3V317" library="Supply Synbol" deviceset="3V3" device=""/>
+<part name="3V315" library="Supply Symbol" deviceset="3V3" device=""/>
+<part name="GND16" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="GND15" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="GND14" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="3V316" library="Supply Symbol" deviceset="3V3" device=""/>
+<part name="3V317" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="R14" library="Resistor" deviceset="RESISTOR" device="-0603" value="100 Ohms"/>
 <part name="C9" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="1nF"/>
 <part name="C10" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="1nF"/>
@@ -7639,27 +7639,27 @@ Source: &lt;a href="http://www.littelfuse.com/~/media/electronics/datasheets/tvs
 <part name="R12" library="Resistor" deviceset="RESISTOR" device="-0603" value="100 Ohms"/>
 <part name="R23" library="Resistor" deviceset="RESISTOR" device="-0603" value="200 Ohms"/>
 <part name="C5" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="100nF"/>
-<part name="GND7" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="3V310" library="Supply Synbol" deviceset="3V3" device=""/>
+<part name="GND7" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="3V310" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="R67" library="Resistor" deviceset="RESISTOR" device="-0603" value="10K Ohms"/>
-<part name="4V1" library="Supply Synbol" deviceset="4V2" device="" value="4V2"/>
-<part name="GND1" library="Supply Synbol" deviceset="GND" device=""/>
+<part name="4V1" library="Supply Symbol" deviceset="4V2" device="" value="4V2"/>
+<part name="GND1" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="R68" library="Resistor" deviceset="RESISTOR" device="-0603" value="1K Ohms">
 <attribute name="MF" value="VISHAY"/>
 </part>
 <part name="B1" library="Buzzer" deviceset="BUZZER" device="-SMD"/>
 <part name="RFCON1" library="RF Connector" deviceset="RFCON" device="-U.FL"/>
-<part name="GND111" library="Supply Synbol" deviceset="GND" device=""/>
+<part name="GND111" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="RFCON2" library="RF Connector" deviceset="RFCON" device="-U.FL"/>
-<part name="GND29" library="Supply Synbol" deviceset="GND" device=""/>
+<part name="GND29" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="RFCON3" library="RF Connector" deviceset="RFCON" device="-U.FL"/>
-<part name="GND39" library="Supply Synbol" deviceset="GND" device=""/>
+<part name="GND39" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="RFCON4" library="RF Connector" deviceset="RFCON" device="-U.FL"/>
-<part name="GND112" library="Supply Synbol" deviceset="GND" device=""/>
+<part name="GND112" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="SIM1" library="SIM Holder" deviceset="SIMHOLDER" device="-SMD"/>
-<part name="GND48" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="GND50" library="Supply Synbol" deviceset="GND" device=""/>
-<part name="GND113" library="Supply Synbol" deviceset="GND" device=""/>
+<part name="GND48" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="GND50" library="Supply Symbol" deviceset="GND" device=""/>
+<part name="GND113" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="CON3" library="JST" deviceset="2P" device="-PH-TOP"/>
 <part name="C39" library="Capacitor" deviceset="ALUMINIUM-CAPACITOR" device="-CASE-D" value="220uF">
 <attribute name="OCLCSC" value="C189315"/>
