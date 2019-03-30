@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="9.3.0">
+<eagle version="9.3.2">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -8,34 +8,34 @@
 </settings>
 <grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
 <layers>
-<layer number="1" name="Top" color="4" fill="1" visible="no" active="no"/>
-<layer number="2" name="Route2" color="1" fill="3" visible="no" active="no"/>
-<layer number="3" name="Route3" color="4" fill="3" visible="no" active="no"/>
-<layer number="4" name="Route4" color="18" fill="1" visible="no" active="no"/>
-<layer number="5" name="Route5" color="19" fill="1" visible="no" active="no"/>
-<layer number="6" name="Route6" color="25" fill="1" visible="no" active="no"/>
-<layer number="7" name="Route7" color="26" fill="1" visible="no" active="no"/>
-<layer number="8" name="Route8" color="27" fill="1" visible="no" active="no"/>
-<layer number="9" name="Route9" color="28" fill="1" visible="no" active="no"/>
-<layer number="10" name="Route10" color="29" fill="1" visible="no" active="no"/>
-<layer number="11" name="Route11" color="30" fill="1" visible="no" active="no"/>
-<layer number="12" name="Route12" color="20" fill="1" visible="no" active="no"/>
-<layer number="13" name="Route13" color="21" fill="1" visible="no" active="no"/>
-<layer number="14" name="Route14" color="1" fill="6" visible="no" active="no"/>
-<layer number="15" name="Route15" color="4" fill="6" visible="no" active="no"/>
-<layer number="16" name="Bottom" color="1" fill="1" visible="no" active="no"/>
-<layer number="17" name="Pads" color="2" fill="1" visible="no" active="no"/>
-<layer number="18" name="Vias" color="2" fill="1" visible="no" active="no"/>
-<layer number="19" name="Unrouted" color="6" fill="1" visible="no" active="no"/>
-<layer number="20" name="Dimension" color="15" fill="1" visible="no" active="no"/>
-<layer number="21" name="tPlace" color="7" fill="1" visible="no" active="no"/>
-<layer number="22" name="bPlace" color="7" fill="1" visible="no" active="no"/>
-<layer number="23" name="tOrigins" color="15" fill="1" visible="no" active="no"/>
-<layer number="24" name="bOrigins" color="15" fill="1" visible="no" active="no"/>
-<layer number="25" name="tNames" color="7" fill="1" visible="no" active="no"/>
-<layer number="26" name="bNames" color="7" fill="1" visible="no" active="no"/>
-<layer number="27" name="tValues" color="7" fill="1" visible="no" active="no"/>
-<layer number="28" name="bValues" color="7" fill="1" visible="no" active="no"/>
+<layer number="1" name="Top" color="4" fill="1" visible="yes" active="no"/>
+<layer number="2" name="Route2" color="16" fill="1" visible="yes" active="no"/>
+<layer number="3" name="Route3" color="17" fill="1" visible="yes" active="no"/>
+<layer number="4" name="Route4" color="18" fill="1" visible="yes" active="no"/>
+<layer number="5" name="Route5" color="19" fill="1" visible="yes" active="no"/>
+<layer number="6" name="Route6" color="25" fill="1" visible="yes" active="no"/>
+<layer number="7" name="Route7" color="26" fill="1" visible="yes" active="no"/>
+<layer number="8" name="Route8" color="27" fill="1" visible="yes" active="no"/>
+<layer number="9" name="Route9" color="28" fill="1" visible="yes" active="no"/>
+<layer number="10" name="Route10" color="29" fill="1" visible="yes" active="no"/>
+<layer number="11" name="Route11" color="30" fill="1" visible="yes" active="no"/>
+<layer number="12" name="Route12" color="20" fill="1" visible="yes" active="no"/>
+<layer number="13" name="Route13" color="21" fill="1" visible="yes" active="no"/>
+<layer number="14" name="Route14" color="22" fill="1" visible="yes" active="no"/>
+<layer number="15" name="Route15" color="23" fill="1" visible="yes" active="no"/>
+<layer number="16" name="Bottom" color="1" fill="1" visible="yes" active="no"/>
+<layer number="17" name="Pads" color="2" fill="1" visible="yes" active="no"/>
+<layer number="18" name="Vias" color="2" fill="1" visible="yes" active="no"/>
+<layer number="19" name="Unrouted" color="6" fill="1" visible="yes" active="no"/>
+<layer number="20" name="Dimension" color="24" fill="1" visible="yes" active="no"/>
+<layer number="21" name="tPlace" color="7" fill="1" visible="yes" active="no"/>
+<layer number="22" name="bPlace" color="7" fill="1" visible="yes" active="no"/>
+<layer number="23" name="tOrigins" color="15" fill="1" visible="yes" active="no"/>
+<layer number="24" name="bOrigins" color="15" fill="1" visible="yes" active="no"/>
+<layer number="25" name="tNames" color="7" fill="1" visible="yes" active="no"/>
+<layer number="26" name="bNames" color="7" fill="1" visible="yes" active="no"/>
+<layer number="27" name="tValues" color="7" fill="1" visible="yes" active="no"/>
+<layer number="28" name="bValues" color="7" fill="1" visible="yes" active="no"/>
 <layer number="29" name="tStop" color="7" fill="3" visible="no" active="no"/>
 <layer number="30" name="bStop" color="7" fill="6" visible="no" active="no"/>
 <layer number="31" name="tCream" color="7" fill="4" visible="no" active="no"/>
@@ -44,8 +44,8 @@
 <layer number="34" name="bFinish" color="6" fill="6" visible="no" active="no"/>
 <layer number="35" name="tGlue" color="7" fill="4" visible="no" active="no"/>
 <layer number="36" name="bGlue" color="7" fill="5" visible="no" active="no"/>
-<layer number="37" name="tTest" color="7" fill="1" visible="no" active="no"/>
-<layer number="38" name="bTest" color="7" fill="1" visible="no" active="no"/>
+<layer number="37" name="tTest" color="7" fill="1" visible="yes" active="no"/>
+<layer number="38" name="bTest" color="7" fill="1" visible="yes" active="no"/>
 <layer number="39" name="tKeepout" color="4" fill="11" visible="no" active="no"/>
 <layer number="40" name="bKeepout" color="1" fill="11" visible="no" active="no"/>
 <layer number="41" name="tRestrict" color="4" fill="10" visible="no" active="no"/>
@@ -53,20 +53,20 @@
 <layer number="43" name="vRestrict" color="2" fill="10" visible="no" active="no"/>
 <layer number="44" name="Drills" color="7" fill="1" visible="no" active="no"/>
 <layer number="45" name="Holes" color="7" fill="1" visible="no" active="no"/>
-<layer number="46" name="Milling" color="3" fill="1" visible="no" active="no"/>
-<layer number="47" name="Measures" color="7" fill="1" visible="no" active="no"/>
-<layer number="48" name="Document" color="7" fill="1" visible="no" active="no"/>
-<layer number="49" name="Reference" color="7" fill="1" visible="no" active="no"/>
-<layer number="50" name="dxf" color="7" fill="1" visible="no" active="no"/>
-<layer number="51" name="tDocu" color="7" fill="1" visible="no" active="no"/>
-<layer number="52" name="bDocu" color="7" fill="1" visible="no" active="no"/>
-<layer number="53" name="tGND_GNDA" color="7" fill="9" visible="no" active="no"/>
-<layer number="54" name="bGND_GNDA" color="1" fill="9" visible="no" active="no"/>
-<layer number="56" name="wert" color="7" fill="1" visible="no" active="no"/>
-<layer number="57" name="tCAD" color="11" fill="1" visible="no" active="no"/>
-<layer number="58" name="bCAD" color="11" fill="1" visible="no" active="no"/>
-<layer number="59" name="tCarbon" color="7" fill="1" visible="no" active="no"/>
-<layer number="60" name="bCarbon" color="7" fill="1" visible="no" active="no"/>
+<layer number="46" name="Milling" color="3" fill="1" visible="yes" active="no"/>
+<layer number="47" name="Measures" color="7" fill="1" visible="yes" active="no"/>
+<layer number="48" name="Document" color="7" fill="1" visible="yes" active="no"/>
+<layer number="49" name="Reference" color="7" fill="1" visible="yes" active="no"/>
+<layer number="50" name="dxf" color="7" fill="1" visible="yes" active="no"/>
+<layer number="51" name="tDocu" color="7" fill="1" visible="yes" active="no"/>
+<layer number="52" name="bDocu" color="7" fill="1" visible="yes" active="no"/>
+<layer number="53" name="tGND_GNDA" color="7" fill="9" visible="yes" active="no"/>
+<layer number="54" name="bGND_GNDA" color="1" fill="9" visible="yes" active="no"/>
+<layer number="56" name="wert" color="7" fill="1" visible="yes" active="no"/>
+<layer number="57" name="tCAD" color="11" fill="1" visible="yes" active="no"/>
+<layer number="58" name="bCAD" color="11" fill="1" visible="yes" active="no"/>
+<layer number="59" name="tCarbon" color="7" fill="1" visible="yes" active="no"/>
+<layer number="60" name="bCarbon" color="7" fill="1" visible="yes" active="no"/>
 <layer number="88" name="SimResults" color="9" fill="1" visible="yes" active="yes"/>
 <layer number="89" name="SimProbes" color="9" fill="1" visible="yes" active="yes"/>
 <layer number="90" name="Modules" color="5" fill="1" visible="yes" active="yes"/>
@@ -3287,20 +3287,9 @@
 <wire x1="-1.5113" y1="-0.7366" x2="-1.5113" y2="0.7366" width="0.1905" layer="21"/>
 <wire x1="-1.5113" y1="0.7366" x2="-0.254" y2="0.7366" width="0.1905" layer="21"/>
 </package>
-<package name="IND0703">
-<wire x1="-3.8" y1="3.8" x2="3.8" y2="3.8" width="0.127" layer="21"/>
-<wire x1="3.8" y1="3.8" x2="3.8" y2="2" width="0.127" layer="21"/>
-<wire x1="-3.8" y1="3.8" x2="-3.8" y2="2" width="0.127" layer="21"/>
-<wire x1="-3.8" y1="-3.8" x2="3.8" y2="-3.8" width="0.127" layer="21"/>
-<wire x1="3.8" y1="-3.8" x2="3.8" y2="-2" width="0.127" layer="21"/>
-<wire x1="-3.8" y1="-3.8" x2="-3.8" y2="-2" width="0.127" layer="21"/>
-<smd name="1" x="-3.65" y="0" dx="3" dy="2" layer="1" rot="R90"/>
-<smd name="2" x="3.65" y="0" dx="3" dy="2" layer="1" rot="R90"/>
-<circle x="0" y="0" radius="2.615" width="0.127" layer="51"/>
-</package>
 <package name="IND1207">
-<smd name="1" x="-6" y="0" dx="4.8" dy="5.2" layer="1"/>
-<smd name="2" x="6" y="0" dx="4.8" dy="5.2" layer="1"/>
+<smd name="1" x="-5.9" y="0" dx="4.6" dy="5.2" layer="1"/>
+<smd name="2" x="5.9" y="0" dx="4.6" dy="5.2" layer="1"/>
 <wire x1="5" y1="6" x2="-5" y2="6" width="0.127" layer="21"/>
 <wire x1="-5" y1="6" x2="-6" y2="5" width="0.127" layer="21" curve="90"/>
 <wire x1="-6" y1="-5" x2="-5" y2="-6" width="0.127" layer="21" curve="90"/>
@@ -3313,6 +3302,52 @@
 <wire x1="-6" y1="5" x2="-6" y2="3" width="0.127" layer="21"/>
 <wire x1="6" y1="-5" x2="6" y2="-3" width="0.127" layer="21"/>
 <wire x1="6" y1="3" x2="6" y2="5" width="0.127" layer="21"/>
+<wire x1="-6" y1="-5" x2="-5" y2="-6" width="0.127" layer="51" curve="90"/>
+<wire x1="-5" y1="-6" x2="5" y2="-6" width="0.127" layer="51"/>
+<wire x1="5" y1="-6" x2="6" y2="-5" width="0.127" layer="51" curve="90"/>
+<wire x1="6" y1="-5" x2="6" y2="5" width="0.127" layer="51"/>
+<wire x1="6" y1="5" x2="5" y2="6" width="0.127" layer="51" curve="90"/>
+<wire x1="5" y1="6" x2="-5" y2="6" width="0.127" layer="51"/>
+<wire x1="-5" y1="6" x2="-6" y2="5" width="0.127" layer="51" curve="90"/>
+<wire x1="-6" y1="5" x2="-6" y2="-5" width="0.127" layer="51"/>
+</package>
+<package name="IND0703">
+<wire x1="-3.8" y1="3.8" x2="3.8" y2="3.8" width="0.127" layer="21"/>
+<wire x1="3.8" y1="3.8" x2="3.8" y2="2" width="0.127" layer="21"/>
+<wire x1="-3.8" y1="3.8" x2="-3.8" y2="2" width="0.127" layer="21"/>
+<wire x1="-3.8" y1="-3.8" x2="3.8" y2="-3.8" width="0.127" layer="21"/>
+<wire x1="3.8" y1="-3.8" x2="3.8" y2="-2" width="0.127" layer="21"/>
+<wire x1="-3.8" y1="-3.8" x2="-3.8" y2="-2" width="0.127" layer="21"/>
+<smd name="1" x="-3.65" y="0" dx="3" dy="2" layer="1" rot="R90"/>
+<smd name="2" x="3.65" y="0" dx="3" dy="2" layer="1" rot="R90"/>
+<circle x="0" y="0" radius="2.615" width="0.127" layer="21"/>
+<wire x1="-3.8" y1="-3.8" x2="3.8" y2="-3.8" width="0.127" layer="51"/>
+<wire x1="3.8" y1="-3.8" x2="3.8" y2="3.8" width="0.127" layer="51"/>
+<wire x1="3.8" y1="3.8" x2="-3.8" y2="3.8" width="0.127" layer="51"/>
+<wire x1="-3.8" y1="3.8" x2="-3.8" y2="-3.8" width="0.127" layer="51"/>
+</package>
+<package name="IND1305">
+<smd name="1" x="-6" y="0" dx="5" dy="6.5" layer="1"/>
+<smd name="2" x="6" y="0" dx="5" dy="6.5" layer="1"/>
+<text x="-5.08" y="7.35" size="1.27" layer="25">&gt;NAME</text>
+<wire x1="-6.7" y1="-5.3" x2="-6.7" y2="5.3" width="0.127" layer="51"/>
+<wire x1="-6.7" y1="5.3" x2="-5.7" y2="6.3" width="0.127" layer="51" curve="-90"/>
+<wire x1="-5.7" y1="6.3" x2="5.7" y2="6.3" width="0.127" layer="51"/>
+<wire x1="5.7" y1="6.3" x2="6.7" y2="5.3" width="0.127" layer="51" curve="-90"/>
+<wire x1="6.7" y1="5.3" x2="6.7" y2="-5.3" width="0.127" layer="51"/>
+<wire x1="6.7" y1="-5.3" x2="5.7" y2="-6.3" width="0.127" layer="51" curve="-90"/>
+<wire x1="5.7" y1="-6.3" x2="-5.7" y2="-6.3" width="0.127" layer="51"/>
+<wire x1="-5.7" y1="-6.3" x2="-6.7" y2="-5.3" width="0.127" layer="51" curve="-90"/>
+<wire x1="-6.7" y1="3.4" x2="-6.7" y2="5.3" width="0.127" layer="21"/>
+<wire x1="-6.7" y1="5.3" x2="-5.7" y2="6.3" width="0.127" layer="21" curve="-90"/>
+<wire x1="-5.7" y1="6.3" x2="5.7" y2="6.3" width="0.127" layer="21"/>
+<wire x1="5.7" y1="6.3" x2="6.7" y2="5.3" width="0.127" layer="21" curve="-90"/>
+<wire x1="6.7" y1="5.3" x2="6.7" y2="3.4" width="0.127" layer="21"/>
+<wire x1="-6.7" y1="-3.4" x2="-6.7" y2="-5.3" width="0.127" layer="21"/>
+<wire x1="-6.7" y1="-5.3" x2="-5.7" y2="-6.3" width="0.127" layer="21" curve="90"/>
+<wire x1="-5.7" y1="-6.3" x2="5.7" y2="-6.3" width="0.127" layer="21"/>
+<wire x1="5.7" y1="-6.3" x2="6.7" y2="-5.3" width="0.127" layer="21" curve="90"/>
+<wire x1="6.7" y1="-5.3" x2="6.7" y2="-3.4" width="0.127" layer="21"/>
 </package>
 </packages>
 <symbols>
@@ -3349,6 +3384,15 @@
 </technologies>
 </device>
 <device name="-12X12X7MM" package="IND1207">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="-13X13X5MM" package="IND1305">
 <connects>
 <connect gate="G$1" pin="1" pad="1"/>
 <connect gate="G$1" pin="2" pad="2"/>
@@ -7185,30 +7229,28 @@ Source: &lt;a href="http://www.littelfuse.com/~/media/electronics/datasheets/tvs
 </packages>
 <symbols>
 <symbol name="A3-LANDSCAPE">
-<wire x1="288.29" y1="3.81" x2="342.265" y2="3.81" width="0.1016" layer="94"/>
-<wire x1="342.265" y1="3.81" x2="373.38" y2="3.81" width="0.1016" layer="94"/>
-<wire x1="373.38" y1="3.81" x2="383.54" y2="3.81" width="0.1016" layer="94"/>
-<wire x1="383.54" y1="3.81" x2="383.54" y2="8.89" width="0.1016" layer="94"/>
-<wire x1="383.54" y1="8.89" x2="383.54" y2="13.97" width="0.1016" layer="94"/>
-<wire x1="383.54" y1="13.97" x2="383.54" y2="19.05" width="0.1016" layer="94"/>
-<wire x1="383.54" y1="19.05" x2="383.54" y2="24.13" width="0.1016" layer="94"/>
-<wire x1="288.29" y1="3.81" x2="288.29" y2="24.13" width="0.1016" layer="94"/>
-<wire x1="288.29" y1="24.13" x2="342.265" y2="24.13" width="0.1016" layer="94"/>
-<wire x1="342.265" y1="24.13" x2="383.54" y2="24.13" width="0.1016" layer="94"/>
-<wire x1="373.38" y1="3.81" x2="373.38" y2="8.89" width="0.1016" layer="94"/>
-<wire x1="373.38" y1="8.89" x2="383.54" y2="8.89" width="0.1016" layer="94"/>
-<wire x1="373.38" y1="8.89" x2="342.265" y2="8.89" width="0.1016" layer="94"/>
-<wire x1="342.265" y1="8.89" x2="342.265" y2="3.81" width="0.1016" layer="94"/>
-<wire x1="342.265" y1="8.89" x2="342.265" y2="13.97" width="0.1016" layer="94"/>
-<wire x1="342.265" y1="13.97" x2="383.54" y2="13.97" width="0.1016" layer="94"/>
-<wire x1="342.265" y1="13.97" x2="342.265" y2="19.05" width="0.1016" layer="94"/>
-<wire x1="342.265" y1="19.05" x2="383.54" y2="19.05" width="0.1016" layer="94"/>
-<wire x1="342.265" y1="19.05" x2="342.265" y2="24.13" width="0.1016" layer="94"/>
-<text x="344.17" y="15.24" size="2.54" layer="94">&gt;DRAWING_NAME</text>
-<text x="344.17" y="10.16" size="2.286" layer="94">&gt;LAST_DATE_TIME</text>
-<text x="357.505" y="5.08" size="2.54" layer="94">&gt;SHEET</text>
-<text x="343.916" y="4.953" size="2.54" layer="94">Sheet:</text>
+<wire x1="288.29" y1="3.81" x2="383.54" y2="3.81" width="0.1016" layer="94"/>
+<wire x1="383.54" y1="3.81" x2="383.54" y2="24.13" width="0.1016" layer="94"/>
 <frame x1="0" y1="0" x2="387.35" y2="260.35" columns="8" rows="5" layer="94"/>
+<rectangle x1="289.2552" y1="3.81" x2="289.8648" y2="24.13" layer="94"/>
+<rectangle x1="336.2452" y1="-22.606" x2="336.8548" y2="71.374" layer="94" rot="R90"/>
+<wire x1="335.78" y1="3.964" x2="335.78" y2="9.144" width="0.1016" layer="94"/>
+<wire x1="335.78" y1="9.144" x2="383.54" y2="9.144" width="0.1016" layer="94"/>
+<wire x1="335.78" y1="9.144" x2="289.56" y2="9.144" width="0.1016" layer="94"/>
+<wire x1="289.56" y1="14.224" x2="335.78" y2="14.224" width="0.1016" layer="94"/>
+<wire x1="335.78" y1="14.224" x2="383.54" y2="14.224" width="0.1016" layer="94"/>
+<wire x1="289.56" y1="19.304" x2="383.54" y2="19.304" width="0.1016" layer="94"/>
+<wire x1="335.78" y1="9.144" x2="335.78" y2="14.224" width="0.1016" layer="94"/>
+<wire x1="289.56" y1="23.114" x2="289.56" y2="24.384" width="0.6096" layer="94"/>
+<wire x1="289.56" y1="24.384" x2="290.83" y2="24.384" width="0.6096" layer="94"/>
+<text x="292.1" y="15.494" size="2.54" layer="94" font="vector">&gt;DRAWING_NAME</text>
+<text x="292.1" y="10.414" size="2.286" layer="94" font="vector">&gt;LAST_DATE_TIME</text>
+<text x="306.07" y="5.334" size="2.54" layer="94" font="vector">&gt;SHEET</text>
+<text x="292.1" y="5.334" size="2.54" layer="94" font="vector">Sheet:</text>
+<text x="292.1" y="20.574" size="2.54" layer="94" font="vector">&gt;CNAME</text>
+<text x="336.65" y="5.334" size="2.54" layer="94" font="vector">Rev:</text>
+<text x="336.75" y="10.414" size="2.54" layer="94" font="vector">&gt;DESIGNER</text>
+<text x="345.41" y="5.234" size="2.54" layer="94" font="vector">&gt;CREVISION</text>
 </symbol>
 </symbols>
 <devicesets>
@@ -7726,6 +7768,8 @@ Source: &lt;a href="http://www.littelfuse.com/~/media/electronics/datasheets/tvs
 </library>
 </libraries>
 <attributes>
+<attribute name="CREVISION" value="1.0"/>
+<attribute name="DESIGNER" value="Joao Silva"/>
 </attributes>
 <variantdefs>
 </variantdefs>
@@ -7756,7 +7800,9 @@ Source: &lt;a href="http://www.littelfuse.com/~/media/electronics/datasheets/tvs
 <part name="C4" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="100nF"/>
 <part name="GND6" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="3V38" library="Supply Symbol" deviceset="3V3" device=""/>
-<part name="SHEET1" library="Frame" deviceset="A3-LANDSCAPE" device=""/>
+<part name="SHEET1" library="Frame" deviceset="A3-LANDSCAPE" device="">
+<attribute name="DESIGNER" value=""/>
+</part>
 <part name="R1" library="Resistor" deviceset="RESISTOR" device="-0603" value="10K Ohms"/>
 <part name="3V32" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="R4" library="Resistor" deviceset="RESISTOR" device="-0603" value="10K Ohms"/>
@@ -7764,7 +7810,9 @@ Source: &lt;a href="http://www.littelfuse.com/~/media/electronics/datasheets/tvs
 <part name="CON1" library="JST" deviceset="6P" device="-SH-TOP"/>
 <part name="GND17" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="3V318" library="Supply Symbol" deviceset="3V3" device=""/>
-<part name="SHEET2" library="Frame" deviceset="A3-LANDSCAPE" device=""/>
+<part name="SHEET2" library="Frame" deviceset="A3-LANDSCAPE" device="">
+<attribute name="DESIGNER" value=""/>
+</part>
 <part name="R15" library="Resistor" deviceset="RESISTOR" device="-0603" value="100K Ohms"/>
 <part name="3V323" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="GND22" library="Supply Symbol" deviceset="GND" device=""/>
@@ -7816,7 +7864,9 @@ Source: &lt;a href="http://www.littelfuse.com/~/media/electronics/datasheets/tvs
 <part name="3V329" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="R21" library="Resistor" deviceset="RESISTOR" device="-0603" value="10K Ohms"/>
 <part name="GND32" library="Supply Symbol" deviceset="GND" device=""/>
-<part name="SHEET5" library="Frame" deviceset="A3-LANDSCAPE" device=""/>
+<part name="SHEET5" library="Frame" deviceset="A3-LANDSCAPE" device="">
+<attribute name="DESIGNER" value=""/>
+</part>
 <part name="GND52" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="3V334" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="C28" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="100nF"/>
@@ -7836,7 +7886,9 @@ Source: &lt;a href="http://www.littelfuse.com/~/media/electronics/datasheets/tvs
 <part name="GND53" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="3V335" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="C29" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="100nF"/>
-<part name="SHEET4" library="Frame" deviceset="A3-LANDSCAPE" device=""/>
+<part name="SHEET4" library="Frame" deviceset="A3-LANDSCAPE" device="">
+<attribute name="DESIGNER" value=""/>
+</part>
 <part name="GND40" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="4V21" library="Supply Symbol" deviceset="4V2" device="" value="4V2"/>
 <part name="C23" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="100nF"/>
@@ -7883,7 +7935,9 @@ Source: &lt;a href="http://www.littelfuse.com/~/media/electronics/datasheets/tvs
 <part name="TP4" library="PADs" deviceset="TESTPOINT" device=""/>
 <part name="GND51" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="TP5" library="PADs" deviceset="TESTPOINT" device=""/>
-<part name="SHEET3" library="Frame" deviceset="A3-LANDSCAPE" device=""/>
+<part name="SHEET3" library="Frame" deviceset="A3-LANDSCAPE" device="">
+<attribute name="DESIGNER" value=""/>
+</part>
 <part name="C21" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="100nF"/>
 <part name="GND36" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="3V330" library="Supply Symbol" deviceset="3V3" device=""/>
@@ -7903,7 +7957,9 @@ Source: &lt;a href="http://www.littelfuse.com/~/media/electronics/datasheets/tvs
 </part>
 <part name="3V33" library="Supply Symbol" deviceset="3V3" device=""/>
 <part name="GND2" library="Supply Symbol" deviceset="GND" device=""/>
-<part name="SHEET6" library="Frame" deviceset="A3-LANDSCAPE" device=""/>
+<part name="SHEET6" library="Frame" deviceset="A3-LANDSCAPE" device="">
+<attribute name="DESIGNER" value=""/>
+</part>
 <part name="D6" library="Generic Diode" deviceset="DSK24" device="" value="DSK24"/>
 <part name="D4" library="Generic Diode" deviceset="SK54L" device="" value="SK54L">
 <attribute name="OCLCSC" value="C129816"/>
@@ -8072,7 +8128,9 @@ Source: &lt;a href="http://www.littelfuse.com/~/media/electronics/datasheets/tvs
 <part name="C6" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="100nF"/>
 <part name="GND8" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="3V311" library="Supply Symbol" deviceset="3V3" device=""/>
-<part name="SHEET7" library="Frame" deviceset="A3-LANDSCAPE" device=""/>
+<part name="SHEET7" library="Frame" deviceset="A3-LANDSCAPE" device="">
+<attribute name="DESIGNER" value=""/>
+</part>
 <part name="U17" library="BuyDisplay" deviceset="ER-TFT035-6" device=""/>
 <part name="C52" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="100nF"/>
 <part name="GND102" library="Supply Symbol" deviceset="GND" device=""/>
@@ -8167,7 +8225,6 @@ Source: &lt;a href="http://www.littelfuse.com/~/media/electronics/datasheets/tvs
 <text x="356.108" y="237.49" size="1.778" layer="94">High Frequency Crystal</text>
 <text x="356.616" y="217.424" size="1.778" layer="94">Low Frequency Crystal</text>
 <text x="64.516" y="217.424" size="1.778" layer="94">Decouple</text>
-<text x="357.378" y="13.97" size="2.54" layer="94">Main processor</text>
 <wire x1="63.5" y1="215.9" x2="63.5" y2="149.86" width="0.1016" layer="94"/>
 <wire x1="63.5" y1="149.86" x2="3.81" y2="149.86" width="0.1016" layer="94"/>
 <text x="48.514" y="151.638" size="1.778" layer="94">I2C Pull-ups</text>
@@ -8188,10 +8245,10 @@ Source: &lt;a href="http://www.littelfuse.com/~/media/electronics/datasheets/tvs
 <text x="78.232" y="217.424" size="1.778" layer="94">SPI Flash Decouple</text>
 <text x="104.394" y="217.424" size="1.778" layer="94">LED Decouple</text>
 <wire x1="101.6" y1="215.9" x2="101.6" y2="256.54" width="0.1016" layer="94" style="shortdash"/>
-<wire x1="288.29" y1="24.13" x2="266.7" y2="24.13" width="0.1016" layer="94"/>
-<wire x1="266.7" y1="24.13" x2="266.7" y2="83.82" width="0.1016" layer="94"/>
-<wire x1="266.7" y1="83.82" x2="287.02" y2="83.82" width="0.1016" layer="94"/>
-<wire x1="287.02" y1="83.82" x2="383.54" y2="83.82" width="0.1016" layer="94"/>
+<wire x1="289.56" y1="24.13" x2="265.43" y2="24.13" width="0.1016" layer="94"/>
+<wire x1="265.43" y1="24.13" x2="265.43" y2="83.82" width="0.1016" layer="94"/>
+<wire x1="265.43" y1="83.82" x2="287.02" y2="83.82" width="0.1016" layer="94"/>
+<wire x1="287.02" y1="83.82" x2="382.27" y2="83.82" width="0.1016" layer="94"/>
 <text x="373.126" y="86.106" size="1.778" layer="94">Buttons</text>
 <wire x1="312.42" y1="170.18" x2="287.02" y2="170.18" width="0.1016" layer="94"/>
 <wire x1="287.02" y1="170.18" x2="287.02" y2="83.82" width="0.1016" layer="94"/>
@@ -8199,9 +8256,11 @@ Source: &lt;a href="http://www.littelfuse.com/~/media/electronics/datasheets/tvs
 </plain>
 <instances>
 <instance part="SHEET1" gate="G$1" x="0" y="0" smashed="yes">
-<attribute name="DRAWING_NAME" x="294.64" y="19.05" size="2.54" layer="94"/>
-<attribute name="LAST_DATE_TIME" x="292.1" y="15.24" size="1.778" layer="94" align="center-left"/>
-<attribute name="SHEET" x="350.52" y="20.32" size="1.778" layer="94" align="center-left"/>
+<attribute name="DRAWING_NAME" x="292.1" y="15.494" size="2.54" layer="94" font="vector"/>
+<attribute name="LAST_DATE_TIME" x="292.1" y="10.414" size="2.286" layer="94" font="vector"/>
+<attribute name="SHEET" x="306.07" y="5.334" size="2.54" layer="94" font="vector"/>
+<attribute name="DESIGNER" x="336.75" y="10.414" size="2.54" layer="94" font="vector"/>
+<attribute name="CREVISION" x="345.41" y="5.234" size="2.54" layer="94" font="vector"/>
 </instance>
 <instance part="Y1" gate="G$1" x="340.36" y="246.38" smashed="yes">
 <attribute name="OCLCSC" x="340.36" y="246.38" size="1.778" layer="96" display="off"/>
@@ -9473,7 +9532,6 @@ Source: &lt;a href="http://www.littelfuse.com/~/media/electronics/datasheets/tvs
 <sheet>
 <description>Wifi co-processor</description>
 <plain>
-<text x="362.966" y="13.97" size="2.54" layer="94">Wifi access</text>
 <text x="142.748" y="5.334" size="1.778" layer="94">SPI Flash</text>
 <text x="133.858" y="171.196" size="1.27" layer="97">Option 2:
 L1: 5.6pF capacitor
@@ -9498,9 +9556,11 @@ Zu.fl: 50 Ohm</text>
 </plain>
 <instances>
 <instance part="SHEET2" gate="G$1" x="0" y="0" smashed="yes">
-<attribute name="DRAWING_NAME" x="299.72" y="19.05" size="2.54" layer="94"/>
-<attribute name="LAST_DATE_TIME" x="297.18" y="15.24" size="1.778" layer="94" align="center-left"/>
-<attribute name="SHEET" x="350.52" y="20.32" size="1.778" layer="94" align="center-left"/>
+<attribute name="DRAWING_NAME" x="292.1" y="15.494" size="2.54" layer="94" font="vector"/>
+<attribute name="LAST_DATE_TIME" x="292.1" y="10.414" size="2.286" layer="94" font="vector"/>
+<attribute name="SHEET" x="306.07" y="5.334" size="2.54" layer="94" font="vector"/>
+<attribute name="DESIGNER" x="336.75" y="10.414" size="2.54" layer="94" font="vector"/>
+<attribute name="CREVISION" x="345.41" y="5.234" size="2.54" layer="94" font="vector"/>
 </instance>
 <instance part="R15" gate="G$1" x="48.26" y="50.8" smashed="yes" rot="R270">
 <attribute name="VALUE" x="44.6024" y="50.1142" size="1.778" layer="96" ratio="10" rot="SR270"/>
@@ -10173,16 +10233,17 @@ Zu.fl: 50 Ohm</text>
 <sheet>
 <description>RFM Radio</description>
 <plain>
-<text x="362.966" y="13.97" size="2.54" layer="94">Wifi access</text>
 <text x="18.796" y="217.424" size="1.778" layer="94">Decouple</text>
 <wire x1="30.48" y1="215.9" x2="30.48" y2="256.54" width="0.1016" layer="94"/>
 <wire x1="30.48" y1="215.9" x2="3.81" y2="215.9" width="0.1016" layer="94"/>
 </plain>
 <instances>
 <instance part="SHEET3" gate="G$1" x="0" y="0" smashed="yes">
-<attribute name="DRAWING_NAME" x="299.72" y="19.05" size="2.54" layer="94"/>
-<attribute name="LAST_DATE_TIME" x="297.18" y="15.24" size="1.778" layer="94" align="center-left"/>
-<attribute name="SHEET" x="350.52" y="20.32" size="1.778" layer="94" align="center-left"/>
+<attribute name="DRAWING_NAME" x="292.1" y="15.494" size="2.54" layer="94" font="vector"/>
+<attribute name="LAST_DATE_TIME" x="292.1" y="10.414" size="2.286" layer="94" font="vector"/>
+<attribute name="SHEET" x="306.07" y="5.334" size="2.54" layer="94" font="vector"/>
+<attribute name="DESIGNER" x="336.75" y="10.414" size="2.54" layer="94" font="vector"/>
+<attribute name="CREVISION" x="345.41" y="5.234" size="2.54" layer="94" font="vector"/>
 </instance>
 <instance part="C21" gate="G$1" x="17.78" y="241.3" smashed="yes" rot="R270">
 <attribute name="VALUE" x="13.5128" y="241.8842" size="1.778" layer="96" ratio="10" rot="SR270"/>
@@ -10332,7 +10393,6 @@ Zu.fl: 50 Ohm</text>
 <sheet>
 <description>GSM/Bluetooth Module</description>
 <plain>
-<text x="362.966" y="13.97" size="2.54" layer="94">Wifi access</text>
 <text x="49.276" y="217.424" size="1.778" layer="94">Decouple</text>
 <wire x1="60.96" y1="215.9" x2="3.81" y2="215.9" width="0.1016" layer="94"/>
 <wire x1="60.96" y1="215.9" x2="60.96" y2="256.54" width="0.1016" layer="94"/>
@@ -10342,9 +10402,11 @@ Zu.fl: 50 Ohm</text>
 </plain>
 <instances>
 <instance part="SHEET4" gate="G$1" x="0" y="0" smashed="yes">
-<attribute name="DRAWING_NAME" x="299.72" y="19.05" size="2.54" layer="94"/>
-<attribute name="LAST_DATE_TIME" x="297.18" y="15.24" size="1.778" layer="94" align="center-left"/>
-<attribute name="SHEET" x="350.52" y="20.32" size="1.778" layer="94" align="center-left"/>
+<attribute name="DRAWING_NAME" x="292.1" y="15.494" size="2.54" layer="94" font="vector"/>
+<attribute name="LAST_DATE_TIME" x="292.1" y="10.414" size="2.286" layer="94" font="vector"/>
+<attribute name="SHEET" x="306.07" y="5.334" size="2.54" layer="94" font="vector"/>
+<attribute name="DESIGNER" x="336.75" y="10.414" size="2.54" layer="94" font="vector"/>
+<attribute name="CREVISION" x="345.41" y="5.234" size="2.54" layer="94" font="vector"/>
 </instance>
 <instance part="GND40" gate="G$1" x="17.78" y="228.6" smashed="yes">
 <attribute name="VALUE" x="14.986" y="223.52" size="1.778" layer="96"/>
@@ -10996,9 +11058,11 @@ Zu.fl: 50 Ohm</text>
 </plain>
 <instances>
 <instance part="SHEET5" gate="G$1" x="0" y="0" smashed="yes">
-<attribute name="DRAWING_NAME" x="299.72" y="19.05" size="2.54" layer="94"/>
-<attribute name="LAST_DATE_TIME" x="297.18" y="15.24" size="1.778" layer="94" align="center-left"/>
-<attribute name="SHEET" x="350.52" y="20.32" size="1.778" layer="94" align="center-left"/>
+<attribute name="DRAWING_NAME" x="292.1" y="15.494" size="2.54" layer="94" font="vector"/>
+<attribute name="LAST_DATE_TIME" x="292.1" y="10.414" size="2.286" layer="94" font="vector"/>
+<attribute name="SHEET" x="306.07" y="5.334" size="2.54" layer="94" font="vector"/>
+<attribute name="DESIGNER" x="336.75" y="10.414" size="2.54" layer="94" font="vector"/>
+<attribute name="CREVISION" x="345.41" y="5.234" size="2.54" layer="94" font="vector"/>
 </instance>
 <instance part="GND52" gate="G$1" x="20.32" y="226.06" smashed="yes">
 <attribute name="VALUE" x="17.526" y="220.98" size="1.778" layer="96"/>
@@ -11390,9 +11454,11 @@ DS pag. 5</text>
 </plain>
 <instances>
 <instance part="SHEET6" gate="G$1" x="0" y="0" smashed="yes">
-<attribute name="DRAWING_NAME" x="299.72" y="19.05" size="2.54" layer="94"/>
-<attribute name="LAST_DATE_TIME" x="297.18" y="15.24" size="1.778" layer="94" align="center-left"/>
-<attribute name="SHEET" x="350.52" y="20.32" size="1.778" layer="94" align="center-left"/>
+<attribute name="DRAWING_NAME" x="292.1" y="15.494" size="2.54" layer="94" font="vector"/>
+<attribute name="LAST_DATE_TIME" x="292.1" y="10.414" size="2.286" layer="94" font="vector"/>
+<attribute name="SHEET" x="306.07" y="5.334" size="2.54" layer="94" font="vector"/>
+<attribute name="DESIGNER" x="336.75" y="10.414" size="2.54" layer="94" font="vector"/>
+<attribute name="CREVISION" x="345.41" y="5.234" size="2.54" layer="94" font="vector"/>
 </instance>
 <instance part="D6" gate="G$1" x="160.02" y="58.42" smashed="yes">
 <attribute name="NAME" x="157.734" y="60.325" size="1.778" layer="95"/>
@@ -12594,9 +12660,11 @@ DS pag. 5</text>
 </plain>
 <instances>
 <instance part="SHEET7" gate="G$1" x="0" y="0" smashed="yes">
-<attribute name="DRAWING_NAME" x="299.72" y="19.05" size="2.54" layer="94"/>
-<attribute name="LAST_DATE_TIME" x="297.18" y="15.24" size="1.778" layer="94" align="center-left"/>
-<attribute name="SHEET" x="350.52" y="20.32" size="1.778" layer="94" align="center-left"/>
+<attribute name="DRAWING_NAME" x="292.1" y="15.494" size="2.54" layer="94" font="vector"/>
+<attribute name="LAST_DATE_TIME" x="292.1" y="10.414" size="2.286" layer="94" font="vector"/>
+<attribute name="SHEET" x="306.07" y="5.334" size="2.54" layer="94" font="vector"/>
+<attribute name="DESIGNER" x="336.75" y="10.414" size="2.54" layer="94" font="vector"/>
+<attribute name="CREVISION" x="345.41" y="5.234" size="2.54" layer="94" font="vector"/>
 </instance>
 <instance part="U17" gate="G$1" x="208.28" y="172.72" smashed="yes">
 <attribute name="NAME" x="182.88" y="176.276" size="1.27" layer="95"/>
