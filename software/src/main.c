@@ -19,8 +19,6 @@
 #include "qspi.h"
 #include "usart.h"
 #include "i2c.h"
-#include "pn532.h"
-#include "as5048a.h"
 
 // Structs
 
