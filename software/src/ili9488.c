@@ -2,8 +2,8 @@
 
 static inline void ili9488_send_cmd(uint8_t ubCmd, uint8_t *pubParam, uint8_t ubNParam)
 {
-    ILI9488_SETUP_CMD();
     ILI9488_SELECT();
+    ILI9488_SETUP_CMD();
     usart0_spi_transfer_byte(ubCmd);
     if(pubParam && ubNParam)
     {
@@ -16,8 +16,8 @@ static inline void ili9488_read_data(uint8_t *pubData, uint8_t ubNData)
 {
     if(pubData && ubNData)
     {
-        ILI9488_SETUP_DAT();
         ILI9488_SELECT();
+        ILI9488_SETUP_DAT();
         usart0_spi_transfer_byte(0x00); // dummy byte
         usart0_spi_read(pubData, ubNData);
         ILI9488_UNSELECT();
@@ -25,8 +25,8 @@ static inline void ili9488_read_data(uint8_t *pubData, uint8_t ubNData)
 }
 static inline void ili9488_send_pixel_data(rgb565_t usColor)
 {
-    ILI9488_SETUP_DAT();
     ILI9488_SELECT();
+    ILI9488_SETUP_DAT();
     usart0_spi_transfer_byte(RGB565_EXTRACT_RED(usColor));
     usart0_spi_transfer_byte(RGB565_EXTRACT_GREEN(usColor));
     usart0_spi_transfer_byte(RGB565_EXTRACT_BLUE(usColor));
@@ -130,6 +130,13 @@ uint8_t ili9488_init()
 	ili9488_send_cmd(ILI9488_ADJ_CTL_3, ubBuf, 4);      // Adjust Control
 
 	ili9488_wakeup(0);  // wake up controller, leave display off
+}
+uint32_t ili9488_read_id()
+{
+    uint8_t ubBuf[3];
+    ili9488_send_cmd(ILI9488_RD_DISP_ID, NULL, 0);
+    ili9488_read_data(ubBuf, 3);
+    return ((uint32_t)ubBuf[0] << 16) | ((uint32_t)ubBuf[1] << 8) | (uint32_t)ubBuf[2];
 }
 void ili9488_sleep()
 {

@@ -23,7 +23,7 @@
 #define RGB565_GREENYELLOW  0xAFE5      /* 173, 255,  47 */
 #define RGB565_PINK         0xF81F
 
-#define RGB565_FROM_RGB(r, g, b)    (((uint16_t)r & 0xF8) << 8) | (((uint16_t)g & 0xFC) << 3) | ((uint16_t)b >> 3)
+#define RGB565_FROM_RGB(r, g, b)    (((uint16_t)r & 0xF8) << 8) | (((uint16_t)g & 0xFC) << 3) | (((uint16_t)b & 0xF8) >> 3)
 
 #define RGB565_EXTRACT_RED(c)       ((c & 0xF800) >> 8)
 #define RGB565_EXTRACT_GREEN(c)     ((c & 0x07E0) >> 3)

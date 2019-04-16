@@ -133,6 +133,7 @@
 #define ILI9488_MADCTL_MH 0x04
 
 uint8_t ili9488_init();
+uint32_t ili9488_read_id();
 void ili9488_sleep();
 void ili9488_wakeup(uint8_t ubDisplayOn);
 void ili9488_display_on();

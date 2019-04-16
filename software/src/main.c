@@ -227,7 +227,7 @@ int init()
     fIOVDDHighThresh = fIOVDDLowThresh + 0.026f; // Hysteresis from datasheet
 
     usart0_init(18000000, 0, USART_SPI_MSB_FIRST, 2, 2, 2);  // SPI0 at 18MHz on Location 2 MISO:PC10 MOSI:PC11 CLK:PC9 ESP8266 WIFI-COPROCESSOR
-    //usart1_init(18000000, 0, USART_SPI_MSB_FIRST, 1, 1, 1);  // SPI1 at 18MHz on Location 1 MISO:PD1 MOSI:PD0 CLK:PD2 ILI9488 Display
+    usart1_init(18000000, 0, USART_SPI_MSB_FIRST, 1, 1, 1);  // SPI1 at 18MHz on Location 1 MISO:PD1 MOSI:PD0 CLK:PD2 ILI9488 Display
     //usart2_init(115200, 0, UART_FRAME_STOPBITS_ONE, 0, 0, 0); // USART2 at 115200Baud on Location 0 RTS-PC0 CTS-PC1 TX-PC2 RX-PC3 GSM
     //usart3_init(10000000, 0, USART_SPI_MSB_FIRST, 0, 0, 0); // SPI3 at 10MHz on Location 0 MISO-PA1 MOSI-PA0 CLK-PA2 RFM
 
@@ -433,6 +433,19 @@ int main()
     //DBGPRINTLN_CTX("QSPI RD: %08X", *(volatile uint32_t *)0xC0000000);
     //DBGPRINTLN_CTX("QSPI RD: %08X", *(volatile uint32_t *)0xC0000004);
 
+    WIFI_UNRESET();
+    WIFI_SELECT();
+
+    TFT_BL_ON();
+    ILI9488_UNRESET();
+
+    ili9488_init();
+    ili9488_display_on();
+    ili9488_set_rotation(1);
+    ili9488_draw_line(10, 10, 20, 20, RGB565_BLUE);
+    //ili9488_fill_screen(1, RGB565_PINK);
+
+    DBGPRINTLN_CTX("Display: 0x%06X", ili9488_read_id());
 
     while(1)
     {
