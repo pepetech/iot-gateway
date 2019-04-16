@@ -1,5 +1,8 @@
 #include "ili9488.h"
 
+static uint16_t usMaxWidth;
+static uint16_t usMaxHeigth;
+
 static inline void ili9488_send_cmd(uint8_t ubCmd, uint8_t *pubParam, uint8_t ubNParam)
 {
     ILI9488_SELECT();
@@ -34,6 +37,8 @@ static inline void ili9488_send_pixel_data(rgb565_t usColor)
 }
 static inline void ili9488_set_window(uint16_t usX0, uint16_t usY0, uint16_t usX1, uint16_t usY1)
 {
+    
+
     uint8_t ubBuf[4];
 
     ubBuf[0] = usX0 >> 8;
@@ -53,6 +58,11 @@ static inline void ili9488_set_window(uint16_t usX0, uint16_t usY0, uint16_t usX
 
 uint8_t ili9488_init()
 {
+    ILI9488_RESET();
+    delay_ms(10);
+    ILI9488_UNRESET();
+    delay_ms(120);
+
     uint8_t ubBuf[15];
 
     ubBuf[0] =  0x00;
@@ -170,15 +180,23 @@ void ili9488_set_rotation(uint8_t ubRotation)
     {
         case 0:
             ubBuf = ILI9488_MADCTL_MX | ILI9488_MADCTL_BGR;
+            usMaxWidth = ILI9488_TFTWIDTH;
+            usMaxHeigth = ILI9488_TFTHEIGHT;
             break;
         case 1:
             ubBuf = ILI9488_MADCTL_MV | ILI9488_MADCTL_BGR;
+            usMaxWidth = ILI9488_TFTHEIGHT;
+            usMaxHeigth = ILI9488_TFTWIDTH;
             break;
         case 2:
             ubBuf = ILI9488_MADCTL_MY | ILI9488_MADCTL_BGR;
+            usMaxWidth = ILI9488_TFTWIDTH;
+            usMaxHeigth = ILI9488_TFTHEIGHT;
             break;
         case 3:
             ubBuf = ILI9488_MADCTL_MX | ILI9488_MADCTL_MY | ILI9488_MADCTL_MV | ILI9488_MADCTL_BGR;
+            usMaxWidth = ILI9488_TFTHEIGHT;
+            usMaxHeigth = ILI9488_TFTHEIGHT;
             break;
         default:
             return;
@@ -193,17 +211,12 @@ void ili9488_set_invert(uint8_t ubOnOff)
 
 void ili9488_set_scroll_area(uint8_t ubRotation, uint16_t usTopFixedArea, uint16_t usBottomFixedArea)
 {
-    uint16_t usDisplayHeight = ILI9488_TFTWIDTH;
-
-    if(ubRotation % 2)
-        usDisplayHeight = ILI9488_TFTHEIGHT;
-
     uint8_t ubBuf[6];
 
     ubBuf[0] = usTopFixedArea >> 8;
     ubBuf[1] = usTopFixedArea & 0x00FF;
-    ubBuf[2] = (usDisplayHeight - usTopFixedArea - usBottomFixedArea) >> 8;
-    ubBuf[3] = (usDisplayHeight - usTopFixedArea - usBottomFixedArea) & 0x00FF;
+    ubBuf[2] = (usMaxHeigth - usTopFixedArea - usBottomFixedArea) >> 8;
+    ubBuf[3] = (usMaxHeigth - usTopFixedArea - usBottomFixedArea) & 0x00FF;
     ubBuf[4] = usBottomFixedArea >> 8;
     ubBuf[5] = usBottomFixedArea & 0x00FF;
     ili9488_send_cmd(ILI9488_VSCRL_DEF, ubBuf, 6); // Vertical scroll definition
@@ -219,10 +232,7 @@ void ili9488_scroll(uint16_t usPixs)
 
 void ili9488_fill_screen(uint8_t ubRotation, rgb565_t usColor)
 {
-    if(ubRotation % 2)
-        ili9488_set_window(0, 0, ILI9488_TFTHEIGHT, ILI9488_TFTWIDTH);
-    else
-        ili9488_set_window(0, 0, ILI9488_TFTWIDTH, ILI9488_TFTHEIGHT);
+    ili9488_set_window(0, 0, usMaxWidth, usMaxHeigth);
 
     for(uint32_t ulI = ILI9488_TFTWIDTH * ILI9488_TFTHEIGHT; ulI > 0; ulI--)
     {
