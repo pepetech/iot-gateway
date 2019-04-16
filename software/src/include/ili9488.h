@@ -153,6 +153,6 @@ void ili9488_draw_line(uint16_t usX0, uint16_t usY0, uint16_t usX1, uint16_t usY
 void ili9488_draw_rectangle(uint16_t usX0, uint16_t usY0, uint16_t usX1, uint16_t usY1, rgb565_t usColor, uint8_t ubFill);
 void ili9488_draw_circle(uint16_t usX, uint16_t usY, uint16_t usR, uint8_t ubFill, rgb565_t usColor);
 
-void ili9488_draw_image(rgb565_t *pusImgBuf, uint16_t usX, uint16_t usY);
+void ili9488_draw_image(const rgb565_t *pusImgBuf, uint16_t usX, uint16_t usY);
 
 #endif  // __ILI9488_H_

@@ -4,11 +4,11 @@ static inline void ili9488_send_cmd(uint8_t ubCmd, uint8_t *pubParam, uint8_t ub
 {
     ILI9488_SELECT();
     ILI9488_SETUP_CMD();
-    usart0_spi_transfer_byte(ubCmd);
+    usart1_spi_transfer_byte(ubCmd);
     if(pubParam && ubNParam)
     {
         ILI9488_SETUP_DAT();
-        usart0_spi_write(pubParam, ubNParam);
+        usart1_spi_write(pubParam, ubNParam);
     }
     ILI9488_UNSELECT();
 }
@@ -18,8 +18,8 @@ static inline void ili9488_read_data(uint8_t *pubData, uint8_t ubNData)
     {
         ILI9488_SELECT();
         ILI9488_SETUP_DAT();
-        usart0_spi_transfer_byte(0x00); // dummy byte
-        usart0_spi_read(pubData, ubNData);
+        usart1_spi_transfer_byte(0x00); // dummy byte
+        usart1_spi_read(pubData, ubNData);
         ILI9488_UNSELECT();
     }
 }
@@ -27,9 +27,9 @@ static inline void ili9488_send_pixel_data(rgb565_t usColor)
 {
     ILI9488_SELECT();
     ILI9488_SETUP_DAT();
-    usart0_spi_transfer_byte(RGB565_EXTRACT_RED(usColor));
-    usart0_spi_transfer_byte(RGB565_EXTRACT_GREEN(usColor));
-    usart0_spi_transfer_byte(RGB565_EXTRACT_BLUE(usColor));
+    usart1_spi_transfer_byte(RGB565_EXTRACT_RED(usColor));
+    usart1_spi_transfer_byte(RGB565_EXTRACT_GREEN(usColor));
+    usart1_spi_transfer_byte(RGB565_EXTRACT_BLUE(usColor));
     ILI9488_UNSELECT();
 }
 static inline void ili9488_set_window(uint16_t usX0, uint16_t usY0, uint16_t usX1, uint16_t usY1)
@@ -220,9 +220,9 @@ void ili9488_scroll(uint16_t usPixs)
 void ili9488_fill_screen(uint8_t ubRotation, rgb565_t usColor)
 {
     if(ubRotation % 2)
-        ili9488_set_window(0, 0, ILI9488_TFTWIDTH, ILI9488_TFTHEIGHT);
-    else
         ili9488_set_window(0, 0, ILI9488_TFTHEIGHT, ILI9488_TFTWIDTH);
+    else
+        ili9488_set_window(0, 0, ILI9488_TFTWIDTH, ILI9488_TFTHEIGHT);
 
     for(uint32_t ulI = ILI9488_TFTWIDTH * ILI9488_TFTHEIGHT; ulI > 0; ulI--)
     {
@@ -401,7 +401,7 @@ void ili9488_draw_circle(uint16_t usX, uint16_t usY, uint16_t usR, uint8_t ubFil
     }
 }
 
-void ili9488_draw_image(rgb565_t *pusImgBuf, uint16_t usX, uint16_t usY)
+void ili9488_draw_image(const rgb565_t *pusImgBuf, uint16_t usX, uint16_t usY)
 {
     if(!pusImgBuf)
         return;
