@@ -21,7 +21,7 @@
 #include "i2c.h"
 #include "ili9488.h"
 #include "pepe.h"
-#include "land.h"
+#include "patrick.h"
 
 // Structs
 
@@ -471,12 +471,12 @@ int main()
     ili9488_display_on();
     ili9488_set_rotation(0);
     //ili9488_draw_line(10, 10, 20, 20, RGB565_BLUE);
-    ili9488_fill_screen(0, RGB565_WHITE);
+    ili9488_fill_screen(RGB565_WHITE);
     //ili9488_draw_circle(160, 240, 50, 1, RGB565_DARKGREEN);
     //ili9488_draw_line(0, 0, 240, 160, RGB565_DARKGREEN);
     //ili9488_draw_rectangle(10, 10, 500, 160, RGB565_DARKGREEN, 0);
-    ili9488_draw_image(usLand, 32, 0);
-    ili9488_draw_image(usPepe, 32, 230);
+    ili9488_draw_image(usPepe, 32, 100);
+    ili9488_draw_image(usPatrick, 32, 0);
 
     DBGPRINTLN_CTX("Display: 0x%06X", ili9488_read_id());
 

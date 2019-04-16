@@ -144,7 +144,7 @@ void ili9488_set_invert(uint8_t ubOnOff);
 void ili9488_set_scroll_area(uint8_t ubRotation, uint16_t usTopFixedArea, uint16_t usBottomFixedArea);
 void ili9488_scroll(uint16_t usPixs);
 
-void ili9488_fill_screen(uint8_t ubRotation, rgb565_t usColor);
+void ili9488_fill_screen(rgb565_t usColor);
 
 void ili9488_draw_pixel(uint16_t usX, uint16_t usY, rgb565_t usColor);
 void ili9488_draw_Fast_v_line(uint16_t usX, uint16_t usY0, uint16_t usY1, rgb565_t usColor);

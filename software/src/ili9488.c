@@ -35,9 +35,17 @@ static inline void ili9488_send_pixel_data(rgb565_t usColor)
     usart1_spi_transfer_byte(RGB565_EXTRACT_BLUE(usColor));
     ILI9488_UNSELECT();
 }
-static inline void ili9488_set_window(uint16_t usX0, uint16_t usY0, uint16_t usX1, uint16_t usY1)
+static inline uint8_t ili9488_set_window(uint16_t usX0, uint16_t usY0, uint16_t usX1, uint16_t usY1)
 {
-    
+    if(usX0 > usX1)
+        return 1;
+    if(usY0 > usY1)
+        return 1;
+    if(usX1 > usMaxWidth)
+        return 1;
+    if(usY1 > usMaxHeigth)
+        return 1;
+
 
     uint8_t ubBuf[4];
 
@@ -54,6 +62,8 @@ static inline void ili9488_set_window(uint16_t usX0, uint16_t usY0, uint16_t usX
     ili9488_send_cmd(ILI9488_P_ADDR_SET, ubBuf, 4); // Row addr set
 
     ili9488_send_cmd(ILI9488_RAM_WR, NULL, 0); // write to RAM
+
+    return 0;
 }
 
 uint8_t ili9488_init()
@@ -180,23 +190,23 @@ void ili9488_set_rotation(uint8_t ubRotation)
     {
         case 0:
             ubBuf = ILI9488_MADCTL_MX | ILI9488_MADCTL_BGR;
-            usMaxWidth = ILI9488_TFTWIDTH;
-            usMaxHeigth = ILI9488_TFTHEIGHT;
+            usMaxWidth = ILI9488_TFTWIDTH - 1;
+            usMaxHeigth = ILI9488_TFTHEIGHT - 1;
             break;
         case 1:
             ubBuf = ILI9488_MADCTL_MV | ILI9488_MADCTL_BGR;
-            usMaxWidth = ILI9488_TFTHEIGHT;
-            usMaxHeigth = ILI9488_TFTWIDTH;
+            usMaxWidth = ILI9488_TFTHEIGHT - 1;
+            usMaxHeigth = ILI9488_TFTWIDTH - 1;
             break;
         case 2:
             ubBuf = ILI9488_MADCTL_MY | ILI9488_MADCTL_BGR;
-            usMaxWidth = ILI9488_TFTWIDTH;
-            usMaxHeigth = ILI9488_TFTHEIGHT;
+            usMaxWidth = ILI9488_TFTWIDTH - 1;
+            usMaxHeigth = ILI9488_TFTHEIGHT - 1;
             break;
         case 3:
             ubBuf = ILI9488_MADCTL_MX | ILI9488_MADCTL_MY | ILI9488_MADCTL_MV | ILI9488_MADCTL_BGR;
-            usMaxWidth = ILI9488_TFTHEIGHT;
-            usMaxHeigth = ILI9488_TFTHEIGHT;
+            usMaxWidth = ILI9488_TFTHEIGHT - 1;
+            usMaxHeigth = ILI9488_TFTHEIGHT - 1;
             break;
         default:
             return;
@@ -230,9 +240,10 @@ void ili9488_scroll(uint16_t usPixs)
     ili9488_send_cmd(ILI9488_VSCRL_ADDR, ubBuf, 2); // Vertical scrolling start address
 }
 
-void ili9488_fill_screen(uint8_t ubRotation, rgb565_t usColor)
+void ili9488_fill_screen(rgb565_t usColor)
 {
-    ili9488_set_window(0, 0, usMaxWidth, usMaxHeigth);
+    if(ili9488_set_window(0, 0, usMaxWidth, usMaxHeigth))
+        return;
 
     for(uint32_t ulI = ILI9488_TFTWIDTH * ILI9488_TFTHEIGHT; ulI > 0; ulI--)
     {
@@ -242,7 +253,8 @@ void ili9488_fill_screen(uint8_t ubRotation, rgb565_t usColor)
 
 void ili9488_draw_pixel(uint16_t usX, uint16_t usY, rgb565_t usColor)
 {
-    ili9488_set_window(usX, usY, usX + 1, usY + 1);
+    if(ili9488_set_window(usX, usY, usX + 1, usY + 1))
+        return;
     ili9488_send_pixel_data(usColor);
 }
 void ili9488_draw_Fast_v_line(uint16_t usX, uint16_t usY0, uint16_t usY1, rgb565_t usColor)
@@ -250,7 +262,9 @@ void ili9488_draw_Fast_v_line(uint16_t usX, uint16_t usY0, uint16_t usY1, rgb565
     if(usY0 > usY1)
         SWAP(usY0, usY1);
 
-    ili9488_set_window(usX, usY0, usX, usY1);
+    if(ili9488_set_window(usX, usY0, usX, usY1))
+        return;
+
     for(uint16_t usH = usY1 - usY0; usH > 0; usH--)
     {
         ili9488_send_pixel_data(usColor);
@@ -261,7 +275,9 @@ void ili9488_draw_Fast_h_line(uint16_t usX0, uint16_t usY, uint16_t usX1, rgb565
     if(usX0 > usX1)
         SWAP(usX0, usX1);
 
-    ili9488_set_window(usX0, usY, usX1, usY);
+    if(ili9488_set_window(usX0, usY, usX1, usY))
+        return;
+
     for(uint16_t usW = usX1 - usX0; usW > 0; usW--)
     {
         ili9488_send_pixel_data(usColor);
@@ -332,7 +348,9 @@ void ili9488_draw_rectangle(uint16_t usX0, uint16_t usY0, uint16_t usX1, uint16_
 
     if(ubFill)
     {
-        ili9488_set_window(usX0, usY0, usX1, usY1);
+        if(ili9488_set_window(usX0, usY0, usX1, usY1))
+            return;
+
         for(uint16_t usH = usY1 - usY0; usH > 0; usH--)
         {
             for(uint16_t usW = usX1 - usX0; usW > 0; usW--)
@@ -416,7 +434,8 @@ void ili9488_draw_image(const rgb565_t *pusImgBuf, uint16_t usX, uint16_t usY)
     if(!pusImgBuf)
         return;
 
-    ili9488_set_window(usX, usY, usX + pusImgBuf[0] - 1, usY + pusImgBuf[1] - 1);
+    if(ili9488_set_window(usX, usY, usX + pusImgBuf[0] - 1, usY + pusImgBuf[1] - 1))
+        return;
 
     uint32_t ulImgSize = pusImgBuf[0] * pusImgBuf[1];
 
