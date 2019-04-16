@@ -8,8 +8,8 @@
  * usPepe[1] = image heigth
  * usPepe[2:last] = 16bit rgb565 pixel color from top left to bottom right
  *
- * resolution: 256w x 256h
- * size: 1048Kbit, 128KiB
+ * resolution: 64w x 64h
+ * size: 65Kbit, 8KiB
  */
 
 #ifndef	__PEPE_H_
