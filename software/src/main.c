@@ -298,6 +298,9 @@ int init()
 
     delay_ms(100);
 
+    CCS811_WAKE();
+    CCS811_UNRESET();
+
     DBGPRINTLN_CTX("Scanning I2C bus 0...");
 
     for(uint8_t a = 0x08; a < 0x78; a++)
@@ -306,7 +309,7 @@ int init()
             DBGPRINTLN_CTX("  Address 0x%02X ACKed!", a);
     }
 
-    DBGPRINTLN_CTX("Scanning I2C bus 2...");
+    DBGPRINTLN_CTX("Scanning I2C bus 1...");
 
     for(uint8_t a = 0x08; a < 0x78; a++)
     {

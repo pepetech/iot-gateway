@@ -15,8 +15,8 @@
 #define BUZZ_TOGGLE()    GPIO->P[0].DOUTTGL = BIT(15);
 
 // RFM MACROS
-#define RFM_RESET()         PERI_REG_BIT_CLEAR(&(GPIO->P[0].DOUT)) = BIT(4)
-#define RFM_UNRESET()       PERI_REG_BIT_SET(&(GPIO->P[0].DOUT)) = BIT(4)
+#define RFM_UNRESET()       PERI_REG_BIT_CLEAR(&(GPIO->P[0].DOUT)) = BIT(4)
+#define RFM_RESET()         PERI_REG_BIT_SET(&(GPIO->P[0].DOUT)) = BIT(4)
 #define RFM_SELECT()        PERI_REG_BIT_CLEAR(&(GPIO->P[0].DOUT)) = BIT(3)
 #define RFM_UNSELECT()      PERI_REG_BIT_SET(&(GPIO->P[0].DOUT)) = BIT(3)
 #define RFM_IRQ()           PERI_REG_BIT(&(GPIO->P[0].DIN, 6)
@@ -56,8 +56,8 @@
 // CCS811 MACROS
 #define CCS811_RESET()      PERI_REG_BIT_CLEAR(&(GPIO->P[4].DOUT)) = BIT(11)
 #define CCS811_UNRESET()    PERI_REG_BIT_SET(&(GPIO->P[4].DOUT)) = BIT(11)
-#define CCS811_WAKE_SET()   PERI_REG_BIT_SET(&(GPIO->P[4].DOUT)) = BIT(10)
-#define CCS811_WAKE_CLR()   PERI_REG_BIT_CLEAR(&(GPIO->P[4].DOUT)) = BIT(10)
+#define CCS811_SLEEP()      PERI_REG_BIT_SET(&(GPIO->P[4].DOUT)) = BIT(10)
+#define CCS811_WAKE()       PERI_REG_BIT_CLEAR(&(GPIO->P[4].DOUT)) = BIT(10)
 #define CCS811_IRQ()        PERI_REG_BIT(&(GPIO->P[4].DIN, 9)
 
 // MAG MACROS
