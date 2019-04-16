@@ -19,6 +19,7 @@
 #include "qspi.h"
 #include "usart.h"
 #include "i2c.h"
+#include "ili9488.h"
 
 // Structs
 

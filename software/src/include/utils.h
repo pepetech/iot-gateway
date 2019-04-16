@@ -45,4 +45,10 @@
 #define UINT322BITSTR(b)    UINT162BITSTR(((b) >> 16) & 0xFFFF), UINT162BITSTR(((b) >> 0) & 0xFFFF)
 #define UINT642BITSTR(b)    UINT322BITSTR(((b) >> 32) & 0xFFFFFFFF), UINT322BITSTR(((b) >> 0) & 0xFFFFFFFF)
 
+// Absolute value of
+#define ABS(a)      ((a) < 0 ? (-(a)) : (a))
+
+// Swap two variables
+#define SWAP(a, b)  do{ typeof(a) SWAP = a; a = b; b = SWAP; }while(0)
+
 #endif  // __UTILS_H__

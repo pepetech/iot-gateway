@@ -51,4 +51,18 @@ static inline void usart0_read(uint8_t *pubDst, uint32_t ulSize)
 }
 #endif  // USART0_MODE
 
+// - - - - - - - - - - - - - - - TEMPORARY - - - - - - - - - - - - - -
+void usart1_init(uint32_t ulBaud, uint8_t ubMode, uint8_t ubBitMode, int8_t bMISOLocation, int8_t bMOSILocation, uint8_t ubCLKLocation);
+uint8_t usart1_spi_transfer_byte(const uint8_t ubData);
+void usart1_spi_transfer(const uint8_t* pubSrc, uint32_t ulSize, uint8_t* pubDst);
+static inline void usart1_spi_write(const uint8_t* pubSrc, uint32_t ulSize)
+{
+    usart1_spi_transfer(pubSrc, ulSize, NULL);
+}
+static inline void usart1_spi_read(uint8_t* pubDst, uint32_t ulSize)
+{
+    usart1_spi_transfer(NULL, ulSize, pubDst);
+}
+// - - - - - - - - - - - - - - - TEMPORARY - - - - - - - - - - - - - -
+
 #endif  // __USART_H__
