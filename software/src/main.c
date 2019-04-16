@@ -475,8 +475,13 @@ int main()
     //ili9488_draw_circle(160, 240, 50, 1, RGB565_DARKGREEN);
     //ili9488_draw_line(0, 0, 240, 160, RGB565_DARKGREEN);
     //ili9488_draw_rectangle(10, 10, 500, 160, RGB565_DARKGREEN, 0);
-    ili9488_draw_image(usPepe, 32, 100);
-    ili9488_draw_image(usPatrick, 32, 0);
+    for(uint8_t x = 0; x < 4; x++)
+    {
+        for(uint8_t y = 0; y < 6; y++)
+        {
+            ili9488_draw_image(usPepe,32 + (x * 64), 32 + (y * 64));
+        }
+    }
 
     DBGPRINTLN_CTX("Display: 0x%06X", ili9488_read_id());
 
@@ -486,11 +491,7 @@ int main()
 
         if (g_ullSystemTick > (ullLastTask + 1000))
         {
-            static uint8_t ublaststate = 0;
-            ili9488_set_invert(ublaststate);
-            ublaststate = !ublaststate;
-
-            play_sound(3000, 50);
+            play_sound(3500, 10);
 
             DBGPRINTLN_CTX("ADC Temp: %.2f", adc_get_temperature());
             DBGPRINTLN_CTX("EMU Temp: %.2f", emu_get_temperature());
