@@ -144,3 +144,43 @@ void gpio_init()
     GPIO->ROUTEPEN |= GPIO_ROUTEPEN_SWVPEN;                             // Enable SWO
     GPIO->ROUTELOC0 = GPIO_ROUTELOC0_SWVLOC_LOC0;                       // SWO on PF2
 }
+
+void play_sound(uint16_t usFrequency, uint32_t ulTime)
+{
+    static uint32_t ubInit = 0;
+
+    if(!ubInit)
+    {
+        CMU->HFPERCLKEN0 |= CMU_HFPERCLKEN0_TIMER3;
+
+        TIMER3->CTRL = TIMER_CTRL_RSSCOIST | TIMER_CTRL_PRESC_DIV1 | TIMER_CTRL_CLKSEL_PRESCHFPERCLK | TIMER_CTRL_FALLA_NONE | TIMER_CTRL_RISEA_NONE | TIMER_CTRL_MODE_UP;
+        TIMER3->CNT = 0x00000000;
+
+        TIMER3->CC[2].CTRL = TIMER_CC_CTRL_PRSCONF_LEVEL | TIMER_CC_CTRL_CUFOA_NONE | TIMER_CC_CTRL_COFOA_TOGGLE | TIMER_CC_CTRL_CMOA_NONE | TIMER_CC_CTRL_MODE_OUTPUTCOMPARE;
+
+        TIMER3->ROUTELOC0 = TIMER_ROUTELOC0_CC2LOC_LOC0;
+
+        ubInit = 1;
+    }
+
+    if(!usFrequency)
+    {
+        TIMER3->ROUTEPEN &= ~TIMER_ROUTEPEN_CC2PEN;
+        TIMER3->CMD = TIMER_CMD_STOP;
+
+        return;
+    }
+
+    TIMER3->TOP = (HFPER_CLOCK_FREQ / (usFrequency << 1)) - 1; // Double the frequency
+
+    TIMER3->CMD = TIMER_CMD_START;
+    TIMER3->ROUTEPEN |= TIMER_ROUTEPEN_CC2PEN;
+
+    if(!ulTime)
+        return;
+
+    delay_ms(ulTime);
+
+    TIMER3->ROUTEPEN &= ~TIMER_ROUTEPEN_CC2PEN;
+    TIMER3->CMD = TIMER_CMD_STOP;
+}

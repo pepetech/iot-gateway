@@ -2,6 +2,8 @@
 #define __GPIO_H__
 
 #include <em_device.h>
+#include "cmu.h"
+#include "systick.h"
 #include "utils.h"
 
 // LED MACROS
@@ -67,5 +69,7 @@
 #define MAG_STATE()         PERI_REG_BIT(&(GPIO->P[4].DIN), 15)
 
 void gpio_init();
+
+void play_sound(uint16_t usFrequency, uint32_t ulTime);
 
 #endif  // __GPIO_H__

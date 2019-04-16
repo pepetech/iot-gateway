@@ -300,6 +300,7 @@ int init()
     DBGPRINTLN_CTX("EMU - IOVDD Status: %s", g_ubIOVDDLow ? "LOW" : "OK");
     DBGPRINTLN_CTX("EMU - Core Voltage: %.2f mV", adc_get_corevdd());
 
+    play_sound(3500, 500);
     delay_ms(100);
 
     CCS811_WAKE();
@@ -325,9 +326,17 @@ int init()
 }
 int main()
 {
-    CMU->ROUTELOC0 = CMU_ROUTELOC0_CLKOUT1LOC_LOC1;
-    CMU->ROUTEPEN |= CMU_ROUTEPEN_CLKOUT1PEN;
-    CMU->CTRL |= CMU_CTRL_CLKOUTSEL1_HFXO;
+    play_sound(2700, 50);
+    play_sound(3000, 50);
+    play_sound(3300, 50);
+    play_sound(3600, 50);
+    play_sound(3900, 50);
+    play_sound(4200, 50);
+    play_sound(4500, 50);
+
+    //CMU->ROUTELOC0 = CMU_ROUTELOC0_CLKOUT1LOC_LOC1;
+    //CMU->ROUTEPEN |= CMU_ROUTEPEN_CLKOUT1PEN;
+    //CMU->CTRL |= CMU_CTRL_CLKOUTSEL1_HFXO;
 
     // Internal flash test
     //DBGPRINTLN_CTX("Initial calibration dump:");
