@@ -8,8 +8,8 @@ void gpio_init()
     // NR - Not routed (no routing to pin on pcb, floating)
 
     // Port A
-    GPIO->P[0].CTRL   = GPIO_P_CTRL_DRIVESTRENGTHALT_STRONG | (5 << _GPIO_P_CTRL_SLEWRATEALT_SHIFT)
-                      | GPIO_P_CTRL_DRIVESTRENGTH_STRONG | (5 << _GPIO_P_CTRL_SLEWRATE_SHIFT);
+    GPIO->P[0].CTRL   = GPIO_P_CTRL_DRIVESTRENGTHALT_STRONG | (6 << _GPIO_P_CTRL_SLEWRATEALT_SHIFT)
+                      | GPIO_P_CTRL_DRIVESTRENGTH_STRONG | (6 << _GPIO_P_CTRL_SLEWRATE_SHIFT);
     GPIO->P[0].MODEL  = GPIO_P_MODEL_MODE0_PUSHPULL         // US3_MOSI_RFM - Location 0
                       | GPIO_P_MODEL_MODE1_INPUTPULLFILTER  // US3_MISO_RFM - Location 0
                       | GPIO_P_MODEL_MODE2_PUSHPULL         // US3_CLK_RFM - Location 0
@@ -30,8 +30,8 @@ void gpio_init()
     GPIO->P[0].OVTDIS = 0;
 
     // Port B
-    GPIO->P[1].CTRL   = GPIO_P_CTRL_DRIVESTRENGTHALT_STRONG | (5 << _GPIO_P_CTRL_SLEWRATEALT_SHIFT)
-                      | GPIO_P_CTRL_DRIVESTRENGTH_STRONG | (5 << _GPIO_P_CTRL_SLEWRATE_SHIFT);
+    GPIO->P[1].CTRL   = GPIO_P_CTRL_DRIVESTRENGTHALT_STRONG | (6 << _GPIO_P_CTRL_SLEWRATEALT_SHIFT)
+                      | GPIO_P_CTRL_DRIVESTRENGTH_STRONG | (6 << _GPIO_P_CTRL_SLEWRATE_SHIFT);
     GPIO->P[1].MODEL  = GPIO_P_MODEL_MODE0_PUSHPULL     // LED_DI
                       | GPIO_P_MODEL_MODE1_INPUTPULLFILTER  // BTN_1
                       | GPIO_P_MODEL_MODE2_INPUTPULLFILTER  // BTN_2
@@ -52,8 +52,8 @@ void gpio_init()
     GPIO->P[1].OVTDIS = 0;
 
     // Port C
-    GPIO->P[2].CTRL   = GPIO_P_CTRL_DRIVESTRENGTHALT_STRONG | (5 << _GPIO_P_CTRL_SLEWRATEALT_SHIFT)
-                      | GPIO_P_CTRL_DRIVESTRENGTH_STRONG | (5 << _GPIO_P_CTRL_SLEWRATE_SHIFT);
+    GPIO->P[2].CTRL   = GPIO_P_CTRL_DRIVESTRENGTHALT_STRONG | (6 << _GPIO_P_CTRL_SLEWRATEALT_SHIFT)
+                      | GPIO_P_CTRL_DRIVESTRENGTH_STRONG | (6 << _GPIO_P_CTRL_SLEWRATE_SHIFT);
     GPIO->P[2].MODEL  = GPIO_P_MODEL_MODE0_PUSHPULL     // US2_RTS_GSM - Location 0
                       | GPIO_P_MODEL_MODE1_INPUTPULLFILTER  // US2_CTS_GSM - Location 0
                       | GPIO_P_MODEL_MODE2_PUSHPULL     // US2_TX_GSM - Location 0
@@ -75,7 +75,7 @@ void gpio_init()
 
     // Port D
     GPIO->P[3].CTRL   = GPIO_P_CTRL_DRIVESTRENGTHALT_STRONG | (6 << _GPIO_P_CTRL_SLEWRATEALT_SHIFT)
-                      | GPIO_P_CTRL_DRIVESTRENGTH_STRONG | (5 << _GPIO_P_CTRL_SLEWRATE_SHIFT);
+                      | GPIO_P_CTRL_DRIVESTRENGTH_STRONG | (6 << _GPIO_P_CTRL_SLEWRATE_SHIFT);
     GPIO->P[3].MODEL  = GPIO_P_MODEL_MODE0_PUSHPULL     // US1_MOSI_TFT - Location 1
                       | GPIO_P_MODEL_MODE1_INPUTPULLFILTER  // US1_MISO_TFT - Location 1
                       | GPIO_P_MODEL_MODE2_PUSHPULL     // US1_CLK_TFT - Location 1
@@ -84,11 +84,11 @@ void gpio_init()
                       | GPIO_P_MODEL_MODE5_DISABLED        // 4V2_SENSE
                       | GPIO_P_MODEL_MODE6_DISABLED        // VBAT_SENSE
                       | GPIO_P_MODEL_MODE7_DISABLED;       // VIN_SENSE
-    GPIO->P[3].MODEH  = GPIO_P_MODEH_MODE8_DISABLED     // NR
-                      | GPIO_P_MODEH_MODE9_PUSHPULLALT     // QSPI0_DQ0 - Location 0
-                      | GPIO_P_MODEH_MODE10_PUSHPULLALT    // QSPI0_DQ1 - Location 0
-                      | GPIO_P_MODEH_MODE11_PUSHPULLALT    // QSPI0_DQ2 - Location 0
-                      | GPIO_P_MODEH_MODE12_PUSHPULLALT    // QSPI0_DQ3 - Location 0
+    GPIO->P[3].MODEH  = GPIO_P_MODEH_MODE8_PUSHPULL     // NR
+                      | GPIO_P_MODEH_MODE9_PUSHPULL     // QSPI0_DQ0 - Location 0
+                      | GPIO_P_MODEH_MODE10_PUSHPULL    // QSPI0_DQ1 - Location 0
+                      | GPIO_P_MODEH_MODE11_PUSHPULL    // QSPI0_DQ2 - Location 0
+                      | GPIO_P_MODEH_MODE12_PUSHPULL    // QSPI0_DQ3 - Location 0
                       | GPIO_P_MODEH_MODE13_DISABLED    // NC
                       | GPIO_P_MODEH_MODE14_DISABLED    // NC
                       | GPIO_P_MODEH_MODE15_DISABLED;   // NC
@@ -96,8 +96,8 @@ void gpio_init()
     GPIO->P[3].OVTDIS = BIT(4) | BIT(5) | BIT(6) | BIT(7);
 
     // Port E
-    GPIO->P[4].CTRL   = GPIO_P_CTRL_DRIVESTRENGTHALT_STRONG | (5 << _GPIO_P_CTRL_SLEWRATEALT_SHIFT)
-                      | GPIO_P_CTRL_DRIVESTRENGTH_STRONG | (5 << _GPIO_P_CTRL_SLEWRATE_SHIFT);
+    GPIO->P[4].CTRL   = GPIO_P_CTRL_DRIVESTRENGTHALT_STRONG | (6 << _GPIO_P_CTRL_SLEWRATEALT_SHIFT)
+                      | GPIO_P_CTRL_DRIVESTRENGTH_STRONG | (6 << _GPIO_P_CTRL_SLEWRATE_SHIFT);
     GPIO->P[4].MODEL  = GPIO_P_MODEL_MODE0_DISABLED     // NR
                       | GPIO_P_MODEL_MODE1_DISABLED     // NR
                       | GPIO_P_MODEL_MODE2_DISABLED     // NR
@@ -119,15 +119,15 @@ void gpio_init()
 
     // Port F
     GPIO->P[5].CTRL   = GPIO_P_CTRL_DRIVESTRENGTHALT_STRONG | (6 << _GPIO_P_CTRL_SLEWRATEALT_SHIFT)
-                      | GPIO_P_CTRL_DRIVESTRENGTH_STRONG | (5 << _GPIO_P_CTRL_SLEWRATE_SHIFT);
+                      | GPIO_P_CTRL_DRIVESTRENGTH_STRONG | (6 << _GPIO_P_CTRL_SLEWRATE_SHIFT);
     GPIO->P[5].MODEL  = GPIO_P_MODEL_MODE0_PUSHPULL     // DBG_SWCLK - Location 0
                       | GPIO_P_MODEL_MODE1_PUSHPULL     // DBG_SWDIO - Location 0
                       | GPIO_P_MODEL_MODE2_PUSHPULL     // DBG_SWO - Location 0
                       | GPIO_P_MODEL_MODE3_DISABLED     // NC
                       | GPIO_P_MODEL_MODE4_DISABLED     // NC
                       | GPIO_P_MODEL_MODE5_DISABLED     // NR
-                      | GPIO_P_MODEL_MODE6_PUSHPULLALT     // QSPI0_SCLK - Location 0
-                      | GPIO_P_MODEL_MODE7_PUSHPULLALT;    // QSPI0_CS0 - Location 0
+                      | GPIO_P_MODEL_MODE6_PUSHPULL     // QSPI0_SCLK - Location 0
+                      | GPIO_P_MODEL_MODE7_PUSHPULL;    // QSPI0_CS0 - Location 0
     GPIO->P[5].MODEH  = GPIO_P_MODEH_MODE8_DISABLED     // NR
                       | GPIO_P_MODEH_MODE9_DISABLED     // NR
                       | GPIO_P_MODEH_MODE10_DISABLED    // NR

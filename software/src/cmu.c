@@ -130,8 +130,15 @@ void cmu_init()
         while(!(CMU->STATUS & CMU_STATUS_QSPI0CLKENS) && ubQSPIClockEnabled);
     }
 
+    // Setup LFXO
+    CMU->LFXOCTRL = (CMU->LFXOCTRL & (CMU_LFXOCTRL_GAIN_DEFAULT | _CMU_LFXOCTRL_TUNING_MASK)) | CMU_LFXOCTRL_TIMEOUT_2KCYCLES | CMU_LFXOCTRL_AGC | CMU_LFXOCTRL_MODE_XTAL;
+
+    // Enable LFXO and wait for it to be ready
+    CMU->OSCENCMD = CMU_OSCENCMD_LFXOEN;
+    while(!(CMU->STATUS & CMU_STATUS_LFXORDY));
+
     // LFE Clock
-    CMU->LFECLKSEL = CMU_LFECLKSEL_LFE_ULFRCO;
+    CMU->LFECLKSEL = CMU_LFECLKSEL_LFE_LFXO;
 }
 void cmu_update_clocks()
 {
@@ -539,7 +546,7 @@ void cmu_lfxo_calib(uint8_t ubCTune)
 {
     if(CMU->STATUS & CMU_STATUS_LFXOENS)
         return;
-    
+
     float fCLoad = LFXO_CTUNE_TO_PF(ubCTune) / 2.f;
     uint8_t ubGain = 0;
 

@@ -13,7 +13,7 @@ void rtcc_init()
     RTCC->PRECNT = 0;
     RTCC->CNT = 0;
 
-    RTCC->CC[0].CCV = 999; // Prescaler RTCC_CLOCK_FREQ / (X + 1)
+    RTCC->CC[0].CCV = 32767; // Prescaler RTCC_CLOCK_FREQ / (X + 1)
 
     RTCC->CC[1].CTRL = RTCC_CC_CTRL_COMPBASE_CNT | RTCC_CC_CTRL_MODE_OUTPUTCOMPARE;
 
