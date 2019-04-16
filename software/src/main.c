@@ -186,7 +186,7 @@ uint16_t get_device_revision()
 int init()
 {
     emu_init(1); // Init EMU
-    
+
     cmu_hfxo_startup_calib(0x200, 0x087); // Config HFXO Startup for 1280 uA, 20.04 pF
     cmu_hfxo_steady_calib(0x006, 0x087); // Config HFXO Steady state for 12 uA, 20.04 pF
 
@@ -222,7 +222,7 @@ int init()
 
     fDVDDHighThresh = fDVDDLowThresh + 0.026f; // Hysteresis from datasheet
     fIOVDDHighThresh = fIOVDDLowThresh + 0.026f; // Hysteresis from datasheet
-    
+
     usart0_init(18000000, 0, USART_SPI_MSB_FIRST, 2, 2, 2);  // SPI0 at 18MHz on Location 2 MISO:PC10 MOSI:PC11 CLK:PC9 ESP8266 WIFI-COPROCESSOR
     //usart1_init(18000000, 0, USART_SPI_MSB_FIRST, 1, 1, 1);  // SPI1 at 18MHz on Location 1 MISO:PD1 MOSI:PD0 CLK:PD2 ILI9488 Display
     //usart2_init(115200, 0, UART_FRAME_STOPBITS_ONE, 0, 0, 0); // USART2 at 115200Baud on Location 0 RTS-PC0 CTS-PC1 TX-PC2 RX-PC3 GSM
@@ -230,7 +230,7 @@ int init()
 
     i2c0_init(I2C_NORMAL, 6, 6); // Init I2C0 at 100 kHz on location 6 SCL:SDA PE13:PE12 Sensors
     i2c1_init(I2C_NORMAL, 1, 1); // Init I2C1 at 100 kHz on location 1 SCL:SDA PB12:PB11 TFT Touch Controller
-    
+
 
     char szDeviceName[32];
 
@@ -424,23 +424,6 @@ int main()
     //DBGPRINTLN_CTX("QSPI RD: %08X", *(volatile uint32_t *)0xC0000000);
     //DBGPRINTLN_CTX("QSPI RD: %08X", *(volatile uint32_t *)0xC0000004);
 
-    //for(uint8_t i = 0; i < 112; i++)
-    //{
-    //    usart0_spi_transfer_byte(0xFF); // G
-    //    usart0_spi_transfer_byte(0xFF); // R
-    //    usart0_spi_transfer_byte(0xFF); // B
-    //}
-
-    //delay_ms(1000);
-
-    //for(uint8_t i = 0; i < 112; i++)
-    //{
-    //    usart0_spi_transfer_byte(0x00); // G
-    //    usart0_spi_transfer_byte(0x00); // R
-    //    usart0_spi_transfer_byte(0x00); // B
-    //}
-
-    //delay_ms(1000);
 
     while(1)
     {
@@ -449,24 +432,20 @@ int main()
         if (g_ullSystemTick > (ullLastTask + 500))
         {
 
+            DBGPRINTLN_CTX("ADC Temp: %.2f", adc_get_temperature());
+            DBGPRINTLN_CTX("EMU Temp: %.2f", emu_get_temperature());
+
+            DBGPRINTLN_CTX("HFXO Startup: %.2f pF", cmu_hfxo_get_startup_cap());
+            DBGPRINTLN_CTX("HFXO Startup: %.2f uA", cmu_hfxo_get_startup_current());
+            DBGPRINTLN_CTX("HFXO Steady: %.2f pF", cmu_hfxo_get_steady_cap());
+            DBGPRINTLN_CTX("HFXO Steady: %.2f uA", cmu_hfxo_get_steady_current());
+            DBGPRINTLN_CTX("HFXO PMA [%03X]: %.2f uA", cmu_hfxo_get_pma_ibtrim(), cmu_hfxo_get_pma_current());
+            DBGPRINTLN_CTX("HFXO PDA [%03X]: %.2f uA", cmu_hfxo_get_pda_ibtrim(1), cmu_hfxo_get_pda_current(0));
+
+            DBGPRINTLN_CTX("RTCC Time: %lu", rtcc_get_time());
+
             ullLastTask = g_ullSystemTick;
         }
-
-/*
-        DBGPRINTLN_CTX("ADC Temp: %.2f", adc_get_temperature());
-        DBGPRINTLN_CTX("EMU Temp: %.2f", emu_get_temperature());
-
-        DBGPRINTLN_CTX("HFXO Startup: %.2f pF", cmu_hfxo_get_startup_cap());
-        DBGPRINTLN_CTX("HFXO Startup: %.2f uA", cmu_hfxo_get_startup_current());
-        DBGPRINTLN_CTX("HFXO Steady: %.2f pF", cmu_hfxo_get_steady_cap());
-        DBGPRINTLN_CTX("HFXO Steady: %.2f uA", cmu_hfxo_get_steady_current());
-        DBGPRINTLN_CTX("HFXO PMA [%03X]: %.2f uA", cmu_hfxo_get_pma_ibtrim(), cmu_hfxo_get_pma_current());
-        DBGPRINTLN_CTX("HFXO PDA [%03X]: %.2f uA", cmu_hfxo_get_pda_ibtrim(1), cmu_hfxo_get_pda_current(0));
-
-        //sleep();
-
-        DBGPRINTLN_CTX("RTCC Time: %lu", rtcc_get_time());
-*/
     }
 
     return 0;
