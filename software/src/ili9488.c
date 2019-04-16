@@ -439,6 +439,8 @@ void ili9488_draw_image(const rgb565_t *pusImgBuf, uint16_t usX, uint16_t usY)
 
     uint32_t ulImgSize = pusImgBuf[0] * pusImgBuf[1];
 
+    pusImgBuf += 2;
+
     while(ulImgSize--)
         ili9488_send_pixel_data(*pusImgBuf++);
 }

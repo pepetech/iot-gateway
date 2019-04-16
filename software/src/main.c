@@ -484,8 +484,14 @@ int main()
     {
         static uint64_t ullLastTask = 0;
 
-        if (g_ullSystemTick > (ullLastTask + 500))
+        if (g_ullSystemTick > (ullLastTask + 1000))
         {
+            static uint8_t ublaststate = 0;
+            ili9488_set_invert(ublaststate);
+            ublaststate = !ublaststate;
+
+            play_sound(3000, 50);
+
             DBGPRINTLN_CTX("ADC Temp: %.2f", adc_get_temperature());
             DBGPRINTLN_CTX("EMU Temp: %.2f", emu_get_temperature());
 
