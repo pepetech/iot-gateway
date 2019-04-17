@@ -39,7 +39,6 @@
 #define ILI9488_SETUP_CMD() PERI_REG_BIT_CLEAR(&(GPIO->P[0].DOUT)) = BIT(14)
 #define TFT_BL_ON()         PERI_REG_BIT_SET(&(GPIO->P[1].DOUT)) = BIT(10)
 #define TFT_BL_OFF()        PERI_REG_BIT_CLEAR(&(GPIO->P[1].DOUT)) = BIT(10)
-#define TFT_BL_DUTY         WTIMER2->CC[1].CCVB
 
 // BUTTON MACROS
 #define BTN_3_STATE()       !PERI_REG_BIT(&(GPIO->P[1].DIN), 1)

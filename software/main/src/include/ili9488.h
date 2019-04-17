@@ -140,6 +140,8 @@
 
 uint8_t ili9488_init();
 uint32_t ili9488_read_id();
+void tft_bl_init(uint32_t usFrequency);
+void tft_bl_set(float fBrightness);
 void ili9488_sleep();
 void ili9488_wakeup(uint8_t ubDisplayOn);
 void ili9488_display_on();

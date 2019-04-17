@@ -447,21 +447,9 @@ int main()
     WIFI_UNRESET();
     WIFI_SELECT();
 
-    CMU->HFPERCLKEN1 |= CMU_HFPERCLKEN1_WTIMER2;
+    tft_bl_init(2000);
 
-    WTIMER2->CTRL = WTIMER_CTRL_RSSCOIST | WTIMER_CTRL_PRESC_DIV1 | WTIMER_CTRL_CLKSEL_PRESCHFPERCLK | WTIMER_CTRL_FALLA_NONE | WTIMER_CTRL_RISEA_NONE | WTIMER_CTRL_MODE_UP;
-    WTIMER2->TOP = 0x00003FFF;
-    WTIMER2->CNT = 0x00000000;
-
-    WTIMER2->CC[1].CTRL = WTIMER_CC_CTRL_PRSCONF_LEVEL | WTIMER_CC_CTRL_CUFOA_NONE | WTIMER_CC_CTRL_COFOA_SET | WTIMER_CC_CTRL_CMOA_CLEAR | WTIMER_CC_CTRL_MODE_PWM;
-    WTIMER2->CC[1].CCV = 0x00000000;
-
-    WTIMER2->ROUTELOC0 = WTIMER_ROUTELOC0_CC1LOC_LOC2;
-    WTIMER2->ROUTEPEN |= TIMER_ROUTEPEN_CC1PEN;
-
-    WTIMER2->CMD = WTIMER_CMD_START;
-
-    TFT_BL_DUTY = 4096;
+    tft_bl_set(0.25);
 
     ILI9488_UNRESET();
 
@@ -471,36 +459,15 @@ int main()
     ili9488_set_rotation(0);
     ili9488_fill_screen(RGB565_BLACK);
 
-    ili9488_printf(&xSans9pFont, 10, 70, RGB565_WHITE, RGB565_BLACK, "small@boi %d \n\r%d", 123, 321);
-
-    ili9488_printf(&xSans18pFont, 10, 120, RGB565_WHITE, RGB565_BLACK, "big-boi %d \n\rbig boi %d", 123, 321);
-
-    delay_ms(1000);
-
     while(1)
     {
         static uint8_t ubLastBtn1State = 1;
         static uint8_t ubLastBtn2State = 1;
         static uint16_t usScroll = 0;
 
-        if(BTN_2_STATE() && (1 != ubLastBtn2State))
-        {
-            ubLastBtn2State = 1;
-        }
-        else if(!BTN_2_STATE() && (0 != ubLastBtn1State))
-        {
-            ubLastBtn2State = 0;
-        }
-
-        if(BTN_1_STATE() && (1 != ubLastBtn1State))
-        {
-            ili9488_draw_image(&xSurpriseImage, 0, 0);
-            ubLastBtn1State = 1;
-        }
-        else if(!BTN_1_STATE() && (0 != ubLastBtn1State))
+        if(BTN_2_STATE() && (ubLastBtn2State != 1))
         {
             ili9488_fill_screen(RGB565_WHITE);
-
             for(uint8_t x = 0; x < 4; x++)
             {
                 for(uint8_t y = 0; y < 6; y++)
@@ -508,12 +475,28 @@ int main()
                     ili9488_draw_image(&xPepeImage, 32 + (x * 64), 32 + (y * 64));
                 }
             }
+            ubLastBtn2State = 1;
+        }
+        else if(!BTN_2_STATE() && (ubLastBtn2State != 0))
+        {
+            ili9488_fill_screen(RGB565_BLACK);
+            ubLastBtn2State = 0;
+        }
+
+        if(BTN_1_STATE() && (ubLastBtn1State != 1))
+        {
+            ili9488_draw_image(&xSurpriseImage, 0, 0);
+            ubLastBtn1State = 1;
+        }
+        else if(!BTN_1_STATE() && (ubLastBtn1State != 0))
+        {
+            ili9488_fill_screen(RGB565_BLACK);
             ubLastBtn1State = 0;
         }
 
         static uint64_t ullLastTask = 0;
 
-        if (g_ullSystemTick > (ullLastTask + 1000))
+        if (g_ullSystemTick > (ullLastTask + 5000))
         {
             play_sound(3500, 10);
 
@@ -525,6 +508,29 @@ int main()
             {
             }
             ubLastState = !ubLastState;
+
+            ili9488_fill_screen(RGB565_BLACK);
+
+            ili9488_printf(&xSans18pFont, 10, 10, RGB565_WHITE, RGB565_BLACK, "Display is the wey");
+
+            ili9488_printf(&xSans9pFont, 10, 60, RGB565_WHITE, RGB565_BLACK,
+            "ADC Temp: %.2f\n\r"
+            "EMU Temp: %.2f\n\r"
+            "RTCC Time: %lu\n\r"
+            "Battery Charging: %hhu\n\r"
+            "Battery Standby: %hhu\n\r"
+            "3V3 Fault: %hhu\n\r"
+            "Button states (1|2|3): %hhu|%hhu|%hhu\n\r",
+            adc_get_temperature(),
+            emu_get_temperature(),
+            rtcc_get_time(),
+            BAT_CHRG(),
+            BAT_STDBY(),
+            VREG_ERR(),
+            BTN_1_STATE(),
+            BTN_2_STATE(),
+            BTN_3_STATE());
+
 
             DBGPRINTLN_CTX("ADC Temp: %.2f", adc_get_temperature());
             DBGPRINTLN_CTX("EMU Temp: %.2f", emu_get_temperature());

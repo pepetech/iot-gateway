@@ -167,6 +167,33 @@ uint32_t ili9488_read_id() // FIXME: returns 000000
 
     return ((uint32_t)ubBuf[0] << 16) | ((uint32_t)ubBuf[1] << 8) | (uint32_t)ubBuf[2];
 }
+void tft_bl_init(uint32_t usFrequency)
+{
+    CMU->HFPERCLKEN1 |= CMU_HFPERCLKEN1_WTIMER2;
+
+    WTIMER2->CTRL = WTIMER_CTRL_RSSCOIST | WTIMER_CTRL_PRESC_DIV1 | WTIMER_CTRL_CLKSEL_PRESCHFPERCLK | WTIMER_CTRL_FALLA_NONE | WTIMER_CTRL_RISEA_NONE | WTIMER_CTRL_MODE_UP;
+    WTIMER2->TOP = HFPER_CLOCK_FREQ / usFrequency;
+    WTIMER2->CNT = 0x00000000;
+
+    WTIMER2->CC[1].CTRL = WTIMER_CC_CTRL_PRSCONF_LEVEL | WTIMER_CC_CTRL_CUFOA_NONE | WTIMER_CC_CTRL_COFOA_SET | WTIMER_CC_CTRL_CMOA_CLEAR | WTIMER_CC_CTRL_MODE_PWM;
+    WTIMER2->CC[1].CCV = 0x00000000;
+
+    WTIMER2->ROUTELOC0 = WTIMER_ROUTELOC0_CC1LOC_LOC2;
+    WTIMER2->ROUTEPEN |= TIMER_ROUTEPEN_CC1PEN;
+
+    WTIMER2->CMD = WTIMER_CMD_START;
+
+    WTIMER2->CC[1].CCVB = 0;
+}
+void tft_bl_set(float fBrightness)
+{
+    if(fBrightness > 1)
+        fBrightness = 1;
+    if(fBrightness < 0)
+        fBrightness = 0;
+
+    WTIMER2->CC[1].CCVB = WTIMER2->TOP * fBrightness;
+}
 void ili9488_sleep()
 {
     ili9488_display_off();
