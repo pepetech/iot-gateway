@@ -22,6 +22,7 @@
 #include "ili9488.h"
 #include "pepe.h"
 #include "patrick.h"
+#include "surprise.h"
 
 // Structs
 
@@ -482,6 +483,8 @@ int main()
             ili9488_draw_image(usPepe,32 + (x * 64), 32 + (y * 64));
         }
     }
+
+    ili9488_draw_image(usSurprise, 0, 0);
 
     DBGPRINTLN_CTX("Display: 0x%06X", ili9488_read_id());
 
