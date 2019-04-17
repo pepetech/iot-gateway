@@ -20,11 +20,8 @@
 #include "usart.h"
 #include "i2c.h"
 #include "ili9488.h"
-#include "pepe.h"
-#include "patrick.h"
-#include "surprise.h"
-#include "fonts/sans18p.h"
-#include "fonts/sans9p.h"
+#include "images.h"
+#include "fonts.h"
 
 // Structs
 
@@ -450,8 +447,6 @@ int main()
     WIFI_UNRESET();
     WIFI_SELECT();
 
-    TFT_BL_ON();
-
     CMU->HFPERCLKEN1 |= CMU_HFPERCLKEN1_WTIMER2;
 
     WTIMER2->CTRL = WTIMER_CTRL_RSSCOIST | WTIMER_CTRL_PRESC_DIV1 | WTIMER_CTRL_CLKSEL_PRESCHFPERCLK | WTIMER_CTRL_FALLA_NONE | WTIMER_CTRL_RISEA_NONE | WTIMER_CTRL_MODE_UP;
@@ -476,26 +471,11 @@ int main()
     ili9488_set_rotation(0);
     ili9488_fill_screen(RGB565_BLACK);
 
-    const uint8_t ubPepeLogo[] = {
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x7C, 0x00, 0x00, 0x00, 0xC7, 0x3F, 0x00, 0x03, 0x80, 0xE1, 0x80,
-		0x06, 0x7F, 0xE7, 0xE0, 0x04, 0xC0, 0x3C, 0x38, 0x08, 0x07, 0xF8, 0xFC, 0x08, 0x1C, 0x0D, 0x86,
-		0x08, 0x38, 0xC4, 0x32, 0x18, 0xF1, 0xE4, 0x7B, 0x18, 0x71, 0xA4, 0x69, 0x30, 0x18, 0xC6, 0x31,
-		0x60, 0x3E, 0x07, 0x03, 0x40, 0x07, 0xFF, 0xBE, 0x40, 0x21, 0xF2, 0xFC, 0xC0, 0x1C, 0x01, 0x0C,
-		0x84, 0x03, 0x80, 0x86, 0x87, 0xE0, 0x00, 0x47, 0x82, 0x1C, 0x00, 0x0F, 0x82, 0xC3, 0x80, 0x32,
-		0x82, 0xB8, 0x7F, 0xC6, 0x81, 0x47, 0xFF, 0xFC, 0xC0, 0x91, 0x03, 0x08, 0x60, 0x6E, 0x81, 0x1C,
-		0x30, 0x13, 0xFF, 0x16, 0x18, 0x0C, 0xFF, 0xE6, 0x0C, 0x03, 0x00, 0x1C, 0x07, 0x00, 0xDF, 0xF8,
-		0x01, 0xC0, 0x00, 0x20, 0x00, 0x60, 0x00, 0xE0, 0x00, 0x3F, 0xFF, 0x80, 0x00, 0x00, 0x00, 0x00
-	};
+    ili9488_printf(&xSans9pFont, 10, 70, RGB565_WHITE, RGB565_BLACK, "small@boi %d \n\r%d", 123, 321);
 
-    ili9488_draw_bitmap(ubPepeLogo, 10, 10, 32, 32, RGB565_BLUE, RGB565_BLACK);
+    ili9488_printf(&xSans18pFont, 10, 120, RGB565_WHITE, RGB565_BLACK, "big-boi %d \n\rbig boi %d", 123, 321);
 
-    //while(1);
-
-    ili9488_printf(&sans9p, 10, 70, RGB565_WHITE, RGB565_BLACK, "small@boi %d \n\r%d", 123, 321);
-
-    ili9488_printf(&sans18p, 10, 120, RGB565_WHITE, RGB565_BLACK, "big-boi %d \n\rbig boi %d", 123, 321);
-
-    while(1);
+    delay_ms(1000);
 
     while(1)
     {
@@ -514,7 +494,7 @@ int main()
 
         if(BTN_1_STATE() && (1 != ubLastBtn1State))
         {
-            ili9488_draw_image(usSurprise, 0, 0);
+            ili9488_draw_image(&xSurpriseImage, 0, 0);
             ubLastBtn1State = 1;
         }
         else if(!BTN_1_STATE() && (0 != ubLastBtn1State))
@@ -525,7 +505,7 @@ int main()
             {
                 for(uint8_t y = 0; y < 6; y++)
                 {
-                    ili9488_draw_image(usPepe,32 + (x * 64), 32 + (y * 64));
+                    ili9488_draw_image(&xPepeImage, 32 + (x * 64), 32 + (y * 64));
                 }
             }
             ubLastBtn1State = 0;

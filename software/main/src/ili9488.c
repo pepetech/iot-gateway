@@ -7,12 +7,16 @@ static inline void ili9488_send_cmd(uint8_t ubCmd, uint8_t *pubParam, uint8_t ub
 {
     ILI9488_SELECT();
     ILI9488_SETUP_CMD();
+
     usart1_spi_transfer_byte(ubCmd);
+
     if(pubParam && ubNParam)
     {
         ILI9488_SETUP_DAT();
+
         usart1_spi_write(pubParam, ubNParam);
     }
+
     ILI9488_UNSELECT();
 }
 static inline void ili9488_read_data(uint8_t *pubData, uint8_t ubNData)
@@ -21,31 +25,34 @@ static inline void ili9488_read_data(uint8_t *pubData, uint8_t ubNData)
     {
         ILI9488_SELECT();
         ILI9488_SETUP_DAT();
+
         usart1_spi_transfer_byte(0x00); // dummy byte
         usart1_spi_read(pubData, ubNData);
+
         ILI9488_UNSELECT();
     }
 }
-static inline void ili9488_send_pixel_data(rgb565_t usColor)
+static inline void ili9488_send_pixel_data(rgb565_t xColor)
 {
     ILI9488_SELECT();
     ILI9488_SETUP_DAT();
-    usart1_spi_transfer_byte(RGB565_EXTRACT_RED(usColor));
-    usart1_spi_transfer_byte(RGB565_EXTRACT_GREEN(usColor));
-    usart1_spi_transfer_byte(RGB565_EXTRACT_BLUE(usColor));
+
+    usart1_spi_transfer_byte(RGB565_EXTRACT_RED(xColor));
+    usart1_spi_transfer_byte(RGB565_EXTRACT_GREEN(xColor));
+    usart1_spi_transfer_byte(RGB565_EXTRACT_BLUE(xColor));
+
     ILI9488_UNSELECT();
 }
 static inline uint8_t ili9488_set_window(uint16_t usX0, uint16_t usY0, uint16_t usX1, uint16_t usY1)
 {
     if(usX0 > usX1)
-        return 1;
+        return 0;
     if(usY0 > usY1)
-        return 1;
+        return 0;
     if(usX1 > usMaxWidth)
-        return 1;
+        return 0;
     if(usY1 > usMaxHeigth)
-        return 1;
-
+        return 0;
 
     uint8_t ubBuf[4];
 
@@ -63,7 +70,7 @@ static inline uint8_t ili9488_set_window(uint16_t usX0, uint16_t usY0, uint16_t 
 
     ili9488_send_cmd(ILI9488_RAM_WR, NULL, 0); // write to RAM
 
-    return 0;
+    return 1;
 }
 
 uint8_t ili9488_init()
@@ -151,11 +158,13 @@ uint8_t ili9488_init()
 
 	ili9488_wakeup(0);  // wake up controller, leave display off
 }
-uint32_t ili9488_read_id()
+uint32_t ili9488_read_id() // FIXME: returns 000000
 {
     uint8_t ubBuf[3];
+
     ili9488_send_cmd(ILI9488_RD_DISP_ID, NULL, 0);
     ili9488_read_data(ubBuf, 3);
+
     return ((uint32_t)ubBuf[0] << 16) | ((uint32_t)ubBuf[1] << 8) | (uint32_t)ubBuf[2];
 }
 void ili9488_sleep()
@@ -169,6 +178,7 @@ void ili9488_wakeup(uint8_t ubDisplayOn)
 {
     ili9488_send_cmd(ILI9488_SLP_OUT, NULL, 0); // Sleep out
 	delay_ms(120);
+
     if(ubDisplayOn)
     {
         ili9488_display_on();
@@ -210,8 +220,8 @@ void ili9488_set_rotation(uint8_t ubRotation)
             break;
         default:
             return;
-            break;
     }
+
     ili9488_send_cmd(ILI9488_MEM_A_CTL, &ubBuf, 1);
 }
 void ili9488_set_invert(uint8_t ubOnOff)
@@ -240,59 +250,56 @@ void ili9488_scroll(uint16_t usPixs)
     ili9488_send_cmd(ILI9488_VSCRL_ADDR, ubBuf, 2); // Vertical scrolling start address
 }
 
-void ili9488_fill_screen(rgb565_t usColor)
+void ili9488_fill_screen(rgb565_t xColor)
 {
-    if(ili9488_set_window(0, 0, usMaxWidth, usMaxHeigth))
+    if(!ili9488_set_window(0, 0, usMaxWidth, usMaxHeigth))
         return;
 
     for(uint32_t ulI = ILI9488_TFTWIDTH * ILI9488_TFTHEIGHT; ulI > 0; ulI--)
-    {
-        ili9488_send_pixel_data(usColor);
-    }
+        ili9488_send_pixel_data(xColor);
 }
 
-void ili9488_draw_pixel(uint16_t usX, uint16_t usY, rgb565_t usColor)
+void ili9488_draw_pixel(uint16_t usX, uint16_t usY, rgb565_t xColor)
 {
-    if(ili9488_set_window(usX, usY, usX + 1, usY + 1))
+    if(!ili9488_set_window(usX, usY, usX + 1, usY + 1))
         return;
-    ili9488_send_pixel_data(usColor);
+
+    ili9488_send_pixel_data(xColor);
 }
-void ili9488_draw_Fast_v_line(uint16_t usX, uint16_t usY0, uint16_t usY1, rgb565_t usColor)
+void ili9488_draw_fast_v_line(uint16_t usX, uint16_t usY0, uint16_t usY1, rgb565_t xColor)
 {
     if(usY0 > usY1)
         SWAP(usY0, usY1);
 
-    if(ili9488_set_window(usX, usY0, usX, usY1))
+    if(!ili9488_set_window(usX, usY0, usX, usY1))
         return;
 
     for(uint16_t usH = usY1 - usY0; usH > 0; usH--)
-    {
-        ili9488_send_pixel_data(usColor);
-    }
+        ili9488_send_pixel_data(xColor);
 }
-void ili9488_draw_Fast_h_line(uint16_t usX0, uint16_t usY, uint16_t usX1, rgb565_t usColor)
+void ili9488_draw_fast_h_line(uint16_t usX0, uint16_t usY, uint16_t usX1, rgb565_t xColor)
 {
     if(usX0 > usX1)
         SWAP(usX0, usX1);
 
-    if(ili9488_set_window(usX0, usY, usX1, usY))
+    if(!ili9488_set_window(usX0, usY, usX1, usY))
         return;
 
     for(uint16_t usW = usX1 - usX0; usW > 0; usW--)
-    {
-        ili9488_send_pixel_data(usColor);
-    }
+        ili9488_send_pixel_data(xColor);
 }
-void ili9488_draw_line(uint16_t usX0, uint16_t usY0, uint16_t usX1, uint16_t usY1, rgb565_t usColor)
+void ili9488_draw_line(uint16_t usX0, uint16_t usY0, uint16_t usX1, uint16_t usY1, rgb565_t xColor)
 {
     if(usX0 == usX1)
     {
-        ili9488_draw_Fast_v_line(usX0, usY0, usY1, usColor);
+        ili9488_draw_fast_v_line(usX0, usY0, usY1, xColor);
+
         return;
     }
     if(usY0 == usY1)
     {
-        ili9488_draw_Fast_h_line(usX0, usY0, usX1, usColor);
+        ili9488_draw_fast_h_line(usX0, usY0, usX1, xColor);
+
         return;
     }
 
@@ -306,6 +313,7 @@ void ili9488_draw_line(uint16_t usX0, uint16_t usY0, uint16_t usX1, uint16_t usY
         SWAP(usX0, usY0);
         SWAP(usX1, usY1);
 	}
+
 	if(usX0 > usX1)
 	{
         SWAP(usX0, usX1);
@@ -325,9 +333,9 @@ void ili9488_draw_line(uint16_t usX0, uint16_t usY0, uint16_t usX1, uint16_t usY
 	for(; usX0 <= usX1; usX0++)
 	{
 		if(ubSteep)
-			ili9488_draw_pixel(usY0, usX0, usColor);
+			ili9488_draw_pixel(usY0, usX0, xColor);
         else
-			ili9488_draw_pixel(usX0, usY0, usColor);
+			ili9488_draw_pixel(usX0, usY0, xColor);
 
 		bErr -= ubdy;
 
@@ -338,7 +346,7 @@ void ili9488_draw_line(uint16_t usX0, uint16_t usY0, uint16_t usX1, uint16_t usY
 		}
 	}
 }
-void ili9488_draw_rectangle(uint16_t usX0, uint16_t usY0, uint16_t usX1, uint16_t usY1, rgb565_t usColor, uint8_t ubFill)
+void ili9488_draw_rectangle(uint16_t usX0, uint16_t usY0, uint16_t usX1, uint16_t usY1, rgb565_t xColor, uint8_t ubFill)
 {
     if(usX0 > usX1)
         SWAP(usX0, usX1);
@@ -348,26 +356,24 @@ void ili9488_draw_rectangle(uint16_t usX0, uint16_t usY0, uint16_t usX1, uint16_
 
     if(ubFill)
     {
-        if(ili9488_set_window(usX0, usY0, usX1, usY1))
+        if(!ili9488_set_window(usX0, usY0, usX1, usY1))
             return;
 
         for(uint16_t usH = usY1 - usY0; usH > 0; usH--)
         {
             for(uint16_t usW = usX1 - usX0; usW > 0; usW--)
-            {
-                ili9488_send_pixel_data(usColor);
-            }
+                ili9488_send_pixel_data(xColor);
         }
     }
     else
     {
-        ili9488_draw_Fast_h_line(usX0, usY0, usX1, usColor);
-        ili9488_draw_Fast_v_line(usX1, usY0, usY1, usColor);
-        ili9488_draw_Fast_v_line(usX0, usY0, usY1, usColor);
-        ili9488_draw_Fast_h_line(usX0, usY1, usX1, usColor);
+        ili9488_draw_fast_h_line(usX0, usY0, usX1, xColor);
+        ili9488_draw_fast_v_line(usX1, usY0, usY1, xColor);
+        ili9488_draw_fast_v_line(usX0, usY0, usY1, xColor);
+        ili9488_draw_fast_h_line(usX0, usY1, usX1, xColor);
     }
 }
-void ili9488_draw_circle(uint16_t usX, uint16_t usY, uint16_t usR, uint8_t ubFill, rgb565_t usColor)
+void ili9488_draw_circle(uint16_t usX, uint16_t usY, uint16_t usR, rgb565_t xColor, uint8_t ubFill)
 {
     int16_t sF = 1 - usR;
     int16_t sDdFx = 1;
@@ -378,23 +384,25 @@ void ili9488_draw_circle(uint16_t usX, uint16_t usY, uint16_t usR, uint8_t ubFil
     if(ubFill)
     {
         for(int16_t usI = usY - usR; usI <= usY + usR; usI++)
-            ili9488_draw_pixel(usX, usI, usColor);
+            ili9488_draw_pixel(usX, usI, xColor);
     }
     else
     {
-        ili9488_draw_pixel(usX, usY + usR, usColor);
-        ili9488_draw_pixel(usX, usY - usR, usColor);
-        ili9488_draw_pixel(usX + usR, usY, usColor);
-        ili9488_draw_pixel(usX - usR, usY, usColor);
+        ili9488_draw_pixel(usX, usY + usR, xColor);
+        ili9488_draw_pixel(usX, usY - usR, xColor);
+        ili9488_draw_pixel(usX + usR, usY, xColor);
+        ili9488_draw_pixel(usX - usR, usY, xColor);
     }
 
     while (sXh<sYh)
     {
-        if (sF >= 0) {
+        if (sF >= 0)
+        {
             sYh--;
             sDdFy += 2;
             sF += sDdFy;
         }
+
         sXh++;
         sDdFx += 2;
         sF += sDdFx;
@@ -403,75 +411,76 @@ void ili9488_draw_circle(uint16_t usX, uint16_t usY, uint16_t usR, uint8_t ubFil
         {
             for(int16_t usI = usY - sYh; usI <= usY + sYh; usI++)
             {
-                ili9488_draw_pixel(usX + sXh, usI, usColor);
-                ili9488_draw_pixel(usX - sXh, usI, usColor);
+                ili9488_draw_pixel(usX + sXh, usI, xColor);
+                ili9488_draw_pixel(usX - sXh, usI, xColor);
             }
+
             for(int16_t usI = usY - sXh; usI <= usY + sXh; usI++)
             {
-                ili9488_draw_pixel(usX + sYh, usI, usColor);
-                ili9488_draw_pixel(usX - sYh, usI, usColor);
+                ili9488_draw_pixel(usX + sYh, usI, xColor);
+                ili9488_draw_pixel(usX - sYh, usI, xColor);
             }
         }
         else
         {
-            ili9488_draw_pixel(usX + sXh, usY + sYh, usColor);
-            ili9488_draw_pixel(usX - sXh, usY + sYh, usColor);
-            ili9488_draw_pixel(usX + sXh, usY - sYh, usColor);
-            ili9488_draw_pixel(usX - sXh, usY - sYh, usColor);
-            ili9488_draw_pixel(usX + sYh, usY + sXh, usColor);
-            ili9488_draw_pixel(usX - sYh, usY + sXh, usColor);
-            ili9488_draw_pixel(usX + sYh, usY - sXh, usColor);
-            ili9488_draw_pixel(usX - sYh, usY - sXh, usColor);
+            ili9488_draw_pixel(usX + sXh, usY + sYh, xColor);
+            ili9488_draw_pixel(usX - sXh, usY + sYh, xColor);
+            ili9488_draw_pixel(usX + sXh, usY - sYh, xColor);
+            ili9488_draw_pixel(usX - sXh, usY - sYh, xColor);
+            ili9488_draw_pixel(usX + sYh, usY + sXh, xColor);
+            ili9488_draw_pixel(usX - sYh, usY + sXh, xColor);
+            ili9488_draw_pixel(usX + sYh, usY - sXh, xColor);
+            ili9488_draw_pixel(usX - sYh, usY - sXh, xColor);
         }
     }
 }
 
-void ili9488_draw_image(const rgb565_t *pusImgBuf, uint16_t usX, uint16_t usY)
+void ili9488_draw_image(const image_t *pImage, uint16_t usX, uint16_t usY)
 {
-    if(!pusImgBuf)
+    if(!pImage)
         return;
 
-    if(ili9488_set_window(usX, usY, usX + pusImgBuf[0] - 1, usY + pusImgBuf[1] - 1))
+    if(!pImage->pPixels)
         return;
 
-    uint32_t ulImgSize = pusImgBuf[0] * pusImgBuf[1];
+    if(!ili9488_set_window(usX, usY, usX + pImage->usWidth - 1, usY + pImage->usHeight - 1))
+        return;
 
-    pusImgBuf += 2;
+    rgb565_t *pPixels = pImage->pPixels;
+    uint32_t ulImgSize = pImage->usWidth * pImage->usHeight;
 
     while(ulImgSize--)
-        ili9488_send_pixel_data(*pusImgBuf++);
+        ili9488_send_pixel_data(*pPixels++);
 }
-void ili9488_draw_bitmap(const uint8_t *pubBitmap, uint16_t usX, uint16_t usY, uint16_t usW, uint16_t usH, rgb565_t usColor, rgb565_t usBackColor)
+void ili9488_draw_bitmap(const uint8_t *pubBitmap, uint16_t usX, uint16_t usY, uint16_t usW, uint16_t usH, rgb565_t xColor, rgb565_t xBackColor)
 {
     if(!pubBitmap)
         return;
 
-    if(ili9488_set_window(usX, usY, usX + usW - 1, usY + usH - 1))
+    if(!ili9488_set_window(usX, usY, usX + usW - 1, usY + usH - 1))
         return;
 
     for(uint32_t ulI = 0; ulI < usW * usH; ulI++)
     {
         if(*(pubBitmap + (ulI / 8u)) & (0x80 >> (ulI % 8ul)))
-        {
-            ili9488_send_pixel_data(usColor);
-        }
+            ili9488_send_pixel_data(xColor);
         else
-        {
-            ili9488_send_pixel_data(usBackColor);
-        }
+            ili9488_send_pixel_data(xBackColor);
     }
 }
 
-uint8_t ili9488_draw_char(uint8_t ubChar, const font_t *psFont, uint16_t usX, uint16_t usY, rgb565_t usColor, rgb565_t usBackColor)
+uint8_t ili9488_draw_char(uint8_t ubChar, const font_t *psFont, uint16_t usX, uint16_t usY, rgb565_t xColor, rgb565_t xBackColor)
 {
-    if((ubChar < psFont->first) || (ubChar > psFont->last))
+    if((ubChar < psFont->ubFirstChar) || (ubChar > psFont->ubLastChar))
         ubChar = '?';
 
-    ubChar -= psFont->first;
-    ili9488_draw_bitmap(psFont->bitmap + psFont->glyph[ubChar].bitmapOffset, usX + psFont->glyph[ubChar].xOffset, usY + psFont->yAdvance + psFont->glyph[ubChar].yOffset, psFont->glyph[ubChar].width, psFont->glyph[ubChar].height, usColor, usBackColor);
-    return psFont->glyph[ubChar].xAdvance;
+    ubChar -= psFont->ubFirstChar;
+
+    ili9488_draw_bitmap(psFont->pubBitmap + psFont->pGlyph[ubChar].usBitmapOffset, usX + psFont->pGlyph[ubChar].bXOffset, usY + psFont->ubYAdvance + psFont->pGlyph[ubChar].bYOffset, psFont->pGlyph[ubChar].ubWidth, psFont->pGlyph[ubChar].ubHeight, xColor, xBackColor);
+
+    return psFont->pGlyph[ubChar].ubXAdvance;
 }
-void ili9488_draw_string(uint8_t *pubStr, const font_t *psFont, uint16_t usX, uint16_t usY, rgb565_t usColor, rgb565_t usBackColor)
+void ili9488_draw_string(uint8_t *pubStr, const font_t *psFont, uint16_t usX, uint16_t usY, rgb565_t xColor, rgb565_t xBackColor)
 {
     uint16_t usXh = usX;
     uint16_t usYh = usY;
@@ -479,21 +488,23 @@ void ili9488_draw_string(uint8_t *pubStr, const font_t *psFont, uint16_t usX, ui
     while(*pubStr)
     {
         if(*pubStr == '\n')
-            usYh += psFont->yAdvance;
+            usYh += psFont->ubYAdvance;
         else if(*pubStr == '\r')
             usXh = usX;
         else
-            usXh += ili9488_draw_char(*pubStr, psFont, usXh, usYh, usColor, usBackColor);
+            usXh += ili9488_draw_char(*pubStr, psFont, usXh, usYh, xColor, xBackColor);
+
         pubStr++;
     }
 }
-void ili9488_printf(const font_t *psFont, uint16_t usX, uint16_t usY, rgb565_t usColor, rgb565_t usBackColor ,const char* pszFmt, ...)
+void ili9488_printf(const font_t *psFont, uint16_t usX, uint16_t usY, rgb565_t xColor, rgb565_t xBackColor ,const char* pszFmt, ...)
 {
     va_list args;
 	va_start(args, pszFmt);
 
     uint32_t ulStrLen = vsnprintf(NULL, 0, pszFmt, args);
 	char *pszBuf = (char *)malloc(ulStrLen + 1);
+
     if(!pszBuf)
     {
         va_end(args);
@@ -502,17 +513,16 @@ void ili9488_printf(const font_t *psFont, uint16_t usX, uint16_t usY, rgb565_t u
 
     vsnprintf(pszBuf, ulStrLen + 1, pszFmt, args);
 
-    DBGPRINTLN_CTX("%s", pszBuf);
-
-	ili9488_draw_string(pszBuf, psFont, usX, usY, usColor, usBackColor);
+	ili9488_draw_string(pszBuf, psFont, usX, usY, xColor, xBackColor);
 
     free(pszBuf);
+
 	va_end(args);
 }
 
-// ili9488_draw_line_graph()
-// ili9488_draw_bar_graph()
-// draw_heat_map()
-// draw_radar_spider_chart()
-// draw_scatter_plot()
-// gantt chart
+// TODO: ili9488_draw_line_graph()
+// TODO: ili9488_draw_bar_graph()
+// TODO: draw_heat_map()
+// TODO: draw_radar_spider_chart()
+// TODO: draw_scatter_plot()
+// TODO: gantt chart
