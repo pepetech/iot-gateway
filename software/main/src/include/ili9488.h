@@ -138,6 +138,19 @@
 #define ILI9488_MADCTL_BGR 0x08
 #define ILI9488_MADCTL_MH 0x04
 
+typedef struct
+{
+    uint16_t usX;
+    uint16_t usY;
+    uint16_t usCursor;
+    uint16_t usLen;
+    uint16_t usNumLines;
+    uint16_t usCurrentLine;
+    font_t *pxFont;
+    rgb565_t xColor;
+    rgb565_t xBackColor;
+} textbox_t;
+
 uint8_t ili9488_init();
 uint32_t ili9488_read_id();
 void tft_bl_init(uint32_t usFrequency);
@@ -163,8 +176,16 @@ void ili9488_draw_circle(uint16_t usX, uint16_t usY, uint16_t usR, rgb565_t xCol
 
 void ili9488_draw_image(const image_t *pImage, uint16_t usX, uint16_t usY);
 void ili9488_draw_bitmap(const uint8_t *pubBitmap, uint16_t usX, uint16_t usY, uint16_t usW, uint16_t usH, rgb565_t xColor, rgb565_t usBackColor);
-uint8_t ili9488_draw_char(uint8_t ubChar, const font_t *sFont, uint16_t usX, uint16_t usY, rgb565_t xColor, rgb565_t xBackColor);
-void ili9488_draw_string(uint8_t *pubStr, const font_t *psFont, uint16_t usX, uint16_t usY, rgb565_t xColor, rgb565_t xBackColor);
-void ili9488_printf(const font_t *psFont, uint16_t usX, uint16_t usY, rgb565_t xColor, rgb565_t usBackColor ,const char* pszFmt, ...);
+uint8_t ili9488_draw_char(uint8_t ubChar, const font_t *xFont, uint16_t usX, uint16_t usY, rgb565_t xColor, rgb565_t xBackColor);
+void ili9488_draw_string(uint8_t *pubStr, const font_t *pxFont, uint16_t usX, uint16_t usY, rgb565_t xColor, rgb565_t xBackColor);
+void ili9488_printf(const font_t *pxFont, uint16_t usX, uint16_t usY, rgb565_t xColor, rgb565_t usBackColor ,const char* pszFmt, ...);
+
+textbox_t *ili9488_textbox_create(uint16_t usX, uint16_t usY, uint16_t usNumLines, uint16_t usLenght, font_t *pxFont, rgb565_t xColor, rgb565_t xBackColor, rgb565_t ulOptions);
+void ili9488_textbox_delete(textbox_t *pxTextbox);
+void ili9488_textbox_clear(textbox_t *pxTextbox);
+void ili9488_textbox_clear_line(textbox_t *pxTextbox);
+void ili9488_textbox_goto(textbox_t *pxTextbox, uint16_t usCursor, uint16_t usLine);
+void ili9488_textbox_draw_string(textbox_t *pxTextbox, uint8_t *pubStr);
+void ili9488_textbox_printf(textbox_t *pxTextbox, const char* pszFmt, ...);
 
 #endif  // __ILI9488_H_
