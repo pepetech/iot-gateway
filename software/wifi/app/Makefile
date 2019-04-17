@@ -13,9 +13,8 @@ SDK_ADDR = 0x3FC000
 #SDK_ADDR = 0xFC000
 CA_ADDR = 0x3FA000
 #CA_ADDR = 0xFA000
-ESP_BAUD = 1500000
+ESP_BAUD = 921600
 ESP_PORT = /dev/ttyUSB0
-#ESP_PORT = /dev/ttyUSB1
 
 #######################################################
 
@@ -56,18 +55,18 @@ endif
 CC = xtensa-lx106-elf-gcc
 CXX = xtensa-lx106-elf-g++
 LD = xtensa-lx106-elf-gcc
+AS = xtensa-lx106-elf-as
 STRIP = xtensa-lx106-elf-strip
-
-# Include directories
-INCLUDEDIRS = $(SOURCEDIR)/ $(SOURCEDIR)/include
-
-# Libraries
-LIBS = main net80211 hal crypto wpa lwip pp phy c mbedtls gcc
+OBJCOPY = xtensa-lx106-elf-objcopy
+OBJDUMP = xtensa-lx106-elf-objdump
+GDB = xtensa-lx106-elf-gdb
 
 # Compillers & Linker flags
-CFLAGS = $(addprefix -I,$(INCLUDEDIRSTRUCT)) -Os -std=c99 -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -fno-builtin-printf -D__ets__ -DICACHE_FLASH -DBUILD_VERSION=$(BUILD_VERSION)
-CXXFLAGS = $(CFLAGS) -fno-rtti -fno-exceptions
-LDFLAGS = -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static -Wl,--start-group $(addprefix -l,$(LIBS)) -Wl,--end-group
+CFLAGS = $(addprefix -I,$(INCLUDEDIRSTRUCT)) -Os -std=gnu99 -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -fno-builtin-printf -D__ets__ -DICACHE_FLASH -DBUILD_VERSION=$(BUILD_VERSION)
+CXXFLAGS = $(addprefix -I,$(INCLUDEDIRSTRUCT)) -fno-rtti -fno-exceptions -Os -std=c++17 -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -fno-builtin-printf -D__ets__ -DICACHE_FLASH -DBUILD_VERSION=$(BUILD_VERSION)
+LDFLAGS = -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,--gc-sections
+LDLIBS = -lmain -lnet80211 -lhal -lcrypto -lwpa -llwip -lpp -lphy -lc -lmbedtls -lgcc
+
 
 ifeq ($(BUILD_TYPE), debug)
 CFLAGS += -g
@@ -101,9 +100,9 @@ ESPTOOL_BINS += $(ESP_SDK_IDATA_BIN)
 
 ifeq ($(STANDALONE), 1)
 	ESPTOOL_BINS += 0x00000
-	ESPTOOL_BINS +=  $(TARGET).iram1.bin
+	ESPTOOL_BINS += $(TARGET).iram1.bin
 	ESPTOOL_BINS += 0x10000
-	ESPTOOL_BINS +=  $(TARGET).irom0.bin
+	ESPTOOL_BINS += $(TARGET).irom0.bin
 else
 	ifeq ($(FLASH_APP1), 1)
 		ESPTOOL_BINS += $(APP1_ADDR)
@@ -116,7 +115,18 @@ else
 endif
 
 
-all: clean-bin make-dir version $(TARGET).bin
+all: clean-bin make-dir version $(TARGET).lss $(TARGET).bin
+
+$(TARGET).lss: $(TARGET).elf
+ifeq ($(STANDALONE), 1)
+	@echo Creating LSS file \'$@\'...
+	@$(OBJDUMP) -S --disassemble $< > $@
+else
+	@echo Creating LSS file \'$(TARGET).app1.lss\'...
+	@$(OBJDUMP) -S --disassemble $(TARGET).app1.elf > $(TARGET).app1.lss
+	@echo Creating LSS file \'$(TARGET).app2.lss\'...
+	@$(OBJDUMP) -S --disassemble $(TARGET).app2.elf > $(TARGET).app2.lss
+endif
 
 $(TARGET).bin: $(TARGET).elf
 ifeq ($(STANDALONE), 1)
@@ -142,15 +152,15 @@ $(TARGET).elf: $(OBJECTS)
 	@echo ---------------------------------------------------------------------------
 ifeq ($(STANDALONE), 1)
 	@echo Creating ELF file \'$@\'...
-	@$(LD) -o $@ $^ -T $(LDSCRIPT_STANDALONE) $(LDFLAGS)
+	@$(LD) -o $@ $^ -T $(LDSCRIPT_STANDALONE) $(LDFLAGS) -Wl,-static -Wl,--start-group $(LDLIBS) -Wl,--end-group -Wl,-Map=$(TARGET).map
 ifeq ($(BUILD_TYPE), release)
 	@$(STRIP) -g $@
 endif
 else
 	@echo Creating ELF file \'$(TARGET).app1.elf\'...
-	@$(LD) -o $(TARGET).app1.elf $^ -T $(LDSCRIPT_APP1) $(LDFLAGS)
+	@$(LD) -o $(TARGET).app1.elf $^ -T $(LDSCRIPT_APP1) $(LDFLAGS) -Wl,-static -Wl,--start-group $(LDLIBS) -Wl,--end-group -Wl,-Map=$(TARGET).app1.map
 	@echo Creating ELF file \'$(TARGET).app2.elf\'...
-	@$(LD) -o $(TARGET).app2.elf $^ -T $(LDSCRIPT_APP2) $(LDFLAGS)
+	@$(LD) -o $(TARGET).app2.elf $^ -T $(LDSCRIPT_APP2) $(LDFLAGS) -Wl,-static -Wl,--start-group $(LDLIBS) -Wl,--end-group -Wl,-Map=$(TARGET).app2.map
 ifeq ($(BUILD_TYPE), release)
 	@$(STRIP) -g $(TARGET).app1.elf
 	@$(STRIP) -g $(TARGET).app2.elf
