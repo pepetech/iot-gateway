@@ -219,7 +219,7 @@ void ili9488_set_invert(uint8_t ubOnOff)
     ili9488_send_cmd((ubOnOff ? ILI9488_INV_ON : ILI9488_INV_OFF), NULL, 0);
 }
 
-void ili9488_set_scroll_area(uint8_t ubRotation, uint16_t usTopFixedArea, uint16_t usBottomFixedArea)
+void ili9488_set_scroll_area(uint16_t usTopFixedArea, uint16_t usBottomFixedArea)
 {
     uint8_t ubBuf[6];
 
@@ -369,11 +369,11 @@ void ili9488_draw_rectangle(uint16_t usX0, uint16_t usY0, uint16_t usX1, uint16_
 }
 void ili9488_draw_circle(uint16_t usX, uint16_t usY, uint16_t usR, uint8_t ubFill, rgb565_t usColor)
 {
-	int16_t sF = 1 - usR;
-	int16_t sDdFx = 1;
-	int16_t sDdFy = -2 * usR;
-	int16_t sXh = 0;
-	int16_t sYh = usR;
+    int16_t sF = 1 - usR;
+    int16_t sDdFx = 1;
+    int16_t sDdFy = -2 * usR;
+    int16_t sXh = 0;
+    int16_t sYh = usR;
 
     if(ubFill)
     {
@@ -388,15 +388,13 @@ void ili9488_draw_circle(uint16_t usX, uint16_t usY, uint16_t usR, uint8_t ubFil
         ili9488_draw_pixel(usX - usR, usY, usColor);
     }
 
-    while(usX < usY)
+    while (sXh<sYh)
     {
-        if(sF >= 0)
-        {
+        if (sF >= 0) {
             sYh--;
             sDdFy += 2;
             sF += sDdFy;
         }
-
         sXh++;
         sDdFx += 2;
         sF += sDdFx;
@@ -420,7 +418,6 @@ void ili9488_draw_circle(uint16_t usX, uint16_t usY, uint16_t usR, uint8_t ubFil
             ili9488_draw_pixel(usX - sXh, usY + sYh, usColor);
             ili9488_draw_pixel(usX + sXh, usY - sYh, usColor);
             ili9488_draw_pixel(usX - sXh, usY - sYh, usColor);
-
             ili9488_draw_pixel(usX + sYh, usY + sXh, usColor);
             ili9488_draw_pixel(usX - sYh, usY + sXh, usColor);
             ili9488_draw_pixel(usX + sYh, usY - sXh, usColor);
@@ -443,6 +440,74 @@ void ili9488_draw_image(const rgb565_t *pusImgBuf, uint16_t usX, uint16_t usY)
 
     while(ulImgSize--)
         ili9488_send_pixel_data(*pusImgBuf++);
+}
+void ili9488_draw_bitmap(const uint8_t *pubBitmap, uint16_t usX, uint16_t usY, uint16_t usW, uint16_t usH, rgb565_t usColor, rgb565_t usBackColor)
+{
+    if(!pubBitmap)
+        return;
+
+    if(ili9488_set_window(usX, usY, usX + usW - 1, usY + usH - 1))
+        return;
+
+    for(uint32_t ulI = 0; ulI < usW * usH; ulI++)
+    {
+        if(*(pubBitmap + (ulI / 8u)) & (0x80 >> (ulI % 8ul)))
+        {
+            ili9488_send_pixel_data(usColor);
+        }
+        else
+        {
+            ili9488_send_pixel_data(usBackColor);
+        }
+    }
+}
+
+uint8_t ili9488_draw_char(uint8_t ubChar, const font_t *psFont, uint16_t usX, uint16_t usY, rgb565_t usColor, rgb565_t usBackColor)
+{
+    if((ubChar < psFont->first) || (ubChar > psFont->last))
+        ubChar = '?';
+
+    ubChar -= psFont->first;
+    ili9488_draw_bitmap(psFont->bitmap + psFont->glyph[ubChar].bitmapOffset, usX + psFont->glyph[ubChar].xOffset, usY + psFont->yAdvance + psFont->glyph[ubChar].yOffset, psFont->glyph[ubChar].width, psFont->glyph[ubChar].height, usColor, usBackColor);
+    return psFont->glyph[ubChar].xAdvance;
+}
+void ili9488_draw_string(uint8_t *pubStr, const font_t *psFont, uint16_t usX, uint16_t usY, rgb565_t usColor, rgb565_t usBackColor)
+{
+    uint16_t usXh = usX;
+    uint16_t usYh = usY;
+
+    while(*pubStr)
+    {
+        if(*pubStr == '\n')
+            usYh += psFont->yAdvance;
+        else if(*pubStr == '\r')
+            usXh = usX;
+        else
+            usXh += ili9488_draw_char(*pubStr, psFont, usXh, usYh, usColor, usBackColor);
+        pubStr++;
+    }
+}
+void ili9488_printf(const font_t *psFont, uint16_t usX, uint16_t usY, rgb565_t usColor, rgb565_t usBackColor ,const char* pszFmt, ...)
+{
+    va_list args;
+	va_start(args, pszFmt);
+
+    uint32_t ulStrLen = vsnprintf(NULL, 0, pszFmt, args);
+	char *pszBuf = (char *)malloc(ulStrLen + 1);
+    if(!pszBuf)
+    {
+        va_end(args);
+        return;
+    }
+
+    vsnprintf(pszBuf, ulStrLen + 1, pszFmt, args);
+
+    DBGPRINTLN_CTX("%s", pszBuf);
+
+	ili9488_draw_string(pszBuf, psFont, usX, usY, usColor, usBackColor);
+
+    free(pszBuf);
+	va_end(args);
 }
 
 // ili9488_draw_line_graph()

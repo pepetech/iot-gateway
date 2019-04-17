@@ -42,9 +42,9 @@
 #define TFT_BL_DUTY         WTIMER2->CC[1].CCVB
 
 // BUTTON MACROS
-#define BTN_1_STATE()       PERI_REG_BIT(&(GPIO->P[1].DIN), 1)
-#define BTN_2_STATE()       PERI_REG_BIT(&(GPIO->P[1].DIN), 2)
-#define BTN_3_STATE()       PERI_REG_BIT(&(GPIO->P[1].DIN), 3)
+#define BTN_3_STATE()       !PERI_REG_BIT(&(GPIO->P[1].DIN), 1)
+#define BTN_2_STATE()       !PERI_REG_BIT(&(GPIO->P[1].DIN), 2)
+#define BTN_1_STATE()       !PERI_REG_BIT(&(GPIO->P[1].DIN), 3)
 
 // BAT / POW MACROS
 #define BAT_STDBY()         !PERI_REG_BIT(&(GPIO->P[2].DIN), 6)

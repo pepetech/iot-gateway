@@ -2,11 +2,16 @@
 #define __ILI9488_H_
 
 #include <em_device.h>
+#include <stdio.h>
+#include <stdarg.h>
 #include "usart.h"
 #include "gpio.h"
 #include "systick.h"
 #include "utils.h"
 #include "rgb565.h"
+#include "font.h"
+#include "math.h"
+#include "debug_macros.h"
 
 #define ILI9488_TFTWIDTH        320u
 #define ILI9488_TFTHEIGHT       480u
@@ -141,7 +146,7 @@ void ili9488_display_off();
 void ili9488_set_rotation(uint8_t ubRotation);
 void ili9488_set_invert(uint8_t ubOnOff);
 
-void ili9488_set_scroll_area(uint8_t ubRotation, uint16_t usTopFixedArea, uint16_t usBottomFixedArea);
+void ili9488_set_scroll_area(uint16_t usTopFixedArea, uint16_t usBottomFixedArea);
 void ili9488_scroll(uint16_t usPixs);
 
 void ili9488_fill_screen(rgb565_t usColor);
@@ -154,5 +159,9 @@ void ili9488_draw_rectangle(uint16_t usX0, uint16_t usY0, uint16_t usX1, uint16_
 void ili9488_draw_circle(uint16_t usX, uint16_t usY, uint16_t usR, uint8_t ubFill, rgb565_t usColor);
 
 void ili9488_draw_image(const rgb565_t *pusImgBuf, uint16_t usX, uint16_t usY);
+void ili9488_draw_bitmap(const uint8_t *pubBitmap, uint16_t usX, uint16_t usY, uint16_t usW, uint16_t usH, rgb565_t usColor, rgb565_t usBackColor);
+uint8_t ili9488_draw_char(uint8_t ubChar, const font_t *sFont, uint16_t usX, uint16_t usY, rgb565_t usColor, rgb565_t usBackColor);
+void ili9488_draw_string(uint8_t *pubStr, const font_t *psFont, uint16_t usX, uint16_t usY, rgb565_t usColor, rgb565_t usBackColor);
+void ili9488_printf(const font_t *psFont, uint16_t usX, uint16_t usY, rgb565_t usColor, rgb565_t usBackColor ,const char* pszFmt, ...);
 
 #endif  // __ILI9488_H_
