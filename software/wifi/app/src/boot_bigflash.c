@@ -6,7 +6,7 @@
 
 extern uint32_t SPIRead(uint32_t, void*, uint32_t);
 extern void Cache_Read_Enable(uint8_t, uint8_t, uint8_t);
-
+/*
 void Cache_Read_Enable_New()
 {
 	static uint8_t mmap_1 = 0xFF;
@@ -34,3 +34,4 @@ void Cache_Read_Enable_New()
 
 	Cache_Read_Enable(mmap_1, mmap_2, FLASH_CACHE_USE_32K);
 }
+*/

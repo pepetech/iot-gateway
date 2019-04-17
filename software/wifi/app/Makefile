@@ -2,17 +2,18 @@ FLASH_MODE = qio
 FLASH_SPEED = 80
 FLASH_SIZE = 4096
 #FLASH_SIZE = 1024
-STANDALONE = 0
+STANDALONE = 1
 FLASH_APP1 = 1
-FLASH_APP2 = 1
+FLASH_APP2 = 0
 APP1_ADDR = 0x002000
 #APP1_ADDR = 0x002000
 APP2_ADDR = 0x102000
 #APP2_ADDR = 0x082000
-SDK_ADDR = 0x3FC000
-#SDK_ADDR = 0xFC000
 CA_ADDR = 0x3FA000
 #CA_ADDR = 0xFA000
+SDK_ADDR = 0x3FC000
+#SDK_ADDR = 0xFC000
+ESP_SDK_IDATA_BIN = /opt/esp-open-sdk/sdk/bin/esp_init_data_default.bin
 ESP_BAUD = 921600
 ESP_PORT = /dev/ttyUSB0
 
@@ -65,7 +66,7 @@ GDB = xtensa-lx106-elf-gdb
 CFLAGS = $(addprefix -I,$(INCLUDEDIRSTRUCT)) -Os -std=gnu99 -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -fno-builtin-printf -D__ets__ -DICACHE_FLASH -DBUILD_VERSION=$(BUILD_VERSION)
 CXXFLAGS = $(addprefix -I,$(INCLUDEDIRSTRUCT)) -fno-rtti -fno-exceptions -Os -std=c++17 -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -fno-builtin-printf -D__ets__ -DICACHE_FLASH -DBUILD_VERSION=$(BUILD_VERSION)
 LDFLAGS = -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,--gc-sections
-LDLIBS = -lmain -lnet80211 -lhal -lcrypto -lwpa -llwip -lpp -lphy -lc -lmbedtls -lgcc
+LDLIBS = -lmain -lnet80211 -lhal -lcrypto -lwpa -lwpa2 -llwip -lpp -lphy -lc -lmbedtls -lgcc
 
 
 ifeq ($(BUILD_TYPE), debug)
@@ -175,7 +176,7 @@ $(OBJECTDIR)/%.o: $(SOURCEDIR)/%.cpp
 	@echo Compilling C++ file \'$<\' \> \'$@\'...
 	@$(CXX) $(CXXFLAGS) -MD -c -o $@ $<
 
-flash: clean-bin $(TARGET).bin
+flash: clean-bin make-dir version $(TARGET).lss $(TARGET).bin
 	@esptool.py -b $(ESP_BAUD) -p $(ESP_PORT) -a hard_reset write_flash -fm $(FLASH_MODE) -ff $(FLASH_SPEED)m $(ESPTOOL_BINS)
 
 flash-ca:
