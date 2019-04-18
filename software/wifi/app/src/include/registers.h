@@ -272,6 +272,11 @@
 #define SPI_CTRL0_QIO_MODE                   BIT(24)
 #define SPI_CTRL0_DIO_MODE                   BIT(23)
 #define SPI_CTRL0_QOUT_MODE                  BIT(20)
+#define SPI_CTRL0_SHARE_BUS                  BIT(19)
+#define SPI_CTRL0_HOLD_MODE                  BIT(18)
+#define SPI_CTRL0_ENABLE_AHB                 BIT(17)
+#define SPI_CTRL0_SST_AAI                    BIT(16)
+#define SPI_CTRL0_RESANDRES                  BIT(15)
 #define SPI_CTRL0_DOUT_MODE                  BIT(14)
 #define SPI_CTRL0_FASTRD_MODE                BIT(13)
 #define SPI_CTRL0_CLOCK_EQU_SYS_CLOCK        BIT(12)
@@ -383,6 +388,12 @@
 #define SPI_SLAVE0_CMD_DEFINE                BIT(27)
 #define SPI_SLAVE0_TRANS_COUNT_M             0x0000000F
 #define SPI_SLAVE0_TRANS_COUNT_S             23
+#define SPI_SLAVE0_LAST_STATE_M              0x00000007
+#define SPI_SLAVE0_LAST_STATE_S              20
+#define SPI_SLAVE0_LAST_COMMAND_M            0x00000007
+#define SPI_SLAVE0_LAST_COMMAND_S            17
+#define SPI_SLAVE0_CS_INT_MODE_M             0x00000003
+#define SPI_SLAVE0_CS_INT_MODE_S             10
 #define SPI_SLAVE0_TRANS_DONE_EN             BIT(9)
 #define SPI_SLAVE0_WR_STA_DONE_EN            BIT(8)
 #define SPI_SLAVE0_RD_STA_DONE_EN            BIT(7)
@@ -398,6 +409,8 @@
 #define SPI1_SLAVE1                      REG_SPI1_BASE(13)
 #define SPI_SLAVE1_STATUS_BITLEN_M           0x0000001F
 #define SPI_SLAVE1_STATUS_BITLEN_S           27
+#define SPI_SLAVE1_STA_FAST_EN               BIT(26)
+#define SPI_SLAVE1_STA_READBACK              BIT(25)
 #define SPI_SLAVE1_BUF_BITLEN_M              0x000001FF
 #define SPI_SLAVE1_BUF_BITLEN_S              16
 #define SPI_SLAVE1_RD_ADDR_BITLEN_M          0x0000003F

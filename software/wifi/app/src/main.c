@@ -4,8 +4,11 @@ static ets_timer_t tick_timer;
 static ets_timer_t sntp_timer;
 static uint8_t update_scheduled = 0;
 static uint32_t update_new_version = 0;
+static uint8_t spi_buffer[32];
 
 // Forward declarations
+static void spi_isr(void *arg);
+
 static void ICACHE_FLASH_ATTR tick_timer_callback(void *arg);
 static void ICACHE_FLASH_ATTR sntp_timer_callback(void *arg);
 
@@ -31,6 +34,94 @@ void ICACHE_FLASH_ATTR user_init();
 void ICACHE_FLASH_ATTR user_main();
 
 // Functions
+void spi_isr(void *arg)
+{
+    uint32_t flags = REG(DPORT_SPI_INT_STATUS);
+
+    DBGPRINTLN_CTX("Flags [%08X]", flags);
+
+    if(flags & DPORT_SPI_INT_STATUS_SPI1)
+    {
+        uint32_t status = REG(SPI1_SLAVE0);
+
+        REG(SPI1_SLAVE0) &= ~(SPI_SLAVE0_WR_STA_DONE_EN | SPI_SLAVE0_RD_STA_DONE_EN | SPI_SLAVE0_WR_BUF_DONE_EN | SPI_SLAVE0_RD_BUF_DONE_EN); // Disable interrupts
+        REG(SPI1_SLAVE0) |= SPI_SLAVE0_SYNC_RESET; // Reset
+        REG(SPI1_SLAVE0) &= ~(SPI_SLAVE0_TRANS_DONE | SPI_SLAVE0_WR_STA_DONE | SPI_SLAVE0_RD_STA_DONE | SPI_SLAVE0_WR_BUF_DONE | SPI_SLAVE0_RD_BUF_DONE); // Dlear interrupts
+        REG(SPI1_SLAVE0) |= SPI_SLAVE0_WR_STA_DONE_EN | SPI_SLAVE0_RD_STA_DONE_EN | SPI_SLAVE0_WR_BUF_DONE_EN | SPI_SLAVE0_RD_BUF_DONE_EN;// Enable interrupts
+
+        DBGPRINTLN_CTX("SPI1 addr [%08X]", REG(SPI1_ADDR));
+
+        if(status & SPI_SLAVE0_RD_BUF_DONE)
+        {
+            DBGPRINTLN_CTX("SPI1 read done");
+
+            uint32_t len = 32;
+            uint8_t data[] = { 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA };
+
+            uint8_t i;
+            uint32_t out = 0;
+            uint8_t bi = 0;
+            uint8_t wi = 8;
+
+            for(i = 0; i < 32; i++)
+            {
+                out |= (i < len) ? (data[i] << (bi * 8)) : 0;
+                bi++;
+                bi &= 3;
+
+                if(!bi)
+                {
+                    REG(SPI1_W(wi)) = out;
+                    out = 0;
+                    wi++;
+                }
+            }
+        }
+
+        if(status & SPI_SLAVE0_RD_STA_DONE)
+        {
+            DBGPRINTLN_CTX("SPI1 read status done");
+        }
+
+        if(status & SPI_SLAVE0_WR_STA_DONE)
+        {
+            uint32_t s = REG(SPI1_WSTATUS);
+
+            DBGPRINTLN_CTX("SPI1 write status done [%08X]", s);
+        }
+
+        if(status & SPI_SLAVE0_WR_BUF_DONE)
+        {
+            DBGPRINT_CTX("SPI1 write data done [");
+
+            for(uint8_t i = 0; i < 8; i++)
+            {
+                uint32_t data = REG(SPI1_W(i));
+
+                spi_buffer[(i << 2) + 0] = (data >> 0) & 0xFF;
+                spi_buffer[(i << 2) + 1] = (data >> 8) & 0xFF;
+                spi_buffer[(i << 2) + 2] = (data >> 16) & 0xFF;
+                spi_buffer[(i << 2) + 3] = (data >> 24) & 0xFF;
+
+                DBGPRINT("%02X ", spi_buffer[(i << 2) + 0]);
+                DBGPRINT("%02X ", spi_buffer[(i << 2) + 1]);
+                DBGPRINT("%02X ", spi_buffer[(i << 2) + 2]);
+                DBGPRINT("%02X ", spi_buffer[(i << 2) + 3]);
+            }
+
+            DBGPRINTLN("]");
+        }
+    }
+    else if(flags & DPORT_SPI_INT_STATUS_SPI0)
+    {
+        REG(SPI0_SLAVE0) &= ~0x3FF; // Clear SPI ISR
+    }
+    else if(flags & DPORT_SPI_INT_STATUS_I2S)
+    {
+
+    }
+}
+
 void tick_timer_callback(void *arg)
 {
     uint64_t now_us = get_system_tick();
@@ -209,8 +300,6 @@ void wifi_scan_callback(void *arg, uint32_t status)
         wifi_station_set_enterprise_identity("2170802@my.ipleiria.pt", 22);
         wifi_station_set_enterprise_username("2170802@my.ipleiria.pt", 22);
         wifi_station_set_enterprise_password("15621568", 8);
-
-        //wifi_station_set_enterprise_disable_time_check(1);
 
         wifi_station_connect();
 
@@ -600,39 +689,68 @@ uint32_t user_rf_cal_sector_set()
 }
 void user_init()
 {
+    // Overclock CPU
     REG(DPORT_CPU_CLOCK) = DPORT_CPU_CLOCK_X2; // Set clock to 160 MHz
     ets_update_cpu_frequency(160); // Re-calibrate timers
 
+    // IO config
     /*
     REG(RTC_GPIO_CFG(3)) &= ~(RTC_GPIO_CFG3_PIN_FUNC_M << RTC_GPIO_CFG3_PIN_FUNC_S);
     REG(RTC_GPIO_CFG(3)) |= RTC_GPIO_CFG3_PIN_FUNC_RTC_GPIO0; // Configure iomux as RTCGPIO0 (GPIO16)
-    REG(RTC_GPIO_CONF) &= ~RTC_GPIO_CONF_OUT_ENABLE; // Disable control by RTC, controlled by user now
+    REG(RTC_GPIO_CONF) &= ~RTC_GPIO_CONF_OUT_ENABLE; // Disable control by RTC, controlled by software now
     REG(RTC_GPIO_ENABLE) |= BIT(0); // Set RTCGPIO0 as output
     REG(RTC_GPIO_OUT) |= BIT(0); // Set RTCGPIO0 high
-
-    REG(WIFI_LED_IOMUX) &= ~IOMUX_PIN_FUNC_MASK;
-    REG(WIFI_LED_IOMUX) |= WIFI_LED_FUNC;
     */
 
+    /*
     REG(IOMUX_GPIO1) &= ~IOMUX_PIN_FUNC_MASK;
     REG(IOMUX_GPIO1) |= IOMUX_GPIO1_FUNC_UART0_TXD;
     REG(IOMUX_GPIO3) &= ~IOMUX_PIN_FUNC_MASK;
     REG(IOMUX_GPIO3) |= IOMUX_GPIO3_FUNC_UART0_RXD;
+    */
 
     REG(IOMUX_GPIO2) &= ~IOMUX_PIN_FUNC_MASK;
     REG(IOMUX_GPIO2) |= IOMUX_GPIO2_FUNC_UART1_TXD;
 
-    /*
-    REG(GPIO_ENABLE_OUT_SET) = BIT(WIFI_LED_BIT) | BIT(RGB_DATA_BIT); // Both as outputs
-    REG(GPIO_OUT_SET) = BIT(WIFI_LED_BIT); // Wifi LED active LOW, turn off
-    REG(GPIO_OUT_CLEAR) = BIT(RGB_DATA_BIT); // RGB data LOW
-    */
+    REG(IOMUX_GPIO12) &= ~IOMUX_PIN_FUNC_MASK;
+    REG(IOMUX_GPIO12) |= IOMUX_GPIO12_FUNC_SPI1_MISO_DATA1;
+    REG(IOMUX_GPIO13) &= ~IOMUX_PIN_FUNC_MASK;
+    REG(IOMUX_GPIO13) |= IOMUX_GPIO13_FUNC_SPI1_MOSI_DATA0;
+    REG(IOMUX_GPIO14) &= ~IOMUX_PIN_FUNC_MASK;
+    REG(IOMUX_GPIO14) |= IOMUX_GPIO14_FUNC_SPI1_CLK;
+    REG(IOMUX_GPIO15) &= ~IOMUX_PIN_FUNC_MASK;
+    REG(IOMUX_GPIO15) |= IOMUX_GPIO15_FUNC_SPI1_CS0;
 
+    REG(IOMUX_GPIO5) &= ~IOMUX_PIN_FUNC_MASK;
+    REG(IOMUX_GPIO5) |= IOMUX_GPIO5_FUNC_GPIO;
+
+    REG(GPIO_ENABLE_OUT_SET) = BIT(5); // WIFI_IRQ line
+    REG(GPIO_OUT_CLEAR) = BIT(5); // Deassert WIFI_IRQ line
+    //REG(GPIO_OUT_SET) = BIT(5); // Assert WIFI_IRQ line
+
+    // UART & debug prints
     uart1_init(115200);
 
     ets_install_putc1((ets_putc_fn_t)uart1_write_byte);
     ets_install_putc2(NULL);
 
+    // SPI
+    REG(IOMUX_CONF) &= ~IOMUX_CONF_SPI1_CLOCK_EQU_SYS_CLOCK;
+
+    REG(SPI1_SLAVE0) = SPI_SLAVE0_MODE | SPI_SLAVE0_WR_RD_BUF_EN | SPI_SLAVE0_WR_STA_DONE_EN | SPI_SLAVE0_RD_STA_DONE_EN | SPI_SLAVE0_WR_BUF_DONE_EN | SPI_SLAVE0_RD_BUF_DONE_EN;
+    REG(SPI1_USER0) = SPI_USER0_MISO_HIGHPART | SPI_USER0_COMMAND | SPI_USER0_CLOCK_IN_EDGE;
+    REG(SPI1_CTRL2) = 0x00000000;
+    REG(SPI1_CLOCK) = 0x00000000;
+    REG(SPI1_USER2) = VAL2FIELD(SPI_USER2_COMMAND_BITLEN, 7); // 8 bit commands
+    REG(SPI1_SLAVE1) = VAL2FIELD(SPI_SLAVE1_STATUS_BITLEN, 31) | SPI_SLAVE1_STA_READBACK | VAL2FIELD(SPI_SLAVE1_BUF_BITLEN, 255) | VAL2FIELD(SPI_SLAVE1_WR_ADDR_BITLEN, 7) | VAL2FIELD(SPI_SLAVE1_RD_ADDR_BITLEN, 7);
+    REG(SPI1_CMD) = SPI_CMD_USR;
+
+    REG(SPI1_WSTATUS) = 0xAABBCCDD;
+
+    ets_isr_attach(ETS_INUM_SPI, spi_isr, NULL);
+    ets_isr_unmask(BIT(ETS_INUM_SPI));
+
+    // Print information
     DBGPRINTLN();
 
     DBGPRINTLN_CTX("SDK version: [%s]", system_get_sdk_version());
