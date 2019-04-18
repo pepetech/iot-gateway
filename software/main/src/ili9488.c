@@ -301,18 +301,22 @@ void ili9488_draw_fast_v_line(uint16_t usX, uint16_t usY0, uint16_t usY1, rgb565
     if(!ili9488_set_window(usX, usY0, usX, usY1))
         return;
 
-    for(uint16_t usH = usY1 - usY0; usH > 0; usH--)
+    uint32_t ulDataLen = usY1 - usY0 + 1;
+
+    while(ulDataLen--)
         ili9488_send_pixel_data(xColor);
 }
-void ili9488_draw_fast_h_line(uint16_t usX0, uint16_t usY, uint16_t usX1, rgb565_t xColor)
+void ili9488_draw_fast_h_line(uint16_t usX0, uint16_t usY0, uint16_t usX1, rgb565_t xColor)
 {
     if(usX0 > usX1)
         SWAP(usX0, usX1);
 
-    if(!ili9488_set_window(usX0, usY, usX1, usY))
+    if(!ili9488_set_window(usX0, usY0, usX1, usY0))
         return;
 
-    for(uint16_t usW = usX1 - usX0; usW > 0; usW--)
+    uint32_t ulDataLen = usX1 - usX0 + 1;
+
+    while(ulDataLen--)
         ili9488_send_pixel_data(xColor);
 }
 void ili9488_draw_line(uint16_t usX0, uint16_t usY0, uint16_t usX1, uint16_t usY1, rgb565_t xColor)
@@ -386,11 +390,10 @@ void ili9488_draw_rectangle(uint16_t usX0, uint16_t usY0, uint16_t usX1, uint16_
         if(!ili9488_set_window(usX0, usY0, usX1, usY1))
             return;
 
-        for(uint16_t usH = usY1 - usY0; usH > 0; usH--)
-        {
-            for(uint16_t usW = usX1 - usX0; usW > 0; usW--)
-                ili9488_send_pixel_data(xColor);
-        }
+        uint32_t ulDataLen = (usY1 - usY0 + 1) * (usX1 - usX0 + 1);
+
+        while(ulDataLen--)
+            ili9488_send_pixel_data(xColor);
     }
     else
     {
@@ -503,7 +506,7 @@ uint8_t ili9488_draw_char(uint8_t ubChar, const font_t *pxFont, uint16_t usX, ui
 
     ubChar -= pxFont->ubFirstChar;
 
-    ili9488_draw_bitmap(pxFont->pubBitmap + pxFont->pGlyph[ubChar].usBitmapOffset, usX + pxFont->pGlyph[ubChar].bXOffset, usY + pxFont->ubYAdvance + pxFont->pGlyph[ubChar].bYOffset, pxFont->pGlyph[ubChar].ubWidth, pxFont->pGlyph[ubChar].ubHeight, xColor, xBackColor);
+    ili9488_draw_bitmap(pxFont->pubBitmap + pxFont->pGlyph[ubChar].usBitmapOffset, usX + pxFont->pGlyph[ubChar].bXOffset, usY + pxFont->ubYAdvance + pxFont->pGlyph[ubChar].bYOffset - 1, pxFont->pGlyph[ubChar].ubWidth, pxFont->pGlyph[ubChar].ubHeight, xColor, xBackColor);
 
     return pxFont->pGlyph[ubChar].ubXAdvance;
 }
@@ -547,9 +550,14 @@ void ili9488_printf(const font_t *pxFont, uint16_t usX, uint16_t usY, rgb565_t x
 	va_end(args);
 }
 
-textbox_t *ili9488_textbox_create(uint16_t usX, uint16_t usY, uint16_t usNumLines, uint16_t usLenght, font_t *pxFont, rgb565_t xColor, rgb565_t xBackColor, rgb565_t ulOptions)
+uint16_t ili9488_get_text_height(const font_t *pxFont, uint16_t usNumLines)
 {
-    textbox_t *pxNewTextbox = malloc(sizeof(textbox_t));
+    return (usNumLines * pxFont->ubYAdvance) + pxFont->ubLineOffset;
+}
+
+textbox_t *ili9488_textbox_create(uint16_t usX, uint16_t usY, uint16_t usNumLines, uint16_t usLenght, const font_t *pxFont, rgb565_t xColor, rgb565_t xBackColor)
+{
+    textbox_t *pxNewTextbox = (textbox_t *)malloc(sizeof(textbox_t));
     if(!pxNewTextbox)
         return NULL;
 
@@ -570,37 +578,53 @@ void ili9488_textbox_delete(textbox_t *pxTextbox)
     if(pxTextbox)
         free(pxTextbox);
 }
+void ili9488_textbox_set_color(textbox_t *pxTextbox, rgb565_t xColor, rgb565_t xBackColor)
+{
+    pxTextbox->xColor = xColor;
+    pxTextbox->xBackColor = xBackColor;
+}
 void ili9488_textbox_clear(textbox_t *pxTextbox)
 {
     ili9488_draw_rectangle(
         pxTextbox->usX,
         pxTextbox->usY,
         pxTextbox->usX + pxTextbox->usLen - 1,
-        pxTextbox->usY + (pxTextbox->usNumLines * pxTextbox->pxFont->ubYAdvance) - 1,
+        pxTextbox->usY + ili9488_get_text_height(pxTextbox->pxFont, pxTextbox->usNumLines) - 1,
         pxTextbox->xBackColor,
         1
         );
 
-    pxTextbox->usCursor = 0;
+    pxTextbox->usCursor = pxTextbox->usX;
     pxTextbox->usCurrentLine = 0;
 }
 void ili9488_textbox_clear_line(textbox_t *pxTextbox)
 {
     ili9488_draw_rectangle(
         pxTextbox->usX,
-        pxTextbox->usY + (pxTextbox->usCurrentLine * pxTextbox->pxFont->ubYAdvance),
+        pxTextbox->usY + (pxTextbox->usCurrentLine * pxTextbox->pxFont->ubYAdvance) + pxTextbox->pxFont->ubLineOffset,
         pxTextbox->usX + pxTextbox->usLen - 1,
-        pxTextbox->usY + ((pxTextbox->usCurrentLine + 1) * pxTextbox->pxFont->ubYAdvance) - 1,
+        pxTextbox->usY + ((pxTextbox->usCurrentLine + 1) * pxTextbox->pxFont->ubYAdvance) + pxTextbox->pxFont->ubLineOffset - 1,
         pxTextbox->xBackColor,
         1
         );
 
-    pxTextbox->usCursor = 0;
+    pxTextbox->usCursor = pxTextbox->usX;
 }
-void ili9488_textbox_goto(textbox_t *pxTextbox, uint16_t usCursor, uint16_t usLine)
+void ili9488_textbox_goto(textbox_t *pxTextbox, uint16_t usCursor, uint16_t usLine, uint8_t ubClearLine)
 {
+    usCursor += pxTextbox->usX;
+    if(usCursor > pxTextbox->usLen + pxTextbox->usX)
+        usCursor = pxTextbox->usLen + pxTextbox->usX;
+    if(usCursor < pxTextbox->usX)
+        usCursor = pxTextbox->usX;
+    if(usLine > pxTextbox->usNumLines - 1)
+        usLine = pxTextbox->usNumLines - 1;
+
     pxTextbox->usCursor = usCursor;
     pxTextbox->usCurrentLine = usLine;
+
+    if(ubClearLine)
+        ili9488_textbox_clear_line(pxTextbox);
 }
 void ili9488_textbox_draw_string(textbox_t *pxTextbox, uint8_t *pubStr)
 {
@@ -614,7 +638,7 @@ void ili9488_textbox_draw_string(textbox_t *pxTextbox, uint8_t *pubStr)
         }
         else if(*pubStr == '\r')
             ili9488_textbox_clear_line(pxTextbox);
-        else if((pxTextbox->usCursor + pxTextbox->pxFont->pGlyph[*pubStr - pxTextbox->pxFont->ubFirstChar].ubXAdvance) < pxTextbox->usLen)
+        else if((pxTextbox->usCursor + pxTextbox->pxFont->pGlyph[*pubStr - pxTextbox->pxFont->ubFirstChar].ubXAdvance) < (pxTextbox->usLen + pxTextbox->usX))
             pxTextbox->usCursor += ili9488_draw_char(
                 *pubStr,
                 pxTextbox->pxFont,
@@ -646,6 +670,88 @@ void ili9488_textbox_printf(textbox_t *pxTextbox, const char* pszFmt, ...)
 	ili9488_textbox_draw_string(pxTextbox, pszBuf);
 
     free(pszBuf);
+
+	va_end(args);
+}
+
+terminal_t *ili9488_terminal_create(uint16_t usX, uint16_t usY, uint16_t usNumLines, uint16_t usLenght, const font_t *pxFont, rgb565_t xColor, rgb565_t xBackColor)
+{
+    terminal_t *pxNewTerminal = (terminal_t *)malloc(sizeof(terminal_t));
+    if(!pxNewTerminal)
+        return NULL;
+
+    pxNewTerminal->pxTextbox = (textbox_t *)malloc(sizeof(textbox_t));
+    if(!pxNewTerminal->pxTextbox)
+    {
+        free(pxNewTerminal);
+        return NULL;
+    }
+
+    pxNewTerminal->pubBuf = (uint8_t **)malloc(usNumLines * sizeof(uint8_t *));
+    if(!pxNewTerminal->pxTextbox)
+    {
+        free(pxNewTerminal->pxTextbox);
+        free(pxNewTerminal);
+        return NULL;
+    }
+
+    for(uint8_t ubI = 0; ubI < usNumLines; ubI++)
+    {
+        pxNewTerminal->pubBuf[ubI] = NULL;
+    }
+
+    pxNewTerminal->pxTextbox->pxFont = pxFont;
+    pxNewTerminal->pxTextbox->usCurrentLine = 0;
+    pxNewTerminal->pxTextbox->usCursor = usX;
+    pxNewTerminal->pxTextbox->usLen = usLenght;
+    pxNewTerminal->pxTextbox->usNumLines = usNumLines;
+    pxNewTerminal->pxTextbox->usX = usX;
+    pxNewTerminal->pxTextbox->usY = usY;
+    pxNewTerminal->pxTextbox->xBackColor = xBackColor;
+    pxNewTerminal->pxTextbox->xColor = xColor;
+
+    return pxNewTerminal;
+}
+void ili9488_terminal_delete(terminal_t *pxTerminal)
+{
+    for(uint16_t usI = 0; usI < pxTerminal->pxTextbox->usNumLines; usI++)
+    {
+        if(*(pxTerminal->pubBuf[usI]))
+            free(pxTerminal->pubBuf[usI]);
+    }
+    free(pxTerminal->pxTextbox);
+    free(pxTerminal->pubBuf);
+    free(pxTerminal);
+}
+void ili9488_terminal_printf(terminal_t *pxTerminal, const char* pszFmt, ...)
+{
+    if(pxTerminal->pubBuf[0])
+        free(pxTerminal->pubBuf[0]);
+
+    for(uint8_t ubI = 0; ubI < pxTerminal->pxTextbox->usCurrentLine; ubI++)
+    {
+        pxTerminal->pubBuf[ubI] = pxTerminal->pubBuf[ubI + 1];
+    }
+
+    va_list args;
+	va_start(args, pszFmt);
+
+    uint32_t ulStrLen = vsnprintf(NULL, 0, pszFmt, args);
+	pxTerminal->pubBuf[pxTerminal->pxTextbox->usCurrentLine] = (char *)malloc(ulStrLen + 1);
+
+    if(!pxTerminal->pubBuf[pxTerminal->pxTextbox->usCurrentLine])
+    {
+        va_end(args);
+        return;
+    }
+
+    vsnprintf(pxTerminal->pubBuf[pxTerminal->pxTextbox->usCurrentLine], ulStrLen + 1, pszFmt, args);
+
+	for(uint8_t ubI = 0; ubI < pxTerminal->pxTextbox->usCurrentLine; ubI++)
+    {
+        ili9488_textbox_goto(pxTerminal->pxTextbox, 0, ubI, 1);
+        ili9488_textbox_draw_string(pxTerminal->pxTextbox, pxTerminal->pubBuf[ubI]);
+    }
 
 	va_end(args);
 }

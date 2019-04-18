@@ -454,7 +454,8 @@ const font_t xSans18pFont =
     (glyph_t *)pGlyph,
     0x20,
     0x7E,
-    42
+    42,
+    16
 };
 
 // Approx. 4831 bytes

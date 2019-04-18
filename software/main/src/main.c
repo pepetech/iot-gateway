@@ -61,7 +61,7 @@ void sleep()
         __SEV(); // Set the event flag to ensure the next WFE will be a NOP
         __WFE(); // NOP and clear the event flag
         __WFE(); // Wait for event
-        __NOP(); // Prevent debugger crashes
+        __NOP(); // Prevent debugger crashesdelay_ms(10);
 
         cmu_init();
         cmu_update_clocks();
@@ -190,12 +190,11 @@ int init()
 {
     emu_init(1); // Init EMU
 
-    cmu_hfxo_startup_calib(0x200, 0x145); // Config HFXO Startup for 1280 uA, 36 pF (18 pF + 2 pF CLOAD)
-    cmu_hfxo_steady_calib(0x009, 0x145); // Config HFXO Steady state for 12 uA, 36 pF (18 pF + 2 pF CLOAD)
+    cmu_hfxo_startup_calib(0x200, 0x145); // Cdelay_ms(10);onfig HFXO Startup for 1280 uA, 36 pF (18 pF + 2 pF CLOAD)
+    cmu_hfxo_steady_calib(0x009, 0x145); // Codelay_ms(10);nfig HFXO Steady state for 12 uA, 36 pF (18 pF + 2 pF CLOAD)
 
-    cmu_lfxo_calib(0x08); // Config LFXO for 10 pF (5 pF + 1 pF CLOAD)
-
-    cmu_init(); // Init Clocks
+    cmu_lfxo_calib(0x08); // Config LFXO for 1delay_ms(10);0 pF (5 pF + 1 pF CLOAD)
+    cmu_init(); // Init Clocksdelay_ms(10);
 
     cmu_ushfrco_calib(1, USHFRCO_CALIB_50M, 50000000); // Enable and calibrate USHFRCO for 50 MHz
     cmu_auxhfrco_calib(1, AUXHFRCO_CALIB_32M, 32000000); // Enable and calibrate AUXHFRCO for 32 MHz
@@ -228,7 +227,7 @@ int init()
     fDVDDHighThresh = fDVDDLowThresh + 0.026f; // Hysteresis from datasheet
     fIOVDDHighThresh = fIOVDDLowThresh + 0.026f; // Hysteresis from datasheet
 
-    usart0_init(18000000, 0, USART_SPI_MSB_FIRST, 2, 2, 2);  // SPI0 at 18MHz on Location 2 MISO:PC10 MOSI:PC11 CLK:PC9 ESP8266 WIFI-COPROCESSOR
+    usart0_init(9000000, 0, USART_SPI_MSB_FIRST, 2, 2, 2);  // SPI0 at 18MHz on Location 2 MISO:PC10 MOSI:PC11 CLK:PC9 ESP8266 WIFI-COPROCESSOR
     usart1_init(18000000, 0, USART_SPI_MSB_FIRST, 1, 1, 1);  // SPI1 at 18MHz on Location 1 MISO:PD1 MOSI:PD0 CLK:PD2 ILI9488 Display
     //usart2_init(115200, 0, UART_FRAME_STOPBITS_ONE, 0, 0, 0); // USART2 at 115200Baud on Location 0 RTS-PC0 CTS-PC1 TX-PC2 RX-PC3 GSM
     //usart3_init(10000000, 0, USART_SPI_MSB_FIRST, 0, 0, 0); // SPI3 at 10MHz on Location 0 MISO-PA1 MOSI-PA0 CLK-PA2 RFM
@@ -444,8 +443,12 @@ int main()
     //DBGPRINTLN_CTX("QSPI RD: %08X", *(volatile uint32_t *)0xC0000000);
     //DBGPRINTLN_CTX("QSPI RD: %08X", *(volatile uint32_t *)0xC0000004);
 
-    WIFI_UNRESET();
     WIFI_SELECT();
+    WIFI_RESET();
+    delay_ms(10);
+    WIFI_UNRESET();
+    delay_ms(100);
+    //WIFI_UNSELECT();
 
     tft_bl_init(2000);
 
@@ -457,13 +460,47 @@ int main()
     DBGPRINTLN_CTX("Display: 0x%06X", ili9488_read_id());
     ili9488_display_on();
     ili9488_set_rotation(0);
-    ili9488_fill_screen(RGB565_BLACK);
+    ili9488_fill_screen(RGB565_BLUE);
+
+    terminal_t *terminal = ili9488_terminal_create(10, 300, 3, 300, &xSans9pFont, RGB565_GREEN, RGB565_BLACK);
+
+    if(!terminal)
+    {
+        DBGPRINTLN_CTX("could not start terminal");
+        while(1);
+    }
 
     while(1)
     {
-        static uint8_t ubLastBtn1State = 1;
-        static uint8_t ubLastBtn2State = 1;
-        static uint16_t usScroll = 0;
+        static uint8_t ubTestVar = 0;
+        ili9488_terminal_printf(terminal, ">test %d", ubTestVar++);
+        delay_ms(500);
+    }
+
+    ili9488_draw_rectangle(10, 65, 295 + 15 + 5, 75 + ili9488_get_text_height(&xSans9pFont, 7), RGB565_DARKGREEN, 1);
+
+    textbox_t *textbox = ili9488_textbox_create(15, 70, 7, 295, &xSans9pFont, RGB565_BLUE, RGB565_WHITE);
+    if(!textbox)
+        while(1);
+
+    while(1)
+    {
+        static uint8_t ubLastBtn1State = 0;
+        static uint8_t ubLastBtn2State = 0;
+        static uint8_t ubLastBtn3State = 0;
+
+        if(BTN_1_STATE() && (ubLastBtn1State != 1))
+        {
+            ili9488_draw_image(&xSurpriseImage, 0, 0);
+            ubLastBtn1State = 1;
+        }
+        else if(!BTN_1_STATE() && (ubLastBtn1State != 0))
+        {
+            ili9488_fill_screen(RGB565_BLACK);
+            ili9488_draw_rectangle(10, 65, 295 + 15 + 5, 75 + ili9488_get_text_height(&xSans9pFont, 7), RGB565_DARKGREEN, 1);
+            ili9488_textbox_clear(textbox);
+            ubLastBtn1State = 0;
+        }
 
         if(BTN_2_STATE() && (ubLastBtn2State != 1))
         {
@@ -480,25 +517,50 @@ int main()
         else if(!BTN_2_STATE() && (ubLastBtn2State != 0))
         {
             ili9488_fill_screen(RGB565_BLACK);
+            ili9488_draw_rectangle(10, 65, 295 + 15 + 5, 75 + ili9488_get_text_height(&xSans9pFont, 7), RGB565_DARKGREEN, 1);
+            ili9488_textbox_clear(textbox);
             ubLastBtn2State = 0;
         }
 
-        if(BTN_1_STATE() && (ubLastBtn1State != 1))
+        if(BTN_3_STATE() && (ubLastBtn3State != 1))
         {
-            ili9488_draw_image(&xSurpriseImage, 0, 0);
-            ubLastBtn1State = 1;
+            ubLastBtn3State = 1;
         }
-        else if(!BTN_1_STATE() && (ubLastBtn1State != 0))
+        else if(!BTN_3_STATE() && (ubLastBtn3State != 0))
         {
-            ili9488_fill_screen(RGB565_BLACK);
-            ubLastBtn1State = 0;
+            uint8_t ubNBytes = 38;
+
+            uint8_t ubBuf[ubNBytes];
+            memset(ubBuf, 0x00, ubNBytes);
+
+            ubBuf[0] = 0x03;
+            ubBuf[1] = 0x05;
+
+            DBGPRINTLN_CTX("Transfering %d byte(s) to wifi-coprocessor...", ubNBytes);
+            DBGPRINTLN_CTX("Content:");
+            for(uint8_t ubI = 0; ubI < ubNBytes; ubI++)
+                DBGPRINTLN_CTX("\t0x%02X", ubBuf[ubI]);
+
+            WIFI_UNSELECT();
+            delay_ms(10);
+
+            WIFI_SELECT();
+            usart0_spi_transfer(ubBuf, ubNBytes, ubBuf);
+            WIFI_UNSELECT();
+
+
+            DBGPRINTLN_CTX("Received:");
+            for(uint8_t ubI = 0; ubI < ubNBytes; ubI++)
+                DBGPRINTLN_CTX("\t0x%02X", ubBuf[ubI]);
+
+            ubLastBtn3State = 0;
         }
 
         static uint64_t ullLastTask = 0;
 
         if (g_ullSystemTick > (ullLastTask + 5000))
         {
-            play_sound(3500, 10);
+            play_sound(4500, 10);
 
             static uint8_t ubLastState = 0;
             if(!ubLastState)
@@ -509,28 +571,36 @@ int main()
             }
             ubLastState = !ubLastState;
 
-            ili9488_fill_screen(RGB565_BLACK);
-
             ili9488_printf(&xSans18pFont, 10, 10, RGB565_WHITE, RGB565_BLACK, "Display is the wey");
 
-            ili9488_printf(&xSans9pFont, 10, 60, RGB565_WHITE, RGB565_BLACK,
-            "ADC Temp: %.2f\n\r"
-            "EMU Temp: %.2f\n\r"
-            "RTCC Time: %lu\n\r"
-            "Battery Charging: %hhu\n\r"
-            "Battery Standby: %hhu\n\r"
-            "3V3 Fault: %hhu\n\r"
-            "Button states (1|2|3): %hhu|%hhu|%hhu\n\r",
-            adc_get_temperature(),
-            emu_get_temperature(),
-            rtcc_get_time(),
-            BAT_CHRG(),
-            BAT_STDBY(),
-            VREG_ERR(),
-            BTN_1_STATE(),
-            BTN_2_STATE(),
-            BTN_3_STATE());
-
+            ili9488_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
+            ili9488_textbox_printf(textbox, "\rADC Temp: ");
+            ili9488_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
+            ili9488_textbox_printf(textbox, "%.2f\n\r", adc_get_temperature());
+            ili9488_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
+            ili9488_textbox_printf(textbox, "EMU Temp: ");
+            ili9488_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
+            ili9488_textbox_printf(textbox, "%.2f\n\r", emu_get_temperature());
+            ili9488_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
+            ili9488_textbox_printf(textbox, "RTCC Time: ");
+            ili9488_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
+            ili9488_textbox_printf(textbox, "%lu\n\r", rtcc_get_time());
+            ili9488_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
+            ili9488_textbox_printf(textbox, "Battery Charging: ");
+            ili9488_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
+            ili9488_textbox_printf(textbox, "%hhu\n\r", BAT_CHRG());
+            ili9488_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
+            ili9488_textbox_printf(textbox, "Battery Standby: ");
+            ili9488_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
+            ili9488_textbox_printf(textbox, "%hhu\n\r", BAT_STDBY());
+            ili9488_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
+            ili9488_textbox_printf(textbox, "3V3 Fault: ");
+            ili9488_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
+            ili9488_textbox_printf(textbox, "%hhu\n\r", VREG_ERR());
+            ili9488_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
+            ili9488_textbox_printf(textbox, "Button states (1|2|3): ");
+            ili9488_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
+            ili9488_textbox_printf(textbox, "%hhu|%hhu|%hhu\n", BTN_1_STATE(), BTN_2_STATE(), BTN_3_STATE());
 
             DBGPRINTLN_CTX("ADC Temp: %.2f", adc_get_temperature());
             DBGPRINTLN_CTX("EMU Temp: %.2f", emu_get_temperature());

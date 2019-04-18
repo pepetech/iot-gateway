@@ -53,7 +53,7 @@ void gpio_init()
 
     // Port C
     GPIO->P[2].CTRL   = GPIO_P_CTRL_DRIVESTRENGTHALT_STRONG | (6 << _GPIO_P_CTRL_SLEWRATEALT_SHIFT)
-                      | GPIO_P_CTRL_DRIVESTRENGTH_STRONG | (6 << _GPIO_P_CTRL_SLEWRATE_SHIFT);
+                      | GPIO_P_CTRL_DRIVESTRENGTH_STRONG | (7 << _GPIO_P_CTRL_SLEWRATE_SHIFT);
     GPIO->P[2].MODEL  = GPIO_P_MODEL_MODE0_PUSHPULL     // US2_RTS_GSM - Location 0
                       | GPIO_P_MODEL_MODE1_INPUTPULLFILTER  // US2_CTS_GSM - Location 0
                       | GPIO_P_MODEL_MODE2_PUSHPULL     // US2_TX_GSM - Location 0

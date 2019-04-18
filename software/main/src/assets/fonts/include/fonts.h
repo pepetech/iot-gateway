@@ -20,6 +20,7 @@ typedef struct
 	uint8_t ubFirstChar; // ASCII extents (first char)
     uint8_t ubLastChar;  // ASCII extents (last char)
 	uint8_t ubYAdvance;  // Newline distance (y axis)
+    uint8_t ubLineOffset;
 } font_t;
 
 // Declare all fonts

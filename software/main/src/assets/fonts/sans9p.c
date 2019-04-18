@@ -203,7 +203,8 @@ const font_t xSans9pFont =
     (glyph_t *)pGlyph,
     0x20,
     0x7E,
-    22
+    22,
+    9
 };
 
 // Approx. 1822 bytes

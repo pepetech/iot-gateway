@@ -2,8 +2,8 @@
 #define __ILI9488_H_
 
 #include <em_device.h>
-#include <stdio.h>
 #include <stdarg.h>
+#include "printf.h"
 #include "usart.h"
 #include "gpio.h"
 #include "systick.h"
@@ -146,10 +146,16 @@ typedef struct
     uint16_t usLen;
     uint16_t usNumLines;
     uint16_t usCurrentLine;
-    font_t *pxFont;
+    const font_t *pxFont;
     rgb565_t xColor;
     rgb565_t xBackColor;
 } textbox_t;
+
+typedef struct
+{
+    textbox_t *pxTextbox;
+    uint8_t **pubBuf;
+} terminal_t;
 
 uint8_t ili9488_init();
 uint32_t ili9488_read_id();
@@ -169,7 +175,7 @@ void ili9488_fill_screen(rgb565_t xColor);
 
 void ili9488_draw_pixel(uint16_t usX, uint16_t usY, rgb565_t xColor);
 void ili9488_draw_fast_v_line(uint16_t usX, uint16_t usY0, uint16_t usY1, rgb565_t xColor);
-void ili9488_draw_fast_h_line(uint16_t usX0, uint16_t usY, uint16_t usX1, rgb565_t xColor);
+void ili9488_draw_fast_h_line(uint16_t usX0, uint16_t usY0, uint16_t usX1, rgb565_t xColor);
 void ili9488_draw_line(uint16_t usX0, uint16_t usY0, uint16_t usX1, uint16_t usY1, rgb565_t xColor);
 void ili9488_draw_rectangle(uint16_t usX0, uint16_t usY0, uint16_t usX1, uint16_t usY1, rgb565_t xColor, uint8_t ubFill);
 void ili9488_draw_circle(uint16_t usX, uint16_t usY, uint16_t usR, rgb565_t xColor, uint8_t ubFill);
@@ -180,12 +186,19 @@ uint8_t ili9488_draw_char(uint8_t ubChar, const font_t *xFont, uint16_t usX, uin
 void ili9488_draw_string(uint8_t *pubStr, const font_t *pxFont, uint16_t usX, uint16_t usY, rgb565_t xColor, rgb565_t xBackColor);
 void ili9488_printf(const font_t *pxFont, uint16_t usX, uint16_t usY, rgb565_t xColor, rgb565_t usBackColor ,const char* pszFmt, ...);
 
-textbox_t *ili9488_textbox_create(uint16_t usX, uint16_t usY, uint16_t usNumLines, uint16_t usLenght, font_t *pxFont, rgb565_t xColor, rgb565_t xBackColor, rgb565_t ulOptions);
+uint16_t ili9488_get_text_height(const font_t *pxFont, uint16_t usNumLines);
+
+textbox_t *ili9488_textbox_create(uint16_t usX, uint16_t usY, uint16_t usNumLines, uint16_t usLenght, const font_t *pxFont, rgb565_t xColor, rgb565_t xBackColor);
 void ili9488_textbox_delete(textbox_t *pxTextbox);
+void ili9488_textbox_set_color(textbox_t *pxTextbox, rgb565_t xColor, rgb565_t xBackColor);
 void ili9488_textbox_clear(textbox_t *pxTextbox);
 void ili9488_textbox_clear_line(textbox_t *pxTextbox);
-void ili9488_textbox_goto(textbox_t *pxTextbox, uint16_t usCursor, uint16_t usLine);
+void ili9488_textbox_goto(textbox_t *pxTextbox, uint16_t usCursor, uint16_t usLine, uint8_t ubClearLine);
 void ili9488_textbox_draw_string(textbox_t *pxTextbox, uint8_t *pubStr);
 void ili9488_textbox_printf(textbox_t *pxTextbox, const char* pszFmt, ...);
+
+terminal_t *ili9488_terminal_create(uint16_t usX, uint16_t usY, uint16_t usNumLines, uint16_t usLenght, const font_t *pxFont, rgb565_t xColor, rgb565_t xBackColor);
+void ili9488_terminal_delete(terminal_t *pxTerminal);
+void ili9488_terminal_printf(terminal_t *pxTerminal, const char* pszFmt, ...);
 
 #endif  // __ILI9488_H_
