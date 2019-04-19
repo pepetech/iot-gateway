@@ -23,7 +23,7 @@
 #define DPORT_SPI_READY_CACHE_SIZE_32K  BIT(26) // 0 = 16K, 1 = 32K
 #define DPORT_SPI_READY_MMAP_MB_LOW_M   0x00000001
 #define DPORT_SPI_READY_MMAP_MB_LOW_S   25
-#define DPORT_SPI_READY_UNK24           BIT(24)
+#define DPORT_SPI_READY_UNK24           BIT(24) // Unknown, but it does something
 #define DPORT_SPI_READY_MMAP_MB_HIGH_M  0x0000000E
 #define DPORT_SPI_READY_MMAP_MB_HIGH_S  15
 #define DPORT_SPI_READY_READY_IDLE      BIT(9)
@@ -37,7 +37,7 @@
 #define DPORT_CPU_CLOCK_X2              BIT(0)
 
 #define DPORT_CLOCKGATE_WATCHDOG    REG_DPORT_BASE(6)
-#define DPORT_CLOCKGATE_WATCHDOG_UNKNOWN_8  BIT(8)
+#define DPORT_CLOCKGATE_WATCHDOG_UNK8       BIT(8) // Unknown, but it does something
 #define DPORT_CLOCKGATE_WATCHDOG_DISABLE    BIT(3)
 
 #define DPORT_SPI_INT_STATUS        REG_DPORT_BASE(8)
@@ -375,6 +375,7 @@
 #define SPI0_PIN                         REG_SPI0_BASE(11)
 #define SPI1_PIN                         REG_SPI1_BASE(11)
 #define SPI_PIN_IDLE_EDGE                    BIT(29)  ///< CPOL
+#define SPI_PIN_UNK19                        BIT(19)  // Unknown, is set in espressif code when initializing SPI Slave
 #define SPI_PIN_CS2_DISABLE                  BIT(2)
 #define SPI_PIN_CS1_DISABLE                  BIT(1)
 #define SPI_PIN_CS0_DISABLE                  BIT(0)
