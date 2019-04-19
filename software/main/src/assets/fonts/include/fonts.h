@@ -27,4 +27,4 @@ typedef struct
 extern const font_t xSans9pFont;
 extern const font_t xSans18pFont;
 
-#endif // __FONT_H_
+#endif // __FONTS_H_

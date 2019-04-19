@@ -19,7 +19,7 @@
 #include "qspi.h"
 #include "usart.h"
 #include "i2c.h"
-#include "ili9488.h"
+#include "tft.h"
 #include "images.h"
 #include "fonts.h"
 
@@ -227,7 +227,7 @@ int init()
     fDVDDHighThresh = fDVDDLowThresh + 0.026f; // Hysteresis from datasheet
     fIOVDDHighThresh = fIOVDDLowThresh + 0.026f; // Hysteresis from datasheet
 
-    usart0_init(9000000, 0, USART_SPI_MSB_FIRST, 2, 2, 2);  // SPI0 at 18MHz on Location 2 MISO:PC10 MOSI:PC11 CLK:PC9 ESP8266 WIFI-COPROCESSOR
+    usart0_init(9000000, 0, USART_SPI_MSB_FIRST, 2, 2, 2);  // SPI0 at 9MHz on Location 2 MISO:PC10 MOSI:PC11 CLK:PC9 ESP8266 WIFI-COPROCESSOR
     usart1_init(18000000, 0, USART_SPI_MSB_FIRST, 1, 1, 1);  // SPI1 at 18MHz on Location 1 MISO:PD1 MOSI:PD0 CLK:PD2 ILI9488 Display
     //usart2_init(115200, 0, UART_FRAME_STOPBITS_ONE, 0, 0, 0); // USART2 at 115200Baud on Location 0 RTS-PC0 CTS-PC1 TX-PC2 RX-PC3 GSM
     //usart3_init(10000000, 0, USART_SPI_MSB_FIRST, 0, 0, 0); // SPI3 at 10MHz on Location 0 MISO-PA1 MOSI-PA0 CLK-PA2 RFM
@@ -242,9 +242,9 @@ int init()
     DBGPRINTLN_CTX("Device: %s", szDeviceName);
     DBGPRINTLN_CTX("Device Revision: 0x%04X", get_device_revision());
     DBGPRINTLN_CTX("Calibration temperature: %hhu C", (DEVINFO->CAL & _DEVINFO_CAL_TEMP_MASK) >> _DEVINFO_CAL_TEMP_SHIFT);
-    DBGPRINTLN_CTX("Flash Size: %hu kB", FLASH_SIZE >> 10);
-    DBGPRINTLN_CTX("RAM Size: %hu kB", SRAM_SIZE >> 10);
-    DBGPRINTLN_CTX("Free RAM: %lu B", get_free_ram());
+    DBGPRINTLN_CTX("Flash Size: %hu kiB", FLASH_SIZE >> 10);
+    DBGPRINTLN_CTX("RAM Size: %hu kiB", SRAM_SIZE >> 10);
+    DBGPRINTLN_CTX("Free RAM: %lu kiB", get_free_ram() >> 10);
     DBGPRINTLN_CTX("Unique ID: %08X-%08X", DEVINFO->UNIQUEH, DEVINFO->UNIQUEL);
 
     DBGPRINTLN_CTX("CMU - HFXO Clock: %.1f MHz!", (float)HFXO_VALUE / 1000000);
@@ -299,8 +299,8 @@ int init()
     DBGPRINTLN_CTX("EMU - IOVDD Status: %s", g_ubIOVDDLow ? "LOW" : "OK");
     DBGPRINTLN_CTX("EMU - Core Voltage: %.2f mV", adc_get_corevdd());
 
-    play_sound(3500, 500);
-    delay_ms(100);
+    //play_sound(3500, 500);
+    //delay_ms(100);
 
     CCS811_WAKE();
     CCS811_UNRESET();
@@ -325,6 +325,7 @@ int init()
 }
 int main()
 {
+    /*
     play_sound(2700, 50);
     play_sound(3000, 50);
     play_sound(3300, 50);
@@ -332,7 +333,7 @@ int main()
     play_sound(3900, 50);
     play_sound(4200, 50);
     play_sound(4500, 50);
-
+    */
     //CMU->ROUTELOC0 = CMU_ROUTELOC0_CLKOUT1LOC_LOC1;
     //CMU->ROUTEPEN |= CMU_ROUTEPEN_CLKOUT1PEN;
     //CMU->CTRL |= CMU_CTRL_CLKOUTSEL1_HFXO;
@@ -451,37 +452,33 @@ int main()
     //WIFI_UNSELECT();
 
     tft_bl_init(2000);
-
     tft_bl_set(0.25);
 
     ILI9488_UNRESET();
-
     ili9488_init();
     DBGPRINTLN_CTX("Display: 0x%06X", ili9488_read_id());
+
     ili9488_display_on();
     ili9488_set_rotation(0);
-    ili9488_fill_screen(RGB565_BLUE);
+    ili9488_fill_screen(RGB565_DARKGREY);
 
-    terminal_t *terminal = ili9488_terminal_create(10, 300, 3, 300, &xSans9pFont, RGB565_GREEN, RGB565_BLACK);
-
+    terminal_t *terminal = ili9488_terminal_create(10, 250, 9, 300, &xSans9pFont, RGB565_GREEN, RGB565_BLACK);
     if(!terminal)
     {
-        DBGPRINTLN_CTX("could not start terminal");
+        DBGPRINTLN_CTX("could not allocate start terminal");
         while(1);
     }
 
-    while(1)
-    {
-        static uint8_t ubTestVar = 0;
-        ili9488_terminal_printf(terminal, ">test %d", ubTestVar++);
-        delay_ms(500);
-    }
+    ili9488_printf(&xSans18pFont, 10, 10, RGB565_WHITE, RGB565_DARKGREY, "Display is the wey");
 
     ili9488_draw_rectangle(10, 65, 295 + 15 + 5, 75 + ili9488_get_text_height(&xSans9pFont, 7), RGB565_DARKGREEN, 1);
 
     textbox_t *textbox = ili9488_textbox_create(15, 70, 7, 295, &xSans9pFont, RGB565_BLUE, RGB565_WHITE);
     if(!textbox)
+    {
+        DBGPRINTLN_CTX("could not allocate start textbox");
         while(1);
+    }
 
     while(1)
     {
@@ -496,9 +493,11 @@ int main()
         }
         else if(!BTN_1_STATE() && (ubLastBtn1State != 0))
         {
-            ili9488_fill_screen(RGB565_BLACK);
+            ili9488_fill_screen(RGB565_DARKGREY);
+            ili9488_printf(&xSans18pFont, 10, 10, RGB565_WHITE, RGB565_DARKGREY, "Display is the wey");
             ili9488_draw_rectangle(10, 65, 295 + 15 + 5, 75 + ili9488_get_text_height(&xSans9pFont, 7), RGB565_DARKGREEN, 1);
             ili9488_textbox_clear(textbox);
+            ili9488_terminal_printf(terminal, 1, "\nA nice surprise was shown...");
             ubLastBtn1State = 0;
         }
 
@@ -516,9 +515,11 @@ int main()
         }
         else if(!BTN_2_STATE() && (ubLastBtn2State != 0))
         {
-            ili9488_fill_screen(RGB565_BLACK);
+            ili9488_fill_screen(RGB565_DARKGREY);
+            ili9488_printf(&xSans18pFont, 10, 10, RGB565_WHITE, RGB565_DARKGREY, "Display is the wey");
             ili9488_draw_rectangle(10, 65, 295 + 15 + 5, 75 + ili9488_get_text_height(&xSans9pFont, 7), RGB565_DARKGREEN, 1);
             ili9488_textbox_clear(textbox);
+            ili9488_terminal_printf(terminal, 1, "\nPepe army was shown...");
             ubLastBtn2State = 0;
         }
 
@@ -536,6 +537,7 @@ int main()
             ubBuf[0] = 0x03;
             ubBuf[1] = 0x05;
 
+            ili9488_terminal_printf(terminal, 1, "\nTransfering %d byte(s) to wifi-coprocessor...", ubNBytes);
             DBGPRINTLN_CTX("Transfering %d byte(s) to wifi-coprocessor...", ubNBytes);
             DBGPRINTLN_CTX("Content:");
             for(uint8_t ubI = 0; ubI < ubNBytes; ubI++)
@@ -556,23 +558,30 @@ int main()
             ubLastBtn3State = 0;
         }
 
-        static uint64_t ullLastTask = 0;
-
-        if (g_ullSystemTick > (ullLastTask + 5000))
+        static uint64_t ullLastTextboxUpdate = 0;
+        if(g_ullSystemTick > (ullLastTextboxUpdate + 5000))
         {
-            play_sound(4500, 10);
+            /*
+            DBGPRINTLN_CTX("ADC Temp: %.2f", adc_get_temperature());
+            DBGPRINTLN_CTX("EMU Temp: %.2f", emu_get_temperature());
 
-            static uint8_t ubLastState = 0;
-            if(!ubLastState)
-            {
-            }
-            else
-            {
-            }
-            ubLastState = !ubLastState;
+            DBGPRINTLN_CTX("LFXO: %.2f pF", cmu_lfxo_get_cap());
 
-            ili9488_printf(&xSans18pFont, 10, 10, RGB565_WHITE, RGB565_BLACK, "Display is the wey");
+            DBGPRINTLN_CTX("HFXO Startup: %.2f pF", cmu_hfxo_get_startup_cap());
+            DBGPRINTLN_CTX("HFXO Startup: %.2f uA", cmu_hfxo_get_startup_current());
+            DBGPRINTLN_CTX("HFXO Steady: %.2f pF", cmu_hfxo_get_steady_cap());
+            DBGPRINTLN_CTX("HFXO Steady: %.2f uA", cmu_hfxo_get_steady_current());
+            DBGPRINTLN_CTX("HFXO PMA [%03X]: %.2f uA", cmu_hfxo_get_pma_ibtrim(), cmu_hfxo_get_pma_current());
+            DBGPRINTLN_CTX("HFXO PDA [%03X]: %.2f uA", cmu_hfxo_get_pda_ibtrim(1), cmu_hfxo_get_pda_current(0));
 
+            DBGPRINTLN_CTX("RTCC Time: %lu", rtcc_get_time());
+
+            DBGPRINTLN_CTX("Battery Charging: %hhu", BAT_CHRG());
+            DBGPRINTLN_CTX("Battery Standby: %hhu", BAT_STDBY());
+            DBGPRINTLN_CTX("3V3 Fault: %hhu", VREG_ERR());
+
+            DBGPRINTLN_CTX("Button states (1|2|3): %hhu|%hhu|%hhu", BTN_1_STATE(), BTN_2_STATE(), BTN_3_STATE());
+            */
             ili9488_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
             ili9488_textbox_printf(textbox, "\rADC Temp: ");
             ili9488_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
@@ -602,25 +611,22 @@ int main()
             ili9488_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
             ili9488_textbox_printf(textbox, "%hhu|%hhu|%hhu\n", BTN_1_STATE(), BTN_2_STATE(), BTN_3_STATE());
 
-            DBGPRINTLN_CTX("ADC Temp: %.2f", adc_get_temperature());
-            DBGPRINTLN_CTX("EMU Temp: %.2f", emu_get_temperature());
+            ullLastTextboxUpdate = g_ullSystemTick;
+        }
 
-            DBGPRINTLN_CTX("LFXO: %.2f pF", cmu_lfxo_get_cap());
+        static uint64_t ullLastTask = 0;
+        if(g_ullSystemTick > (ullLastTask + 5000))
+        {
+            //play_sound(4500, 10);
 
-            DBGPRINTLN_CTX("HFXO Startup: %.2f pF", cmu_hfxo_get_startup_cap());
-            DBGPRINTLN_CTX("HFXO Startup: %.2f uA", cmu_hfxo_get_startup_current());
-            DBGPRINTLN_CTX("HFXO Steady: %.2f pF", cmu_hfxo_get_steady_cap());
-            DBGPRINTLN_CTX("HFXO Steady: %.2f uA", cmu_hfxo_get_steady_current());
-            DBGPRINTLN_CTX("HFXO PMA [%03X]: %.2f uA", cmu_hfxo_get_pma_ibtrim(), cmu_hfxo_get_pma_current());
-            DBGPRINTLN_CTX("HFXO PDA [%03X]: %.2f uA", cmu_hfxo_get_pda_ibtrim(1), cmu_hfxo_get_pda_current(0));
-
-            DBGPRINTLN_CTX("RTCC Time: %lu", rtcc_get_time());
-
-            DBGPRINTLN_CTX("Battery Charging: %hhu", BAT_CHRG());
-            DBGPRINTLN_CTX("Battery Standby: %hhu", BAT_STDBY());
-            DBGPRINTLN_CTX("3V3 Fault: %hhu", VREG_ERR());
-
-            DBGPRINTLN_CTX("Button states (1|2|3): %hhu|%hhu|%hhu", BTN_1_STATE(), BTN_2_STATE(), BTN_3_STATE());
+            static uint8_t ubLastState = 0;
+            if(!ubLastState)
+            {
+            }
+            else
+            {
+            }
+            ubLastState = !ubLastState;
 
             ullLastTask = g_ullSystemTick;
         }
