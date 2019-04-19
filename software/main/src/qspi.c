@@ -6,10 +6,6 @@ void qspi_init()
 
     while(!(QSPI0->CONFIG & QSPI_CONFIG_IDLE));
 
-    // Commented below are configs for faster speed.
-    // Currently working with slower config because of breadboard
-    // With these slow configs its not possible to enter XIP mode
-
     QSPI0->CONFIG = QSPI_CONFIG_ENBAHBADDRREMAP | (0 << _QSPI_CONFIG_PERIPHCSLINES_SHIFT) | QSPI_CONFIG_ENBDIRACCCTLR | QSPI_CONFIG_PHYMODEENABLE;
     QSPI0->DEVINSTRRDCONFIG = (4 << _QSPI_DEVINSTRRDCONFIG_DUMMYRDCLKCYCLES_SHIFT) | QSPI_DEVINSTRRDCONFIG_MODEBITENABLE | (2 << _QSPI_DEVINSTRRDCONFIG_DATAXFERTYPEEXTMODE_SHIFT) | (2 << _QSPI_DEVINSTRRDCONFIG_ADDRXFERTYPESTDMODE_SHIFT) | (0 << _QSPI_DEVINSTRRDCONFIG_INSTRTYPE_SHIFT) | ((uint32_t)QSPI_FLASH_CMD_READ_FAST_QIO << _QSPI_DEVINSTRRDCONFIG_RDOPCODENONXIP_SHIFT);
     QSPI0->DEVINSTRWRCONFIG = (0 << _QSPI_DEVINSTRWRCONFIG_DUMMYWRCLKCYCLES_SHIFT) | (2 << _QSPI_DEVINSTRWRCONFIG_DATAXFERTYPEEXTMODE_SHIFT) | (2 << _QSPI_DEVINSTRWRCONFIG_ADDRXFERTYPESTDMODE_SHIFT) | ((uint32_t)QSPI_FLASH_CMD_WRITE_QIO << _QSPI_DEVINSTRWRCONFIG_WROPCODE_SHIFT);
@@ -48,9 +44,9 @@ void qspi_exit_xip()
     QSPI0->CONFIG &= ~(QSPI_CONFIG_ENTERXIPMODE | QSPI_CONFIG_ENTERXIPMODEIMM);
     QSPI0->MODEBITCONFIG = (QSPI0->MODEBITCONFIG & ~_QSPI_MODEBITCONFIG_MODE_MASK) | (0x00 << _QSPI_MODEBITCONFIG_MODE_SHIFT);
     QSPI0->DEVINSTRRDCONFIG &= _QSPI_DEVINSTRRDCONFIG_INSTRTYPE_MASK;
-    
+
     REG_DISCARD(QSPI0_MEM_BASE);
-    
+
     while(!(QSPI0->CONFIG & QSPI_CONFIG_IDLE));
 }
 
@@ -59,29 +55,29 @@ void qspi_flash_cmd(uint8_t ubOpCode, uint32_t ulAddress, uint8_t ubAddressSize,
 {
     if(ubAddressSize > 4)
         return;
-        
+
     if(ubDummyCycles > 31)
         return;
-        
+
     if(ubSrcSize > 8)
         return;
-        
+
     if(ubSrcSize && !pubSrc)
         return;
-        
+
     if(ubDstSize > 16)
         return;
-        
+
     if(ubDstSize && !pubDst)
         return;
 
     while(!(QSPI0->CONFIG & QSPI_CONFIG_IDLE));
-    
+
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
     {
         QSPI0->CONFIG &= ~(QSPI_CONFIG_ENBDIRACCCTLR | QSPI_CONFIG_ENBSPI);
         QSPI0->CONFIG |= QSPI_CONFIG_ENBSPI;
-        
+
         QSPI0->FLASHCMDCTRL = ((uint32_t)ubOpCode << _QSPI_FLASHCMDCTRL_CMDOPCODE_SHIFT) | ((uint32_t)ubDummyCycles << _QSPI_FLASHCMDCTRL_NUMDUMMYCYCLES_SHIFT) | (!!ubModeBits << _QSPI_FLASHCMDCTRL_ENBMODEBIT_SHIFT);
 
         if(ubAddressSize)
@@ -103,7 +99,7 @@ void qspi_flash_cmd(uint8_t ubOpCode, uint32_t ulAddress, uint8_t ubAddressSize,
             QSPI0->FLASHWRDATALOWER = pulBuf[0];
             QSPI0->FLASHWRDATAUPPER = pulBuf[1];
         }
-        
+
         if (ubDstSize)
         {
             QSPI0->FLASHCMDCTRL |= QSPI_FLASHCMDCTRL_ENBREADDATA;
@@ -158,7 +154,7 @@ void qspi_flash_init()
 
     if(qspi_flash_read_jedec_id() != 0xBF2643)
         return;
-    
+
     qspi_flash_unprotect_all_blocks(); // Unprotect all blocks to be able to read/write
     qspi_flash_write_status_config(qspi_flash_read_status(), qspi_flash_read_config() | BIT(1)); // Enable SIO2 and SIO3
 }
