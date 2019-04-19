@@ -19,6 +19,8 @@
 #include "qspi.h"
 #include "usart.h"
 #include "i2c.h"
+#include "bmp280.h"
+#include "ili9488.h"
 #include "tft.h"
 #include "images.h"
 #include "fonts.h"
@@ -232,8 +234,8 @@ int init()
     //usart2_init(115200, 0, UART_FRAME_STOPBITS_ONE, 0, 0, 0); // USART2 at 115200Baud on Location 0 RTS-PC0 CTS-PC1 TX-PC2 RX-PC3 GSM
     //usart3_init(10000000, 0, USART_SPI_MSB_FIRST, 0, 0, 0); // SPI3 at 10MHz on Location 0 MISO-PA1 MOSI-PA0 CLK-PA2 RFM
 
-    i2c0_init(I2C_NORMAL, 6, 6); // Init I2C0 at 100 kHz on location 6 SCL:SDA PE13:PE12 Sensors
-    i2c1_init(I2C_NORMAL, 1, 1); // Init I2C1 at 100 kHz on location 1 SCL:SDA PB12:PB11 TFT Touch Controller
+    i2c0_init(I2C_NORMAL, 6, 6); // Init I2C0 at 100 kHz on location 6 SCL:PE13 SDA:PE12 Sensors
+    i2c1_init(I2C_NORMAL, 1, 1); // Init I2C1 at 100 kHz on location 1 SCL:PB12 SDA:PB11 TFT Touch Controller
 
     char szDeviceName[32];
 
@@ -302,8 +304,10 @@ int init()
     //play_sound(3500, 500);
     //delay_ms(100);
 
-    CCS811_WAKE();
+    // Assert CCS811 control signals otherwise the I2C scan won't detect it
     CCS811_UNRESET();
+    delay_ms(10);
+    CCS811_WAKE();
 
     DBGPRINTLN_CTX("Scanning I2C bus 0...");
 
@@ -321,6 +325,23 @@ int init()
             DBGPRINTLN_CTX("  Address 0x%02X ACKed!", a);
     }
 
+    if(ili9488_init())
+        DBGPRINTLN_CTX("ILI9488 init OK!");
+    else
+        DBGPRINTLN_CTX("ILI9488 init NOK!");
+
+    if(bmp280_init())
+        DBGPRINTLN_CTX("BMP280 init OK!");
+    else
+        DBGPRINTLN_CTX("BMP280 init NOK!");
+
+    /*
+    if(rfm69_init(RADIO_NODE_ID, RADIO_NETWORK_ID, RADIO_AES_KEY))
+        DBGPRINTLN_CTX("RFM69 init OK!");
+    else
+        DBGPRINTLN_CTX("RFM69 init NOK!");
+    */
+
     return 0;
 }
 int main()
@@ -334,115 +355,25 @@ int main()
     play_sound(4200, 50);
     play_sound(4500, 50);
     */
+
     //CMU->ROUTELOC0 = CMU_ROUTELOC0_CLKOUT1LOC_LOC1;
     //CMU->ROUTEPEN |= CMU_ROUTEPEN_CLKOUT1PEN;
     //CMU->CTRL |= CMU_CTRL_CLKOUTSEL1_HFXO;
 
-    // Internal flash test
-    //DBGPRINTLN_CTX("Initial calibration dump:");
+    // BMP280 info & configuration
+    DBGPRINTLN_CTX("BMP280 version: 0x%02X", bmp280_read_version());
 
-    //for(init_calib_t *psCalibTbl = g_psInitCalibrationTable; psCalibTbl->pulRegister; psCalibTbl++)
-    //    DBGPRINTLN_CTX("  0x%08X -> 0x%08X", psCalibTbl->ulInitialCalibration, psCalibTbl->pulRegister);
+    bmp280_write_config(BMP280_STANDBY_1000MS | BMP280_FILTER_8);
+    bmp280_write_control(BMP280_TEMP_OS4 | BMP280_PRESSURE_OS16 | BMP280_MODE_NORMAL);
+    DBGPRINTLN_CTX("BMP280 write control & config!");
 
-    /*
-    DBGPRINTLN_CTX("Boot lock word: %08X", g_psLockBits->CLW[0]);
-    DBGPRINTLN_CTX("User lock word: %08X", g_psLockBits->ULW);
-    DBGPRINTLN_CTX("Mass lock word: %08X", g_psLockBits->MLW);
-    msc_flash_word_write((uint32_t)&(g_psLockBits->MLW), 0xFFFFFFFD);
-    DBGPRINTLN_CTX("Mass lock word: %08X", g_psLockBits->MLW);
-
-    DBGPRINTLN_CTX("0x000FFFFC: %08X", *(volatile uint32_t *)0x000FFFFC);
-    DBGPRINTLN_CTX("0x00100000: %08X", *(volatile uint32_t *)0x00100000);
-    msc_flash_word_write(0x000FFFFC, 0x12344321);
-    msc_flash_word_write(0x00100000, 0xABCDDCBA);
-    DBGPRINTLN_CTX("0x000FFFFC: %08X", *(volatile uint32_t *)0x000FFFFC);
-    DBGPRINTLN_CTX("0x00100000: %08X", *(volatile uint32_t *)0x00100000);
-    msc_flash_unlock();
-    MSC->WRITECMD = MSC_WRITECMD_ERASEMAIN1;
-    msc_flash_lock();
-    DBGPRINTLN_CTX("0x000FFFFC: %08X", *(volatile uint32_t *)0x000FFFFC);
-    DBGPRINTLN_CTX("0x00100000: %08X", *(volatile uint32_t *)0x00100000);
-    */
-
-    // QSPI
-    DBGPRINTLN_CTX("Flash Part ID: %06X", qspi_flash_read_jedec_id());
-
+    // QSPI Flash info
     uint8_t ubFlashUID[8];
 
     qspi_flash_read_security(0x0000, ubFlashUID, 8);
 
-    DBGPRINTLN_CTX("Flash ID: %02X%02X%02X%02X%02X%02X%02X%02X", ubFlashUID[0], ubFlashUID[1], ubFlashUID[2], ubFlashUID[3], ubFlashUID[4], ubFlashUID[5], ubFlashUID[6], ubFlashUID[7]);
-
-    //qspi_flash_chip_erase();
-
-    //uint8_t rd[16];
-
-    //qspi_flash_cmd(QSPI_FLASH_CMD_READ_FAST, 0x00008000, 3, 0, 8, NULL, 0, rd, 10);
-    //DBGPRINTLN_CTX("Flash RD C: %02X%02X%02X%02X%02X%02X%02X%02X %02X%02X%02X%02X%02X%02X%02X%02X", rd[0], rd[1], rd[2], rd[3], rd[4], rd[5], rd[6], rd[7], rd[8], rd[9], rd[10], rd[11], rd[12], rd[13], rd[14], rd[15]);
-
-    //DBGPRINTLN_CTX("Flash RD: %08X", *(volatile uint32_t *)0xC0000000);
-    //*(volatile uint32_t *)0xC0000000 = 0xABCDEF12;
-
-    //qspi_flash_cmd(QSPI_FLASH_CMD_READ_FAST, 0x00000000, 3, 0, 8, NULL, 0, rd, 10);
-    //DBGPRINTLN_CTX("Flash RD C: %02X%02X%02X%02X%02X%02X%02X%02X %02X%02X%02X%02X%02X%02X%02X%02X", rd[0], rd[1], rd[2], rd[3], rd[4], rd[5], rd[6], rd[7], rd[8], rd[9], rd[10], rd[11], rd[12], rd[13], rd[14], rd[15]);
-
-    //uint32_t wr = 0xA2B3C4D5;
-    //qspi_flash_busy_wait();
-    //qspi_flash_write_enable();
-    //qspi_flash_cmd(QSPI_FLASH_CMD_WRITE, 0x00000004, 3, 0, 0, (uint8_t*)&wr, 4, NULL, 0);
-    //qspi_flash_busy_wait();
-
-    //qspi_flash_cmd(QSPI_FLASH_CMD_READ_FAST, 0x00000000, 3, 0, 8, NULL, 0, rd, 10);
-    //DBGPRINTLN_CTX("Flash RD C: %02X%02X%02X%02X%02X%02X%02X%02X %02X%02X%02X%02X%02X%02X%02X%02X", rd[0], rd[1], rd[2], rd[3], rd[4], rd[5], rd[6], rd[7], rd[8], rd[9], rd[10], rd[11], rd[12], rd[13], rd[14], rd[15]);
-
-    //*(volatile uint32_t *)0xC0000000 = 0x12AB34CD;
-
-    //////// Test for page wrapping (write beyond page boundary)
-
-    /*
-    for(uint8_t i = 0; i <= 64; i++)
-        *(volatile uint32_t *)(0xC0000000 + i * 4) = 0x0123ABCD;
-
-    DBGPRINTLN_CTX("Flash RD: %02X", *(volatile uint8_t *)0xC0000000); // CD
-    DBGPRINTLN_CTX("Flash RD: %02X", *(volatile uint8_t *)0xC0000001); // AB
-    DBGPRINTLN_CTX("Flash RD: %02X", *(volatile uint8_t *)0xC0000002); // 23
-    DBGPRINTLN_CTX("Flash RD: %02X", *(volatile uint8_t *)0xC0000003); // 01
-    DBGPRINTLN_CTX("Flash RD: %08X", *(volatile uint32_t *)0xC0000000); // 0123ABCD
-    DBGPRINTLN_CTX("Flash RD: %08X", *(volatile uint32_t *)0xC0000010); // 0123ABCD
-    DBGPRINTLN_CTX("Flash RD: %02X", *(volatile uint8_t *)0xC00000FC); // CD
-    DBGPRINTLN_CTX("Flash RD: %02X", *(volatile uint8_t *)0xC00000FD); // AB
-    DBGPRINTLN_CTX("Flash RD: %02X", *(volatile uint8_t *)0xC00000FE); // 23
-    DBGPRINTLN_CTX("Flash RD: %02X", *(volatile uint8_t *)0xC00000FF); // 01
-    DBGPRINTLN_CTX("Flash RD: %08X", *(volatile uint32_t *)0xC0000100); // 0123ABCD
-    */
-
-    //////// Test for code copy to QSPI flash
-
-    /*
-    for(uint32_t i = 0; i < bin_v1_test_bin_qspi_len / 4; i++)
-        *(volatile uint32_t *)(0x04000000 + i * 4) = *(uint32_t *)(bin_v1_test_bin_qspi + i * 4);
-
-    DBGPRINTLN_CTX("QSPI RD: %02X", *(volatile uint8_t *)0xC0000000);
-    DBGPRINTLN_CTX("QSPI RD: %02X", *(volatile uint8_t *)0xC0000001);
-    DBGPRINTLN_CTX("QSPI RD: %02X", *(volatile uint8_t *)0xC0000002);
-    DBGPRINTLN_CTX("QSPI RD: %02X", *(volatile uint8_t *)0xC0000003);
-
-    DBGPRINTLN_CTX("QSPI Dest %08X", get_family_name);
-    DBGPRINTLN_CTX("Device: %s%hu", get_family_name((DEVINFO->PART & _DEVINFO_PART_DEVICE_FAMILY_MASK) >> _DEVINFO_PART_DEVICE_FAMILY_SHIFT), (DEVINFO->PART & _DEVINFO_PART_DEVICE_NUMBER_MASK) >> _DEVINFO_PART_DEVICE_NUMBER_SHIFT);
-    */
-
-    //DBGPRINTLN_CTX("QSPI RD: %02X", *(volatile uint8_t *)0xC0000000);
-    //DBGPRINTLN_CTX("QSPI RD: %02X", *(volatile uint8_t *)0xC0000001);
-    //DBGPRINTLN_CTX("QSPI RD: %02X", *(volatile uint8_t *)0xC0000002);
-    //DBGPRINTLN_CTX("QSPI RD: %02X", *(volatile uint8_t *)0xC0000003);
-    //DBGPRINTLN_CTX("Boot RD: %02X", *(volatile uint8_t *)0x0FE10000);
-    //DBGPRINTLN_CTX("Data RD: %02X", *(volatile uint8_t *)0x0FE00000);
-
-    //qspi_flash_cmd(QSPI_FLASH_CMD_READ_FAST, 0x00000000, 3, 0, 8, NULL, 0, rd, 10);
-    //DBGPRINTLN_CTX("Flash RD C: %02X%02X%02X%02X%02X%02X%02X%02X %02X%02X%02X%02X%02X%02X%02X%02X", rd[0], rd[1], rd[2], rd[3], rd[4], rd[5], rd[6], rd[7], rd[8], rd[9], rd[10], rd[11], rd[12], rd[13], rd[14], rd[15]);
-
-    //DBGPRINTLN_CTX("QSPI RD: %08X", *(volatile uint32_t *)0xC0000000);
-    //DBGPRINTLN_CTX("QSPI RD: %08X", *(volatile uint32_t *)0xC0000004);
+    DBGPRINTLN_CTX("QSPI Flash UID: %02X%02X%02X%02X%02X%02X%02X%02X", ubFlashUID[0], ubFlashUID[1], ubFlashUID[2], ubFlashUID[3], ubFlashUID[4], ubFlashUID[5], ubFlashUID[6], ubFlashUID[7]);
+    DBGPRINTLN_CTX("QSPI Flash JEDEC ID: %06X", qspi_flash_read_jedec_id());
 
     WIFI_SELECT();
     WIFI_RESET();
@@ -451,32 +382,35 @@ int main()
     delay_ms(100);
     //WIFI_UNSELECT();
 
-    tft_bl_init(2000);
-    tft_bl_set(0.25);
-
-    ILI9488_UNRESET();
-    ili9488_init();
+    // TFT Controller info
     DBGPRINTLN_CTX("Display: 0x%06X", ili9488_read_id());
 
-    ili9488_display_on();
-    ili9488_set_rotation(0);
-    ili9488_fill_screen(RGB565_DARKGREY);
+    // TFT Config
+    tft_bl_init(2000); // Init backlight PWM at 2 kHz
+    tft_bl_set(0.25); // Set backlight to 25%
+    tft_display_on(); // Turn display on
+    tft_set_rotation(0); // Set rotation 0
+    tft_fill_screen(RGB565_DARKGREY); // Fill display
 
-    terminal_t *terminal = ili9488_terminal_create(10, 250, 9, 300, &xSans9pFont, RGB565_GREEN, RGB565_BLACK);
+    tft_terminal_t *terminal = tft_terminal_create(10, 250, 9, 300, &xSans9pFont, RGB565_GREEN, RGB565_BLACK);
+
     if(!terminal)
     {
-        DBGPRINTLN_CTX("could not allocate start terminal");
+        DBGPRINTLN_CTX("Could not allocate start terminal");
+
         while(1);
     }
 
-    ili9488_printf(&xSans18pFont, 10, 10, RGB565_WHITE, RGB565_DARKGREY, "Display is the wey");
+    tft_printf(&xSans18pFont, 10, 10, RGB565_WHITE, RGB565_DARKGREY, "Display is the wey");
 
-    ili9488_draw_rectangle(10, 65, 295 + 15 + 5, 75 + ili9488_get_text_height(&xSans9pFont, 7), RGB565_DARKGREEN, 1);
+    tft_draw_rectangle(10, 65, 295 + 15 + 5, 75 + tft_get_text_height(&xSans9pFont, 7), RGB565_DARKGREEN, 1);
 
-    textbox_t *textbox = ili9488_textbox_create(15, 70, 7, 295, &xSans9pFont, RGB565_BLUE, RGB565_WHITE);
+    tft_textbox_t *textbox = tft_textbox_create(15, 70, 7, 295, &xSans9pFont, RGB565_BLUE, RGB565_WHITE);
+
     if(!textbox)
     {
-        DBGPRINTLN_CTX("could not allocate start textbox");
+        DBGPRINTLN_CTX("Could not allocate start textbox");
+
         while(1);
     }
 
@@ -488,38 +422,40 @@ int main()
 
         if(BTN_1_STATE() && (ubLastBtn1State != 1))
         {
-            ili9488_draw_image(&xSurpriseImage, 0, 0);
+            tft_draw_image(&xSurpriseImage, 0, 0);
             ubLastBtn1State = 1;
         }
         else if(!BTN_1_STATE() && (ubLastBtn1State != 0))
         {
-            ili9488_fill_screen(RGB565_DARKGREY);
-            ili9488_printf(&xSans18pFont, 10, 10, RGB565_WHITE, RGB565_DARKGREY, "Display is the wey");
-            ili9488_draw_rectangle(10, 65, 295 + 15 + 5, 75 + ili9488_get_text_height(&xSans9pFont, 7), RGB565_DARKGREEN, 1);
-            ili9488_textbox_clear(textbox);
-            ili9488_terminal_printf(terminal, 1, "\nA nice surprise was shown...");
+            tft_fill_screen(RGB565_DARKGREY);
+            tft_printf(&xSans18pFont, 10, 10, RGB565_WHITE, RGB565_DARKGREY, "Display is the wey");
+            tft_draw_rectangle(10, 65, 295 + 15 + 5, 75 + tft_get_text_height(&xSans9pFont, 7), RGB565_DARKGREEN, 1);
+            tft_textbox_clear(textbox);
+            tft_terminal_printf(terminal, 1, "\nA nice surprise was shown...");
+
             ubLastBtn1State = 0;
         }
 
         if(BTN_2_STATE() && (ubLastBtn2State != 1))
         {
-            ili9488_fill_screen(RGB565_WHITE);
+            tft_fill_screen(RGB565_WHITE);
             for(uint8_t x = 0; x < 4; x++)
             {
                 for(uint8_t y = 0; y < 6; y++)
                 {
-                    ili9488_draw_image(&xPepeImage, 32 + (x * 64), 32 + (y * 64));
+                    tft_draw_image(&xPepeImage, 32 + (x * 64), 32 + (y * 64));
                 }
             }
             ubLastBtn2State = 1;
         }
         else if(!BTN_2_STATE() && (ubLastBtn2State != 0))
         {
-            ili9488_fill_screen(RGB565_DARKGREY);
-            ili9488_printf(&xSans18pFont, 10, 10, RGB565_WHITE, RGB565_DARKGREY, "Display is the wey");
-            ili9488_draw_rectangle(10, 65, 295 + 15 + 5, 75 + ili9488_get_text_height(&xSans9pFont, 7), RGB565_DARKGREEN, 1);
-            ili9488_textbox_clear(textbox);
-            ili9488_terminal_printf(terminal, 1, "\nPepe army was shown...");
+            tft_fill_screen(RGB565_DARKGREY);
+            tft_printf(&xSans18pFont, 10, 10, RGB565_WHITE, RGB565_DARKGREY, "Display is the wey");
+            tft_draw_rectangle(10, 65, 295 + 15 + 5, 75 + tft_get_text_height(&xSans9pFont, 7), RGB565_DARKGREEN, 1);
+            tft_textbox_clear(textbox);
+            tft_terminal_printf(terminal, 1, "\nPepe army was shown...");
+
             ubLastBtn2State = 0;
         }
 
@@ -537,7 +473,7 @@ int main()
             ubBuf[0] = 0x03;
             ubBuf[1] = 0x05;
 
-            ili9488_terminal_printf(terminal, 1, "\nTransfering %d byte(s) to wifi-coprocessor...", ubNBytes);
+            tft_terminal_printf(terminal, 1, "\nTransfering %d byte(s) to wifi-coprocessor...", ubNBytes);
             DBGPRINTLN_CTX("Transfering %d byte(s) to wifi-coprocessor...", ubNBytes);
             DBGPRINTLN_CTX("Content:");
             for(uint8_t ubI = 0; ubI < ubNBytes; ubI++)
@@ -559,6 +495,7 @@ int main()
         }
 
         static uint64_t ullLastTextboxUpdate = 0;
+
         if(g_ullSystemTick > (ullLastTextboxUpdate + 5000))
         {
             /*
@@ -582,44 +519,60 @@ int main()
 
             DBGPRINTLN_CTX("Button states (1|2|3): %hhu|%hhu|%hhu", BTN_1_STATE(), BTN_2_STATE(), BTN_3_STATE());
             */
-            ili9488_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
-            ili9488_textbox_printf(textbox, "\rADC Temp: ");
-            ili9488_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
-            ili9488_textbox_printf(textbox, "%.2f\n\r", adc_get_temperature());
-            ili9488_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
-            ili9488_textbox_printf(textbox, "EMU Temp: ");
-            ili9488_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
-            ili9488_textbox_printf(textbox, "%.2f\n\r", emu_get_temperature());
-            ili9488_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
-            ili9488_textbox_printf(textbox, "RTCC Time: ");
-            ili9488_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
-            ili9488_textbox_printf(textbox, "%lu\n\r", rtcc_get_time());
-            ili9488_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
-            ili9488_textbox_printf(textbox, "Battery Charging: ");
-            ili9488_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
-            ili9488_textbox_printf(textbox, "%hhu\n\r", BAT_CHRG());
-            ili9488_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
-            ili9488_textbox_printf(textbox, "Battery Standby: ");
-            ili9488_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
-            ili9488_textbox_printf(textbox, "%hhu\n\r", BAT_STDBY());
-            ili9488_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
-            ili9488_textbox_printf(textbox, "3V3 Fault: ");
-            ili9488_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
-            ili9488_textbox_printf(textbox, "%hhu\n\r", VREG_ERR());
-            ili9488_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
-            ili9488_textbox_printf(textbox, "Button states (1|2|3): ");
-            ili9488_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
-            ili9488_textbox_printf(textbox, "%hhu|%hhu|%hhu\n", BTN_1_STATE(), BTN_2_STATE(), BTN_3_STATE());
+            float fTemp = bmp280_read_temperature();
+            float fPress = bmp280_read_pressure();
+
+            DBGPRINTLN_CTX("BMP280 Temperature: %.2f C", fTemp);
+            DBGPRINTLN_CTX("BMP280 Pressure: %.2f hPa", fPress);
+
+            tft_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
+            tft_textbox_printf(textbox, "\nBMP Temp: ");
+            tft_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
+            tft_textbox_printf(textbox, "%.2f\n\r", fTemp);
+            tft_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
+            tft_textbox_printf(textbox, "\rBMP Press: ");
+            tft_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
+            tft_textbox_printf(textbox, "%.2f\n\r", fPress);
+            tft_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
+            tft_textbox_printf(textbox, "\rADC Temp: ");
+            tft_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
+            tft_textbox_printf(textbox, "%.2f\n\r", adc_get_temperature());
+            tft_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
+            tft_textbox_printf(textbox, "EMU Temp: ");
+            tft_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
+            tft_textbox_printf(textbox, "%.2f\n\r", emu_get_temperature());
+            tft_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
+            tft_textbox_printf(textbox, "RTCC Time: ");
+            tft_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
+            tft_textbox_printf(textbox, "%lu\n\r", rtcc_get_time());
+            tft_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
+            tft_textbox_printf(textbox, "Battery Charging: ");
+            tft_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
+            tft_textbox_printf(textbox, "%hhu\n\r", BAT_CHRG());
+            tft_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
+            tft_textbox_printf(textbox, "Battery Standby: ");
+            tft_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
+            tft_textbox_printf(textbox, "%hhu\n\r", BAT_STDBY());
+            tft_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
+            tft_textbox_printf(textbox, "3V3 Fault: ");
+            tft_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
+            tft_textbox_printf(textbox, "%hhu\n\r", VREG_ERR());
+            tft_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
+            tft_textbox_printf(textbox, "Button states (1|2|3): ");
+            tft_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
+            tft_textbox_printf(textbox, "%hhu|%hhu|%hhu\n", BTN_1_STATE(), BTN_2_STATE(), BTN_3_STATE());
 
             ullLastTextboxUpdate = g_ullSystemTick;
         }
 
         static uint64_t ullLastTask = 0;
+
         if(g_ullSystemTick > (ullLastTask + 5000))
         {
             //play_sound(4500, 10);
 
             static uint8_t ubLastState = 0;
+
             if(!ubLastState)
             {
             }

@@ -201,8 +201,8 @@ const font_t xSans9pFont =
 {
     (uint8_t *)ubBitmap,
     (glyph_t *)pGlyph,
-    0x20,
-    0x7E,
+    ' ',
+    '~',
     22,
     9
 };

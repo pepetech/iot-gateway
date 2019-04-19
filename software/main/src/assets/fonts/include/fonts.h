@@ -1,5 +1,5 @@
-#ifndef __FONTS_H_
-#define __FONTS_H_
+#ifndef __FONTS_H__
+#define __FONTS_H__
 
 #include <stdint.h>
 
@@ -17,8 +17,8 @@ typedef struct
 {
 	uint8_t *pubBitmap;  // Glyph bitmaps, concatenated
 	glyph_t *pGlyph;     // Glyph array
-	uint8_t ubFirstChar; // ASCII extents (first char)
-    uint8_t ubLastChar;  // ASCII extents (last char)
+	char cFirstChar;     // ASCII extents (first char)
+    char cLastChar;      // ASCII extents (last char)
 	uint8_t ubYAdvance;  // Newline distance (y axis)
     uint8_t ubLineOffset;
 } font_t;
@@ -27,4 +27,4 @@ typedef struct
 extern const font_t xSans9pFont;
 extern const font_t xSans18pFont;
 
-#endif // __FONTS_H_
+#endif // __FONTS_H__

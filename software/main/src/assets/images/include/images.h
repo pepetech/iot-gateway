@@ -1,5 +1,5 @@
-#ifndef	__IMAGES_H_
-#define	__IMAGES_H_
+#ifndef	__IMAGES_H__
+#define	__IMAGES_H__
 
 #include "rgb565.h"
 
@@ -15,4 +15,4 @@ extern const image_t xPatrickImage;
 extern const image_t xPepeImage;
 extern const image_t xSurpriseImage;
 
-#endif	// __IMAGES_H_
+#endif	// __IMAGES_H__

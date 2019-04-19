@@ -53,7 +53,7 @@ void usart0_spi_transfer(const uint8_t* pubSrc, uint32_t ulSize, uint8_t* pubDst
 			*(pubDst++) = usart0_spi_transfer_byte(0x00);
 	}
 }
-#else   // USART0_MODE
+#else   // USART0_MODE_SPI
 static volatile uint8_t *pubUSART0DMABuffer = NULL;
 static volatile uint8_t *pubUSART0FIFO = NULL;
 static volatile uint16_t usUSART0FIFOWritePos, usUART2FIFOReadPos;
@@ -165,7 +165,7 @@ void usart0_init(uint32_t ulBaud, uint32_t ulFrameSettings, int8_t bRXLocation, 
     USART0->CTRL = USART_CTRL_TXBIL_EMPTY | USART_CTRL_CSMA_NOACTION | UART_CTRL_OVS_X16;
     USART0->CTRLX = (bCTSLocation >= 0 ? USART_CTRLX_CTSEN : 0);
     USART0->FRAME = ulFrameSettings;
-    USART0->CLKDIV = ((HFPER_CLOCK_FREQ / (16 * ulBaud)) - 1) << 8;
+    USART0->CLKDIV = (uint32_t)((((float)HFPER_CLOCK_FREQ / (16.f * ulBaud)) - 1.f) * 256.f);
 
     USART0->TIMECMP0 = UART_TIMECMP0_TSTOP_RXACT | UART_TIMECMP0_TSTART_RXEOF | 0x08; // RX Timeout after 8 baud times
 
@@ -218,7 +218,7 @@ void usart0_flush()
 {
     usUART2FIFOReadPos = usUSART0FIFOWritePos = 0;
 }
-#endif  // USART0_MODE
+#endif  // USART0_MODE_SPI
 
 // - - - - - - - - - - - - - - - TEMPORARY - - - - - - - - - - - - - -
 void usart1_init(uint32_t ulBaud, uint8_t ubMode, uint8_t ubBitMode, int8_t bMISOLocation, int8_t bMOSILocation, uint8_t ubCLKLocation)

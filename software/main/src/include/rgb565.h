@@ -1,5 +1,5 @@
-#ifndef __RGB565_H_
-#define __RGB565_H_
+#ifndef __RGB565_H__
+#define __RGB565_H__
 
 #include <stdint.h>
 
@@ -31,4 +31,4 @@
 
 typedef uint16_t rgb565_t;
 
-#endif // __RGB565_H_
+#endif // __RGB565_H__

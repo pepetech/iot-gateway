@@ -452,8 +452,8 @@ const font_t xSans18pFont =
 {
     (uint8_t *)ubBitmap,
     (glyph_t *)pGlyph,
-    0x20,
-    0x7E,
+    ' ',
+    '~',
     42,
     16
 };
