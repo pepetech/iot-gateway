@@ -300,6 +300,10 @@ int init()
     DBGPRINTLN_CTX("EMU - IOVDD Voltage: %.2f mV", adc_get_iovdd());
     DBGPRINTLN_CTX("EMU - IOVDD Status: %s", g_ubIOVDDLow ? "LOW" : "OK");
     DBGPRINTLN_CTX("EMU - Core Voltage: %.2f mV", adc_get_corevdd());
+    DBGPRINTLN_CTX("EMU - 5V0 Voltage: %.2f mV", adc_get_5v0());
+    DBGPRINTLN_CTX("EMU - 4V2 Voltage: %.2f mV", adc_get_4v2());
+    DBGPRINTLN_CTX("EMU - VBAT Voltage: %.2f mV", adc_get_vbat());
+    DBGPRINTLN_CTX("EMU - VIN Voltage: %.2f mV", adc_get_vin());
 
     //play_sound(3500, 500);
     //delay_ms(100);
