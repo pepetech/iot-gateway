@@ -1,4 +1,26 @@
 #include "gpio.h"
+#include "em_device.h"
+
+static void gpio_isr(uint32_t ulFlags)
+{
+
+}
+void _gpio_even_isr()
+{
+    uint32_t ulFlags = GPIO->IF;
+
+    gpio_isr(ulFlags);
+
+    GPIO->IFC = 0x55555555; // Clear all even flags
+}
+void _gpio_odd_isr()
+{
+    uint32_t ulFlags = GPIO->IF;
+
+    gpio_isr(ulFlags);
+
+    GPIO->IFC = 0xAAAAAAAA; // Clear all odd flags
+}
 
 void gpio_init()
 {
@@ -6,6 +28,7 @@ void gpio_init()
 
     // NC - Not Connected (not available in mcu package)
     // NR - Not routed (no routing to pin on pcb, floating)
+    // NU - Not used (not currently in use)
 
     // Port A
     GPIO->P[0].CTRL   = GPIO_P_CTRL_DRIVESTRENGTHALT_STRONG | (6 << _GPIO_P_CTRL_SLEWRATEALT_SHIFT)
@@ -132,7 +155,7 @@ void gpio_init()
                       | GPIO_P_MODEH_MODE9_DISABLED                 // NR
                       | GPIO_P_MODEH_MODE10_DISABLED                // NR
                       | GPIO_P_MODEH_MODE11_INPUTPULLFILTER         // VREG_ERR
-                      | GPIO_P_MODEH_MODE12_DISABLED                // VIN_DETECT
+                      | GPIO_P_MODEH_MODE12_DISABLED                // VIN_DET - FIXME: Hardware fix needed
                       | GPIO_P_MODEH_MODE13_DISABLED                // NC
                       | GPIO_P_MODEH_MODE14_DISABLED                // NC
                       | GPIO_P_MODEH_MODE15_DISABLED;               // NC
@@ -143,6 +166,53 @@ void gpio_init()
     GPIO->ROUTEPEN &= ~(GPIO_ROUTEPEN_TDIPEN | GPIO_ROUTEPEN_TDOPEN);   // Disable JTAG
     GPIO->ROUTEPEN |= GPIO_ROUTEPEN_SWVPEN;                             // Enable SWO
     GPIO->ROUTELOC0 = GPIO_ROUTELOC0_SWVLOC_LOC0;                       // SWO on PF2
+
+    // External interrupts
+    GPIO->EXTIPSELL = GPIO_EXTIPSELL_EXTIPSEL0_PORTE            // WIFI_IRQ
+                    | GPIO_EXTIPSELL_EXTIPSEL1_PORTB            // BTN_1
+                    | GPIO_EXTIPSELL_EXTIPSEL2_PORTB            // BTN_2
+                    | GPIO_EXTIPSELL_EXTIPSEL3_PORTB            // BTN_3
+                    | GPIO_EXTIPSELL_EXTIPSEL4_PORTA            // RFM_IRQ
+                    | GPIO_EXTIPSELL_EXTIPSEL5_PORTA            // GSM_STATUS
+                    | GPIO_EXTIPSELL_EXTIPSEL6_PORTC            // GSM_RING
+                    | GPIO_EXTIPSELL_EXTIPSEL7_PORTC;           // BAT_CHRG
+    GPIO->EXTIPSELH = GPIO_EXTIPSELH_EXTIPSEL8_PORTA            // GSM_RF_SYNC
+                    | GPIO_EXTIPSELH_EXTIPSEL9_PORTE            // CCS811_IRQ
+                    | GPIO_EXTIPSELH_EXTIPSEL10_PORTF           // VREG_ERR
+                    | GPIO_EXTIPSELH_EXTIPSEL11_PORTA           // NU
+                    | GPIO_EXTIPSELH_EXTIPSEL12_PORTA           // TFT_IRQ
+                    | GPIO_EXTIPSELH_EXTIPSEL13_PORTE           // MAG_ALERT
+                    | GPIO_EXTIPSELH_EXTIPSEL14_PORTF           // VIN_DET
+                    | GPIO_EXTIPSELH_EXTIPSEL15_PORTA;          // NU
+
+    GPIO->EXTIPINSELL = GPIO_EXTIPINSELL_EXTIPINSEL0_PIN3       // WIFI_IRQ
+                      | GPIO_EXTIPINSELL_EXTIPINSEL1_PIN1       // BTN_1
+                      | GPIO_EXTIPINSELL_EXTIPINSEL2_PIN2       // BTN_2
+                      | GPIO_EXTIPINSELL_EXTIPINSEL3_PIN3       // BTN_3
+                      | GPIO_EXTIPINSELL_EXTIPINSEL4_PIN6       // RFM_IRQ
+                      | GPIO_EXTIPINSELL_EXTIPINSEL5_PIN7       // GSM_STATUS
+                      | GPIO_EXTIPINSELL_EXTIPINSEL6_PIN4       // GSM_RING
+                      | GPIO_EXTIPINSELL_EXTIPINSEL7_PIN7;      // BAT_CHRG
+    GPIO->EXTIPINSELH = GPIO_EXTIPINSELH_EXTIPINSEL8_PIN8       // GSM_RF_SYNC
+                      | GPIO_EXTIPINSELH_EXTIPINSEL9_PIN9       // CCS811_IRQ
+                      | GPIO_EXTIPINSELH_EXTIPINSEL10_PIN11     // VREG_ERR
+                      | GPIO_EXTIPINSELH_EXTIPINSEL11_PIN8      // NU
+                      | GPIO_EXTIPINSELH_EXTIPINSEL12_PIN13     // TFT_IRQ
+                      | GPIO_EXTIPINSELH_EXTIPINSEL13_PIN15     // MAG_ALERT
+                      | GPIO_EXTIPINSELH_EXTIPINSEL14_PIN12     // VIN_DET
+                      | GPIO_EXTIPINSELH_EXTIPINSEL15_PIN12;    // NU
+
+    GPIO->EXTIRISE = BIT(0) | BIT(4) | BIT(8) | BIT(13) | BIT(14); // WIFI_IRQ, RFM_IRQ, GSM_RF_SYNC, MAG_ALERT, VIN_DET
+    GPIO->EXTIFALL = BIT(1) | BIT(2) | BIT(3) | BIT(5) | BIT(6) | BIT(9) | BIT(10) | BIT(12); // BTN_1, BTN_2, BTN_3, GSM_STATUS, GSM_RING, CCS811_IRQ, VREG_ERR, TFT_IRQ
+
+    GPIO->IFC = _GPIO_IFC_MASK; // Clear pending IRQs
+    IRQ_CLEAR(GPIO_EVEN_IRQn); // Clear pending vector
+    IRQ_CLEAR(GPIO_ODD_IRQn); // Clear pending vector
+    IRQ_SET_PRIO(GPIO_EVEN_IRQn, 0, 0); // Set priority 0,0 (max)
+    IRQ_SET_PRIO(GPIO_ODD_IRQn, 0, 0); // Set priority 0,0 (max)
+    IRQ_ENABLE(GPIO_EVEN_IRQn); // Enable vector
+    IRQ_ENABLE(GPIO_ODD_IRQn); // Enable vector
+    GPIO->IEN = 0; // Enable interrupts
 }
 
 void play_sound(uint16_t usFrequency, uint32_t ulTime)

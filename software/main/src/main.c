@@ -39,6 +39,17 @@ static uint16_t get_device_revision();
 // Variables
 
 // ISRs
+void _acmp0_1_isr()
+{
+    uint32_t ulFlags = ACMP0->IFC;
+
+    if(ulFlags & ACMP_IFC_EDGE)
+    {
+        DBGPRINTLN_CTX("VBat status: %s", (ACMP0->STATUS & ACMP_STATUS_ACMPOUT) ? "HIGH" : "LOW");
+    }
+
+    REG_DISCARD(&ACMP1->IFC); // Clear all ACMP1 flags
+}
 
 // Functions
 void reset()
@@ -190,13 +201,13 @@ uint16_t get_device_revision()
 
 int init()
 {
-    emu_init(1); // Init EMU
+    emu_init(1); // Init EMU, ignore DCDC and switch digital power immediatly to DVDD
 
-    cmu_hfxo_startup_calib(0x200, 0x145); // Cdelay_ms(10);onfig HFXO Startup for 1280 uA, 36 pF (18 pF + 2 pF CLOAD)
-    cmu_hfxo_steady_calib(0x009, 0x145); // Codelay_ms(10);nfig HFXO Steady state for 12 uA, 36 pF (18 pF + 2 pF CLOAD)
+    cmu_hfxo_startup_calib(0x200, 0x145); // Config HFXO Startup for 1280 uA, 36 pF (18 pF + 2 pF CLOAD)
+    cmu_hfxo_steady_calib(0x009, 0x145); // Cnfig HFXO Steady state for 12 uA, 36 pF (18 pF + 2 pF CLOAD)
 
-    cmu_lfxo_calib(0x08); // Config LFXO for 1delay_ms(10);0 pF (5 pF + 1 pF CLOAD)
-    cmu_init(); // Init Clocksdelay_ms(10);
+    cmu_lfxo_calib(0x08); // Config LFXO for 10 pF (5 pF + 1 pF CLOAD)
+    cmu_init(); // Init Clocks
 
     cmu_ushfrco_calib(1, USHFRCO_CALIB_50M, 50000000); // Enable and calibrate USHFRCO for 50 MHz
     cmu_auxhfrco_calib(1, AUXHFRCO_CALIB_32M, 32000000); // Enable and calibrate AUXHFRCO for 32 MHz
@@ -244,9 +255,9 @@ int init()
     DBGPRINTLN_CTX("Device: %s", szDeviceName);
     DBGPRINTLN_CTX("Device Revision: 0x%04X", get_device_revision());
     DBGPRINTLN_CTX("Calibration temperature: %hhu C", (DEVINFO->CAL & _DEVINFO_CAL_TEMP_MASK) >> _DEVINFO_CAL_TEMP_SHIFT);
-    DBGPRINTLN_CTX("Flash Size: %hu kiB", FLASH_SIZE >> 10);
-    DBGPRINTLN_CTX("RAM Size: %hu kiB", SRAM_SIZE >> 10);
-    DBGPRINTLN_CTX("Free RAM: %lu kiB", get_free_ram() >> 10);
+    DBGPRINTLN_CTX("Flash Size: %hu KiB", FLASH_SIZE >> 10);
+    DBGPRINTLN_CTX("RAM Size: %hu KiB", SRAM_SIZE >> 10);
+    DBGPRINTLN_CTX("Free RAM: %lu KiB", get_free_ram() >> 10);
     DBGPRINTLN_CTX("Unique ID: %08X-%08X", DEVINFO->UNIQUEH, DEVINFO->UNIQUEL);
 
     DBGPRINTLN_CTX("CMU - HFXO Clock: %.1f MHz!", (float)HFXO_VALUE / 1000000);
@@ -387,10 +398,10 @@ int main()
     IRQ_CLEAR(ACMP0_IRQn); // Clear pending vector
     IRQ_SET_PRIO(ACMP0_IRQn, 1, 0); // Set priority 1,0
     IRQ_ENABLE(ACMP0_IRQn); // Enable vector
+    ACMP0->IEN |= ACMP_IEN_EDGE; // Enable EDGE interrupt
 
     ACMP0->CTRL |= ACMP_CTRL_EN; // Enable ACMP0
     while(!(ACMP0->STATUS & ACMP_STATUS_ACMPACT)); // Wait for it to be enabled
-    while(!(ACMP0->IF & ACMP_IF_WARMUP)); // Wait for it to warmup
     // ----------------- Testing battery monitoring with OpAmp + Analog Comparator ----------------- //
 
     // BMP280 info & configuration
@@ -420,7 +431,7 @@ int main()
 
     // TFT Config
     tft_bl_init(2000); // Init backlight PWM at 2 kHz
-    tft_bl_set(0.25); // Set backlight to 25%
+    tft_bl_set(0.25f); // Set backlight to 25%
     tft_display_on(); // Turn display on
     tft_set_rotation(0); // Set rotation 0
     tft_fill_screen(RGB565_DARKGREY); // Fill display
@@ -456,6 +467,7 @@ int main()
         if(BTN_1_STATE() && (ubLastBtn1State != 1))
         {
             tft_draw_image(&xSurpriseImage, 0, 0);
+
             ubLastBtn1State = 1;
         }
         else if(!BTN_1_STATE() && (ubLastBtn1State != 0))
@@ -602,7 +614,7 @@ int main()
 
         if(g_ullSystemTick > (ullLastTask + 5000))
         {
-            //play_sound(4500, 10);
+            //play_sound(2700, 10);
 
             static uint8_t ubLastState = 0;
 

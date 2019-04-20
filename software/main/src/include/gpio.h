@@ -5,6 +5,7 @@
 #include "cmu.h"
 #include "systick.h"
 #include "utils.h"
+#include "nvic.h"
 
 // LED MACROS
 #define LED_HIGH()          PERI_REG_BIT_SET(&(GPIO->P[1].DOUT)) = BIT(0)
@@ -65,7 +66,7 @@
 #define CCS811_IRQ()        PERI_REG_BIT(&(GPIO->P[4].DIN), 9)
 
 // MAG MACROS
-#define MAG_STATE()         PERI_REG_BIT(&(GPIO->P[4].DIN), 15)
+#define MAG_ALERT()         PERI_REG_BIT(&(GPIO->P[4].DIN), 15)
 
 void gpio_init();
 

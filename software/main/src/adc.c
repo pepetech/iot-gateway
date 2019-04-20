@@ -194,7 +194,7 @@ float adc_get_temperature()
     float fADCCode = ADC0->SINGLEDATA >> 4;
     float fCalibrationTemp = (DEVINFO->CAL & _DEVINFO_CAL_TEMP_MASK) >> _DEVINFO_CAL_TEMP_SHIFT;
     float fADCCalibrationTemp = (DEVINFO->ADC0CAL3 & _DEVINFO_ADC0CAL3_TEMPREAD1V25_MASK) >> _DEVINFO_ADC0CAL3_TEMPREAD1V25_SHIFT;
-    float fADCTemp = fCalibrationTemp - (fADCCalibrationTemp - fADCCode) * 1250.f / (4096.f * -1.84f);
+    float fADCTemp = fCalibrationTemp - (fADCCalibrationTemp - fADCCode) * 1250.f / (4095.f * -1.84f);
 
     return fADCTemp;
 }
