@@ -28,6 +28,7 @@
 #define OTA_HOST    "node1.jsilvaiot.com"
 #define OTA_PORT    8880
 
+
 #define ADC_MODE_LOCATION   107
 #define ADC_MODE_VDD        0xFF
 #define ADC_MODE_TOUT_AUTO  0x00
@@ -43,3 +44,16 @@
 #define XTAL_FREQ_24M       0x02
 #define XTAL_FREQ_26M       0x01
 #define XTAL_FREQ_40M       0x00
+
+
+#define SPI_BUFFER_SIZE 8192
+
+#define SPI_TASK_SIZE   20
+#define SPI_TASK_PRIO   0
+
+#define SPI_SIGNAL_READ_STATUS_DONE     0
+#define SPI_SIGNAL_WRITE_STATUS_DONE    1
+#define SPI_SIGNAL_READ_DATA_DONE       2
+#define SPI_SIGNAL_WRITE_DATA_DONE      3
+
+#define SPI_STATUS_WRITTABLE_MASK   0x00000000 // Set writtable bits to 1

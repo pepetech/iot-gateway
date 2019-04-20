@@ -4,13 +4,19 @@ static ets_timer_t tick_timer;
 static ets_timer_t sntp_timer;
 static uint8_t update_scheduled = 0;
 static uint32_t update_new_version = 0;
-static uint8_t spi_buffer[32];
+static ets_event_t spi_task_queue[SPI_TASK_SIZE];
+statis uint32_t spi_status = 0x00000000;
 
 // Forward declarations
 static void spi_isr(void *arg);
 
+static void ICACHE_FLASH_ATTR spi_task_handler(ets_event_t *event);
+
 static void ICACHE_FLASH_ATTR tick_timer_callback(void *arg);
 static void ICACHE_FLASH_ATTR sntp_timer_callback(void *arg);
+
+static void ICACHE_FLASH_ATTR spi_init();
+static void ICACHE_FLASH_ATTR spi_set_data(uint8_t *data, uint32_t len);
 
 static void ICACHE_FLASH_ATTR wifi_init();
 static void ICACHE_FLASH_ATTR wifi_connect(const char *ssid, const char *password);
@@ -38,88 +44,65 @@ void spi_isr(void *arg)
 {
     uint32_t flags = REG(DPORT_SPI_INT_STATUS);
 
-    DBGPRINTLN_CTX("Flags [%08X]", flags);
-
     if(flags & DPORT_SPI_INT_STATUS_SPI1)
     {
         uint32_t status = REG(SPI1_SLAVE0);
 
         REG(SPI1_SLAVE0) &= ~(SPI_SLAVE0_WR_STA_DONE_EN | SPI_SLAVE0_RD_STA_DONE_EN | SPI_SLAVE0_WR_BUF_DONE_EN | SPI_SLAVE0_RD_BUF_DONE_EN); // Disable interrupts
         REG(SPI1_SLAVE0) |= SPI_SLAVE0_SYNC_RESET; // Reset
-        REG(SPI1_SLAVE0) &= ~(SPI_SLAVE0_TRANS_DONE | SPI_SLAVE0_WR_STA_DONE | SPI_SLAVE0_RD_STA_DONE | SPI_SLAVE0_WR_BUF_DONE | SPI_SLAVE0_RD_BUF_DONE); // Dlear interrupts
+        REG(SPI1_SLAVE0) &= ~(SPI_SLAVE0_TRANS_DONE | SPI_SLAVE0_WR_STA_DONE | SPI_SLAVE0_RD_STA_DONE | SPI_SLAVE0_WR_BUF_DONE | SPI_SLAVE0_RD_BUF_DONE); // Clear flags
         REG(SPI1_SLAVE0) |= SPI_SLAVE0_WR_STA_DONE_EN | SPI_SLAVE0_RD_STA_DONE_EN | SPI_SLAVE0_WR_BUF_DONE_EN | SPI_SLAVE0_RD_BUF_DONE_EN;// Enable interrupts
 
-        DBGPRINTLN_CTX("SPI1 addr [%08X]", REG(SPI1_ADDR));
-
         if(status & SPI_SLAVE0_RD_BUF_DONE)
-        {
-            DBGPRINTLN_CTX("SPI1 read done");
-
-            uint32_t len = 32;
-            uint8_t data[] = { 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA };
-
-            uint8_t i;
-            uint32_t out = 0;
-            uint8_t bi = 0;
-            uint8_t wi = 8;
-
-            for(i = 0; i < 32; i++)
-            {
-                out |= (i < len) ? (data[i] << (bi * 8)) : 0;
-                bi++;
-                bi &= 3;
-
-                if(!bi)
-                {
-                    REG(SPI1_W(wi)) = out;
-                    out = 0;
-                    wi++;
-                }
-            }
-        }
+            ets_post(SPI_TASK_PRIO, SPI_SIGNAL_READ_DATA_DONE, NULL);
 
         if(status & SPI_SLAVE0_RD_STA_DONE)
-        {
-            DBGPRINTLN_CTX("SPI1 read status done");
-        }
+            ets_post(SPI_TASK_PRIO, SPI_SIGNAL_READ_STATUS_DONE, NULL);
 
         if(status & SPI_SLAVE0_WR_STA_DONE)
         {
-            uint32_t s = REG(SPI1_WSTATUS);
+            uint32_t status = (spi_status & ~SPI_STATUS_WRITTABLE_MASK) | (REG(SPI1_WSTATUS) & SPI_STATUS_WRITTABLE_MASK);
 
-            DBGPRINTLN_CTX("SPI1 write status done [%08X]", s);
+            REG(SPI1_WSTATUS) = status;
+
+            ets_post(SPI_TASK_PRIO, SPI_SIGNAL_WRITE_STATUS_DONE, (void *)status);
         }
 
         if(status & SPI_SLAVE0_WR_BUF_DONE)
         {
-            DBGPRINT_CTX("SPI1 write data done [");
+            uint32_t data = REG(SPI1_ADDR); // Address register used as additional 4 bytes of data
+
+            // 1 (data >> 0) & 0xFF
+            // 2 (data >> 8) & 0xFF
+            // 3 (data >> 16) & 0xFF
+            // 4 (data >> 24) & 0xFF
 
             for(uint8_t i = 0; i < 8; i++)
             {
-                uint32_t data = REG(SPI1_W(i));
+                data = REG(SPI1_W(i));
 
-                spi_buffer[(i << 2) + 0] = (data >> 0) & 0xFF;
-                spi_buffer[(i << 2) + 1] = (data >> 8) & 0xFF;
-                spi_buffer[(i << 2) + 2] = (data >> 16) & 0xFF;
-                spi_buffer[(i << 2) + 3] = (data >> 24) & 0xFF;
+                // 1 (data >> 0) & 0xFF
+                // 2 (data >> 8) & 0xFF
+                // 3 (data >> 16) & 0xFF
+                // 4 (data >> 24) & 0xFF
 
-                DBGPRINT("%02X ", spi_buffer[(i << 2) + 0]);
-                DBGPRINT("%02X ", spi_buffer[(i << 2) + 1]);
-                DBGPRINT("%02X ", spi_buffer[(i << 2) + 2]);
-                DBGPRINT("%02X ", spi_buffer[(i << 2) + 3]);
+                ets_post(SPI_TASK_PRIO, SPI_SIGNAL_WRITE_DATA_DONE, NULL);
             }
-
-            DBGPRINTLN("]");
         }
     }
     else if(flags & DPORT_SPI_INT_STATUS_SPI0)
     {
-        REG(SPI0_SLAVE0) &= ~0x3FF; // Clear SPI ISR
+        REG(SPI0_SLAVE0) &= ~0x3FF; // Clear flags and disable interrupts
     }
     else if(flags & DPORT_SPI_INT_STATUS_I2S)
     {
 
     }
+}
+
+void spi_task_handler(ets_event_t *event)
+{
+
 }
 
 void tick_timer_callback(void *arg)
@@ -142,8 +125,6 @@ void tick_timer_callback(void *arg)
 
             DBGPRINTLN_CTX("Free heap: [%lu]", curr_free_heap);
         }
-
-        //BGPRINTLN_CTX("System tick: [%lu]", now_ms);
     }
 }
 void sntp_timer_callback(void *arg)
@@ -176,6 +157,48 @@ void sntp_timer_callback(void *arg)
         DBGPRINTLN_CTX("  Starting OTA update...");
 
         ota_start(OTA_HOST, OTA_PORT, SSL_BUFFER_SIZE, DEVICE, device_id, BUILD_VERSION, update_new_version, timestamp, ota_event_handler);
+    }
+}
+
+void spi_init()
+{
+    REG(IOMUX_CONF) &= ~IOMUX_CONF_SPI1_CLOCK_EQU_SYS_CLOCK;
+
+    REG(SPI1_SLAVE0) = SPI_SLAVE0_MODE | SPI_SLAVE0_WR_RD_BUF_EN | SPI_SLAVE0_WR_STA_DONE_EN | SPI_SLAVE0_RD_STA_DONE_EN | SPI_SLAVE0_WR_BUF_DONE_EN | SPI_SLAVE0_RD_BUF_DONE_EN; // Enable interrupts
+    REG(SPI1_USER0) = SPI_USER0_MISO_HIGHPART | SPI_USER0_COMMAND | SPI_USER0_CLOCK_IN_EDGE; // Incoming data uses lower buffer, Outgoing data uses upper buffer, Sample on rising edge
+    REG(SPI1_CTRL2) = VAL2FIELD(SPI_CTRL2_MOSI_DELAY_NUM, 2);
+    REG(SPI1_CLOCK) = 0x00000000;
+    REG(SPI1_USER2) = VAL2FIELD(SPI_USER2_COMMAND_BITLEN, 7); // 8 bit commands
+    REG(SPI1_SLAVE1) = VAL2FIELD(SPI_SLAVE1_STATUS_BITLEN, 31) | SPI_SLAVE1_STA_READBACK | VAL2FIELD(SPI_SLAVE1_BUF_BITLEN, 255) | VAL2FIELD(SPI_SLAVE1_WR_ADDR_BITLEN, 31) | VAL2FIELD(SPI_SLAVE1_RD_ADDR_BITLEN, 7); // 32 bit status, 256 bit data, 32 bit write address, 8 bit read addresses
+    REG(SPI1_CMD) = SPI_CMD_USR;
+
+    REG(SPI1_WSTATUS) = spi_status;
+
+    ets_isr_attach(ETS_INUM_SPI, spi_isr, NULL);
+    ets_isr_unmask(BIT(ETS_INUM_SPI));
+
+    ets_task(spi_task_handler, SPI_TASK_PRIO, spi_task_queue, SPI_TASK_SIZE);
+}
+void spi_set_data(uint8_t *data, uint32_t len)
+{
+    uint32_t word = 0;
+    uint8_t word_index = 8;
+    uint8_t byte_index = 0;
+
+    for(uint8_t i = 0; i < 32; i++) // Convert from bytes to little endian words
+    {
+        word |= (i < len) ? (data[i] << (byte_index * 8)) : 0;
+
+        byte_index++;
+        byte_index &= 3;
+
+        if(!byte_index)
+        {
+            REG(SPI1_W(wi)) = word;
+
+            word = 0;
+            word_index++;
+        }
     }
 }
 
@@ -643,21 +666,21 @@ uint32_t get_flash_sector_count()
                 count = 128;
                 break;
             case FLASH_SIZE_8M_MAP_512_512:
-                count =  256;
+                count = 256;
                 break;
             case FLASH_SIZE_16M_MAP_512_512:
             case FLASH_SIZE_16M_MAP_1024_1024:
-                count =  512;
+                count = 512;
                 break;
             case FLASH_SIZE_32M_MAP_512_512:
             case FLASH_SIZE_32M_MAP_1024_1024:
-                count =  1024;
+                count = 1024;
                 break;
             case FLASH_SIZE_64M_MAP_1024_1024:
-                count =  2048;
+                count = 2048;
                 break;
             case FLASH_SIZE_128M_MAP_1024_1024:
-                count =  4096;
+                count = 4096;
                 break;
         }
     }
@@ -735,20 +758,7 @@ void user_init()
     ets_install_putc2(NULL);
 
     // SPI
-    REG(IOMUX_CONF) &= ~IOMUX_CONF_SPI1_CLOCK_EQU_SYS_CLOCK;
-
-    REG(SPI1_SLAVE0) = SPI_SLAVE0_MODE | SPI_SLAVE0_WR_RD_BUF_EN | SPI_SLAVE0_WR_STA_DONE_EN | SPI_SLAVE0_RD_STA_DONE_EN | SPI_SLAVE0_WR_BUF_DONE_EN | SPI_SLAVE0_RD_BUF_DONE_EN;
-    REG(SPI1_USER0) = SPI_USER0_MISO_HIGHPART | SPI_USER0_COMMAND | SPI_USER0_CLOCK_IN_EDGE;
-    REG(SPI1_CTRL2) = 0x00000000;
-    REG(SPI1_CLOCK) = 0x00000000;
-    REG(SPI1_USER2) = VAL2FIELD(SPI_USER2_COMMAND_BITLEN, 7); // 8 bit commands
-    REG(SPI1_SLAVE1) = VAL2FIELD(SPI_SLAVE1_STATUS_BITLEN, 31) | SPI_SLAVE1_STA_READBACK | VAL2FIELD(SPI_SLAVE1_BUF_BITLEN, 255) | VAL2FIELD(SPI_SLAVE1_WR_ADDR_BITLEN, 7) | VAL2FIELD(SPI_SLAVE1_RD_ADDR_BITLEN, 7);
-    REG(SPI1_CMD) = SPI_CMD_USR;
-
-    REG(SPI1_WSTATUS) = 0xAABBCCDD;
-
-    ets_isr_attach(ETS_INUM_SPI, spi_isr, NULL);
-    ets_isr_unmask(BIT(ETS_INUM_SPI));
+    spi_init();
 
     // Print information
     DBGPRINTLN();
