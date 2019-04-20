@@ -9,7 +9,7 @@ void _gpio_even_isr()
 {
     uint32_t ulFlags = GPIO->IF;
 
-    gpio_isr(ulFlags);
+    gpio_isr(ulFlags & 0x55555555);
 
     GPIO->IFC = 0x55555555; // Clear all even flags
 }
@@ -17,7 +17,7 @@ void _gpio_odd_isr()
 {
     uint32_t ulFlags = GPIO->IF;
 
-    gpio_isr(ulFlags);
+    gpio_isr(ulFlags & 0xAAAAAAAA);
 
     GPIO->IFC = 0xAAAAAAAA; // Clear all odd flags
 }
