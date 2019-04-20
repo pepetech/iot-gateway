@@ -364,6 +364,35 @@ int main()
     //CMU->ROUTEPEN |= CMU_ROUTEPEN_CLKOUT1PEN;
     //CMU->CTRL |= CMU_CTRL_CLKOUTSEL1_HFXO;
 
+    // ----------------- Testing battery monitoring with OpAmp + Analog Comparator ----------------- //
+    CMU->HFPERCLKEN1 |= CMU_HFPERCLKEN1_VDAC0;
+
+    VDAC0->OPA[1].CTRL = VDAC_OPA_CTRL_OUTSCALE_FULL | VDAC_OPA_CTRL_HCMDIS | (0x3 << _VDAC_OPA_CTRL_DRIVESTRENGTH_SHIFT); // Enable full drive strength, no rail-to-rail inputs
+    VDAC0->OPA[1].TIMER = (0x001 << _VDAC_OPA_TIMER_SETTLETIME_SHIFT) | (0x05 << _VDAC_OPA_TIMER_WARMUPTIME_SHIFT) | (0x00 << _VDAC_OPA_TIMER_STARTUPDLY_SHIFT); // Recommended settings
+    VDAC0->OPA[1].MUX = VDAC_OPA_MUX_RESSEL_RES1 | VDAC_OPA_MUX_RESINMUX_DISABLE | VDAC_OPA_MUX_NEGSEL_UG | VDAC_OPA_MUX_POSSEL_POSPAD; // Unity gain with POSPAD as non-inverting input
+    VDAC0->OPA[1].OUT = 0; // Disable all outputs (NEXT1 is always connected)
+    VDAC0->OPA[1].CAL = DEVINFO->OPA1CAL7; // Calibration for DRIVESTRENGTH = 0x3, INCBW = 0
+
+    VDAC0->CMD = VDAC_CMD_OPA1EN; // Enable OPA1
+    while(!(VDAC0->STATUS & VDAC_STATUS_OPA1ENS)); // Wait for it to be enabled
+
+    CMU->HFPERCLKEN0 |= CMU_HFPERCLKEN0_ACMP0;
+
+    ACMP0->CTRL = ACMP_CTRL_FULLBIAS | (0x20 << _ACMP_CTRL_BIASPROG_SHIFT) | ACMP_CTRL_IFALL | ACMP_CTRL_IRISE | ACMP_CTRL_INPUTRANGE_GTVDDDIV2 | ACMP_CTRL_ACCURACY_HIGH | ACMP_CTRL_PWRSEL_AVDD | ACMP_CTRL_GPIOINV_NOTINV | ACMP_CTRL_INACTVAL_LOW;
+    ACMP0->INPUTSEL = ACMP_INPUTSEL_VBSEL_2V5 | ACMP_INPUTSEL_VASEL_VDD | ACMP_INPUTSEL_NEGSEL_VBDIV | ACMP_INPUTSEL_POSSEL_DACOUT1;
+    ACMP0->HYSTERESIS0 = 48 << _ACMP_HYSTERESIS0_DIVVB_SHIFT; // VBat is high when >= 3.828125 V
+    ACMP0->HYSTERESIS1 = 44 << _ACMP_HYSTERESIS1_DIVVB_SHIFT; // VBat is low when <= 3.515625 V
+
+    ACMP0->IFC = _ACMP_IFC_MASK; // Clear pending IRQs
+    IRQ_CLEAR(ACMP0_IRQn); // Clear pending vector
+    IRQ_SET_PRIO(ACMP0_IRQn, 1, 0); // Set priority 1,0
+    IRQ_ENABLE(ACMP0_IRQn); // Enable vector
+
+    ACMP0->CTRL |= ACMP_CTRL_EN; // Enable ACMP0
+    while(!(ACMP0->STATUS & ACMP_STATUS_ACMPACT)); // Wait for it to be enabled
+    while(!(ACMP0->IF & ACMP_IF_WARMUP)); // Wait for it to warmup
+    // ----------------- Testing battery monitoring with OpAmp + Analog Comparator ----------------- //
+
     // BMP280 info & configuration
     DBGPRINTLN_CTX("BMP280 version: 0x%02X", bmp280_read_version());
 
