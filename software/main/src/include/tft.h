@@ -94,8 +94,6 @@ void tft_graph_clear(tft_graph_t *pxGraph);
 void tft_graph_draw_frame(tft_graph_t *pxGraph);
 void tft_graph_draw_data(tft_graph_t *pxGraph, double *pXData, double *pYData, uint16_t usDataPoints);
 
-void Graph(double x, double y, double gx, double gy, double w, double h, double xlo, double xhi, double xinc, double ylo, double yhi, double yinc, const char *title, const char *xlabel, const char *ylabel, rgb565_t gcolor, rgb565_t acolor, rgb565_t pcolor, rgb565_t tcolor, rgb565_t bcolor, uint8_t *redraw);
-
 uint8_t tft_draw_char(char cChar, const font_t *xFont, uint16_t usX, uint16_t usY, rgb565_t xColor, rgb565_t xBackColor);
 void tft_draw_string(char *pszStr, const font_t *pFont, uint16_t usX, uint16_t usY, rgb565_t xColor, rgb565_t xBackColor);
 void tft_printf(const font_t *pFont, uint16_t usX, uint16_t usY, rgb565_t xColor, rgb565_t usBackColor, const char* pszFmt, ...);
