@@ -345,10 +345,11 @@ int init()
     else
         DBGPRINTLN_CTX("ILI9488 init NOK!");
 
-    if(bmp280_init())
-        DBGPRINTLN_CTX("BMP280 init OK!");
-    else
-        DBGPRINTLN_CTX("BMP280 init NOK!");
+    // FIXME: bmp code causes usage fault
+//    if(bmp280_init())
+//        DBGPRINTLN_CTX("BMP280 init OK!");
+//    else
+//        DBGPRINTLN_CTX("BMP280 init NOK!");
 
     /*
     if(rfm69_init(RADIO_NODE_ID, RADIO_NETWORK_ID, RADIO_AES_KEY))
@@ -405,11 +406,11 @@ int main()
     // ----------------- Testing battery monitoring with OpAmp + Analog Comparator ----------------- //
 
     // BMP280 info & configuration
-    DBGPRINTLN_CTX("BMP280 version: 0x%02X", bmp280_read_version());
+    //DBGPRINTLN_CTX("BMP280 version: 0x%02X", bmp280_read_version());
 
-    bmp280_write_config(BMP280_STANDBY_1000MS | BMP280_FILTER_8);
-    bmp280_write_control(BMP280_TEMP_OS4 | BMP280_PRESSURE_OS16 | BMP280_MODE_NORMAL);
-    DBGPRINTLN_CTX("BMP280 write control & config!");
+    //bmp280_write_config(BMP280_STANDBY_1000MS | BMP280_FILTER_8);
+    //bmp280_write_control(BMP280_TEMP_OS4 | BMP280_PRESSURE_OS16 | BMP280_MODE_NORMAL);
+    //DBGPRINTLN_CTX("BMP280 write control & config!");
 
     // QSPI Flash info
     uint8_t ubFlashUID[8];
@@ -433,6 +434,34 @@ int main()
     tft_bl_init(2000); // Init backlight PWM at 2 kHz
     tft_bl_set(0.25f); // Set backlight to 25%
     tft_display_on(); // Turn display on
+    tft_set_rotation(1); // Set rotation 1
+    tft_fill_screen(RGB565_BLACK); // Fill display
+
+    uint8_t display1 = 1;
+    uint8_t display2 = 1;
+    uint8_t display3 = 1;
+    uint8_t display4 = 1;
+    uint8_t display5 = 1;
+    uint8_t display6 = 1;
+    uint8_t display7 = 1;
+    uint8_t display8 = 1;
+    uint8_t display9 = 1;
+
+    tft_graph_t *pTestGraph = tft_graph_create(60, 30, 350, 260, 0, 7, 1, -1, 1, .25, "Sin Function", "x", "sin(x)", &xSans9pFont, RGB565_DARKBLUE, RGB565_RED, RGB565_YELLOW, RGB565_WHITE, RGB565_BLACK);
+    tft_graph_draw_frame(pTestGraph);
+
+
+    double x, y;
+
+    for(x = 0; x <= 6.3; x += .1)
+    {
+        y = sin(x);
+        tft_graph_draw_data(pTestGraph, &x, &y, 1);
+    }
+
+    delay_ms(1000);
+
+    tft_graph_delete(pTestGraph);
     tft_set_rotation(0); // Set rotation 0
     tft_fill_screen(RGB565_DARKGREY); // Fill display
 
@@ -564,20 +593,20 @@ int main()
 
             DBGPRINTLN_CTX("Button states (1|2|3): %hhu|%hhu|%hhu", BTN_1_STATE(), BTN_2_STATE(), BTN_3_STATE());
             */
-            float fTemp = bmp280_read_temperature();
-            float fPress = bmp280_read_pressure();
+            //float fTemp = bmp280_read_temperature();
+            //float fPress = bmp280_read_pressure();
 
-            DBGPRINTLN_CTX("BMP280 Temperature: %.2f C", fTemp);
-            DBGPRINTLN_CTX("BMP280 Pressure: %.2f hPa", fPress);
+            //DBGPRINTLN_CTX("BMP280 Temperature: %.2f C", fTemp);
+            //DBGPRINTLN_CTX("BMP280 Pressure: %.2f hPa", fPress);
 
-            tft_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
-            tft_textbox_printf(textbox, "\nBMP Temp: ");
-            tft_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
-            tft_textbox_printf(textbox, "%.2f\n\r", fTemp);
-            tft_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
-            tft_textbox_printf(textbox, "\rBMP Press: ");
-            tft_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
-            tft_textbox_printf(textbox, "%.2f\n\r", fPress);
+            //tft_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
+            //tft_textbox_printf(textbox, "\nBMP Temp: ");
+            //tft_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
+            //tft_textbox_printf(textbox, "%.2f\n\r", fTemp);
+            //tft_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
+            //tft_textbox_printf(textbox, "\rBMP Press: ");
+            //tft_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
+            //tft_textbox_printf(textbox, "%.2f\n\r", fPress);
             tft_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
             tft_textbox_printf(textbox, "\rADC Temp: ");
             tft_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);

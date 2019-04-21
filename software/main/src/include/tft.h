@@ -10,7 +10,31 @@
 #include "images.h"
 #include "fonts.h"
 
-
+typedef struct
+{
+    uint8_t ubRedrawFlag;
+    double dOldX;
+    double dOldY;
+    uint16_t usOriginX;
+    uint16_t usOriginY;
+    uint16_t usWidth;
+    uint16_t usHeigth;
+    double dXLowBound;
+    double dXUppBound;
+    double dXInc;
+    double dYLowBound;
+    double dYUppBound;
+    double dYInc;
+    char *pubTitle;
+    char *pubXLabel;
+    char *pubYLabel;
+    const font_t *pFont;
+    rgb565_t xGColor;
+    rgb565_t xAColor;
+    rgb565_t xPColor;
+    rgb565_t xTColor;
+    rgb565_t xBColor;
+} tft_graph_t;
 typedef struct
 {
     uint16_t usX;
@@ -23,7 +47,6 @@ typedef struct
     rgb565_t xColor;
     rgb565_t xBackColor;
 } tft_textbox_t;
-
 typedef struct
 {
     tft_textbox_t *pTextbox;
@@ -64,6 +87,15 @@ void tft_draw_circle(uint16_t usX, uint16_t usY, uint16_t usR, rgb565_t xColor, 
 
 void tft_draw_image(const image_t *pImage, uint16_t usX, uint16_t usY);
 void tft_draw_bitmap(const uint8_t *pubBitmap, uint16_t usX, uint16_t usY, uint16_t usW, uint16_t usH, rgb565_t xColor, rgb565_t usBackColor);
+
+tft_graph_t *tft_graph_create(double gx, double gy, double w, double h, double xlo, double xhi, double xinc, double ylo, double yhi, double yinc, const char *title, const char *xlabel, const char *ylabel, const font_t *pFont, rgb565_t gcolor, rgb565_t acolor, rgb565_t pcolor, rgb565_t tcolor, rgb565_t bcolor);
+void tft_graph_delete(tft_graph_t *pxGraph);
+void tft_graph_clear(tft_graph_t *pxGraph);
+void tft_graph_draw_frame(tft_graph_t *pxGraph);
+void tft_graph_draw_data(tft_graph_t *pxGraph, double *pXData, double *pYData, uint16_t usDataPoints);
+
+void Graph(double x, double y, double gx, double gy, double w, double h, double xlo, double xhi, double xinc, double ylo, double yhi, double yinc, const char *title, const char *xlabel, const char *ylabel, rgb565_t gcolor, rgb565_t acolor, rgb565_t pcolor, rgb565_t tcolor, rgb565_t bcolor, uint8_t *redraw);
+
 uint8_t tft_draw_char(char cChar, const font_t *xFont, uint16_t usX, uint16_t usY, rgb565_t xColor, rgb565_t xBackColor);
 void tft_draw_string(char *pszStr, const font_t *pFont, uint16_t usX, uint16_t usY, rgb565_t xColor, rgb565_t xBackColor);
 void tft_printf(const font_t *pFont, uint16_t usX, uint16_t usY, rgb565_t xColor, rgb565_t usBackColor, const char* pszFmt, ...);
