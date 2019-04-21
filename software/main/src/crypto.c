@@ -4,12 +4,12 @@ void crypto_init()
 {
     CMU->HFBUSCLKEN0 |= CMU_HFBUSCLKEN0_CRYPTO0;
 }
-void crypto_sha256(uint8_t *pubData, uint64_t ullDataSize, uint8_t pubDigest[32])
+void crypto_sha256(uint8_t *pubData, uint32_t ulDataSize, uint8_t pubDigest[32])
 {
     if(!pubData)
         return;
 
-    if(!ullDataSize)
+    if(!ulDataSize)
         return;
 
     if(!pubDigest)
@@ -38,29 +38,29 @@ void crypto_sha256(uint8_t *pubData, uint64_t ullDataSize, uint8_t pubDigest[32]
 
     CRYPTO0->SEQ0 = CRYPTO_CMD_INSTR_DDATA1TODDATA0 | (CRYPTO_CMD_INSTR_SELDDATA0DDATA1 << 8) | (CRYPTO_CMD_INSTR_EXEC << 16);
 
-    uint32_t ulDataSize = (uint32_t)ullDataSize;
+    uint32_t ulByteSize = ulDataSize;
 
-    while (ulDataSize >= 64)
+    while(ulByteSize >= 64)
     {
         for(uint8_t i = 0; i < 16; i++)
             CRYPTO0->QDATA1BIG = ((uint32_t *)pubData)[i];
 
         CRYPTO0->SEQ0 = CRYPTO_CMD_INSTR_SHA | (CRYPTO_CMD_INSTR_MADD32 << 8) | (CRYPTO_CMD_INSTR_DDATA0TODDATA1 << 16) | (CRYPTO_CMD_INSTR_EXEC << 24);
 
-        ulDataSize -= 64;
+        ulByteSize -= 64;
         pubData += 64;
     }
 
     uint32_t ulBlockSize = 0;
 
-    for (; ulDataSize > 0; ulDataSize--)
+    while(ulByteSize--)
         pubSHABlock[ulBlockSize++] = *pubData++;
 
     pubSHABlock[ulBlockSize++] = 0x80;
 
-    if (ulBlockSize > 56)
+    if(ulBlockSize > 56)
     {
-        while (ulBlockSize < 64)
+        while(ulBlockSize < 64)
             pubSHABlock[ulBlockSize++] = 0;
 
         for(uint8_t i = 0; i < 16; i++)
@@ -71,13 +71,13 @@ void crypto_sha256(uint8_t *pubData, uint64_t ullDataSize, uint8_t pubDigest[32]
         ulBlockSize = 0;
     }
 
-    while (ulBlockSize < 56)
+    while(ulBlockSize < 56)
         pubSHABlock[ulBlockSize++] = 0;
 
-    uint64_t ullDataSizeBits = ullDataSize << 3;
+    uint64_t ullBitSize = (uint64_t)ulDataSize << 3;
 
-    *(uint32_t *)&pubSHABlock[56] = __REV((uint32_t)(ullDataSizeBits >> 32));
-    *(uint32_t *)&pubSHABlock[60] = __REV((uint32_t)ullDataSizeBits & 0xFFFFFFFF);
+    *(uint32_t *)&pubSHABlock[56] = __REV((uint32_t)(ullBitSize >> 32));
+    *(uint32_t *)&pubSHABlock[60] = __REV((uint32_t)ullBitSize & 0xFFFFFFFF);
 
     for(uint8_t i = 0; i < 16; i++)
         CRYPTO0->QDATA1BIG = pulSHABlock[i];
@@ -87,12 +87,12 @@ void crypto_sha256(uint8_t *pubData, uint64_t ullDataSize, uint8_t pubDigest[32]
     for(uint8_t i = 0; i < 8; i++)
         ((uint32_t *)pubDigest)[i] = CRYPTO0->DDATA0BIG;
 }
-void crypto_sha1(uint8_t *pubData, uint64_t ullDataSize, uint8_t pubDigest[20])
+void crypto_sha1(uint8_t *pubData, uint32_t ulDataSize, uint8_t pubDigest[20])
 {
     if(!pubData)
         return;
 
-    if(!ullDataSize)
+    if(!ulDataSize)
         return;
 
     if(!pubDigest)
@@ -121,29 +121,29 @@ void crypto_sha1(uint8_t *pubData, uint64_t ullDataSize, uint8_t pubDigest[20])
 
     CRYPTO0->SEQ0 = CRYPTO_CMD_INSTR_DDATA1TODDATA0 | (CRYPTO_CMD_INSTR_SELDDATA0DDATA1 << 8) | (CRYPTO_CMD_INSTR_EXEC << 16);
 
-    uint32_t ulDataSize = (uint32_t)ullDataSize;
+    uint32_t ulByteSize = ulDataSize;
 
-    while (ulDataSize >= 64)
+    while(ulByteSize >= 64)
     {
         for(uint8_t i = 0; i < 16; i++)
             CRYPTO0->QDATA1BIG = ((uint32_t *)pubData)[i];
 
         CRYPTO0->SEQ0 = CRYPTO_CMD_INSTR_SHA | (CRYPTO_CMD_INSTR_MADD32 << 8) | (CRYPTO_CMD_INSTR_DDATA0TODDATA1 << 16) | (CRYPTO_CMD_INSTR_EXEC << 24);
 
-        ulDataSize -= 64;
+        ulByteSize -= 64;
         pubData += 64;
     }
 
     uint32_t ulBlockSize = 0;
 
-    for (; ulDataSize > 0; ulDataSize--)
+    while(ulByteSize--)
         pubSHABlock[ulBlockSize++] = *pubData++;
 
     pubSHABlock[ulBlockSize++] = 0x80;
 
-    if (ulBlockSize > 56)
+    if(ulBlockSize > 56)
     {
-        while (ulBlockSize < 64)
+        while(ulBlockSize < 64)
             pubSHABlock[ulBlockSize++] = 0;
 
         for(uint8_t i = 0; i < 16; i++)
@@ -154,13 +154,13 @@ void crypto_sha1(uint8_t *pubData, uint64_t ullDataSize, uint8_t pubDigest[20])
         ulBlockSize = 0;
     }
 
-    while (ulBlockSize < 56)
+    while(ulBlockSize < 56)
         pubSHABlock[ulBlockSize++] = 0;
 
-    uint64_t ullDataSizeBits = ullDataSize << 3;
+    uint64_t ullBitSize = (uint64_t)ulDataSize << 3;
 
-    *(uint32_t *)&pubSHABlock[56] = __REV((uint32_t)(ullDataSizeBits >> 32));
-    *(uint32_t *)&pubSHABlock[60] = __REV((uint32_t)ullDataSizeBits & 0xFFFFFFFF);
+    *(uint32_t *)&pubSHABlock[56] = __REV((uint32_t)(ullBitSize >> 32));
+    *(uint32_t *)&pubSHABlock[60] = __REV((uint32_t)ullBitSize & 0xFFFFFFFF);
 
     for(uint8_t i = 0; i < 16; i++)
         CRYPTO0->QDATA1BIG = pulSHABlock[i];
@@ -170,7 +170,7 @@ void crypto_sha1(uint8_t *pubData, uint64_t ullDataSize, uint8_t pubDigest[20])
     for(uint8_t i = 0; i < 5; i++)
         ((uint32_t *)pubDigest)[i] = CRYPTO0->DDATA0BIG;
 
-    REG_DISCARD(CRYPTO0->DDATA0BIG);
-    REG_DISCARD(CRYPTO0->DDATA0BIG);
-    REG_DISCARD(CRYPTO0->DDATA0BIG);
+    REG_DISCARD(&CRYPTO0->DDATA0BIG);
+    REG_DISCARD(&CRYPTO0->DDATA0BIG);
+    REG_DISCARD(&CRYPTO0->DDATA0BIG);
 }
