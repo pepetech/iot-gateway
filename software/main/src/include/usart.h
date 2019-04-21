@@ -16,7 +16,7 @@
 #define USART_SPI_MSB_FIRST 1
 
 
-//#define USART0_MODE_SPI                 	// Define for SPI, comment out for UART
+#define USART0_MODE_SPI                 	// Define for SPI, comment out for UART
 #define USART0_DMA_CHANNEL			0   	// Only relevant when in UART mode
 #define USART0_DMA_RX_BUFFER_SIZE	128		// Only relevant when in UART mode
 #define USART0_FIFO_SIZE			256     // Only relevant when in UART mode
