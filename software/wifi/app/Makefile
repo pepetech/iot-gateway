@@ -137,16 +137,16 @@ ifeq ($(STANDALONE), 1)
 	@echo Creating BIN file \'$(TARGET).irom0.bin\'...
 	@esptool2 -lib $^ $(TARGET).irom0.bin
 	@echo ---------------------------------------------------------------------------
-	@espmem -l $(LDSCRIPT_STANDALONE) -d $^
+	@espmem -l $(LDSCRIPT_STANDALONE) -d -h $^
 else
 	@echo Creating BIN file \'$(TARGET).app1.bin\'...
 	@esptool2 -bin -$(FLASH_SIZE) -$(FLASH_SPEED) -$(FLASH_MODE) -boot2 -iromchksum $(TARGET).app1.elf $(TARGET).app1.bin .text .data .rodata
 	@echo Creating BIN file \'$(TARGET).app2.bin\'...
 	@esptool2 -bin -$(FLASH_SIZE) -$(FLASH_SPEED) -$(FLASH_MODE) -boot2 -iromchksum $(TARGET).app2.elf $(TARGET).app2.bin .text .data .rodata
 	@echo ---------------------------------------------------------------------------
-	@espmem -l $(LDSCRIPT_APP1) -d $(TARGET).app1.elf
+	@espmem -l $(LDSCRIPT_APP1) -d -h $(TARGET).app1.elf
 	@echo ---------------------------------------------------------------------------
-	@espmem -l $(LDSCRIPT_APP2) -d $(TARGET).app2.elf
+	@espmem -l $(LDSCRIPT_APP2) -d -h $(TARGET).app2.elf
 endif
 
 $(TARGET).elf: $(OBJECTS)

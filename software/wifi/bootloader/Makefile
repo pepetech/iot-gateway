@@ -60,13 +60,13 @@ $(TARGET_BOOT).bin: $(TARGET_BOOT).elf
 	@echo Creating BIN file \'$(TARGET_BOOT).bin\'...
 	@esptool2 -bin -$(FLASH_SIZE) -$(FLASH_SPEED) -$(FLASH_MODE) -boot0 $^ $@ .text .rodata
 	@echo ---------------------------------------------------------------------------
-	@espmem -l $(LDSCRIPT_BOOT) -d $^
+	@espmem -l $(LDSCRIPT_BOOT) -d -h $^
 
 $(SOURCEDIR)/include/loader.h: $(TARGET_LOADER).elf
 	@echo Creating loader header file \'$@\'...
 	@esptool2 -header $^ $@ .text
 	@echo ---------------------------------------------------------------------------
-	@espmem -l $(LDSCRIPT_LOADER) -d $^
+	@espmem -l $(LDSCRIPT_LOADER) -d -h $^
 	@echo ---------------------------------------------------------------------------
 
 $(TARGET_LOADER).elf: $(OBJECTS_LOADER)
