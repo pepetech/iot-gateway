@@ -71,12 +71,12 @@ void ldma_ch_load(uint8_t ubChannel, ldma_descriptor_t *pDescriptor)
     if((uint32_t)pDescriptor & 3) // Descriptors must be word aligned
         return;
 
-    LDMA->CH[ubChannel].LINK = (uint32_t)pDescriptor;
+    LDMA->CH[ubChannel].LINK = (uint32_t)pDescriptor | LDMA_CH_LINK_LINK;
 
     PERI_REG_BIT_CLEAR(&(LDMA->CHDONE)) = BIT(ubChannel);
     LDMA->LINKLOAD = BIT(ubChannel);
 }
-void ldma_ch_req(uint8_t ubChannel)
+void ldma_ch_sw_req(uint8_t ubChannel)
 {
     if(ubChannel >= DMA_CHAN_COUNT)
         return;
@@ -97,15 +97,53 @@ void ldma_ch_disable(uint8_t ubChannel)
 
     PERI_REG_BIT_CLEAR(&(LDMA->CHEN)) = BIT(ubChannel);
 }
+void ldma_ch_peri_req_enable(uint8_t ubChannel)
+{
+    if(ubChannel >= DMA_CHAN_COUNT)
+        return;
+
+    PERI_REG_BIT_CLEAR(&(LDMA->REQDIS)) = BIT(ubChannel);
+}
+void ldma_ch_peri_req_disable(uint8_t ubChannel)
+{
+    if(ubChannel >= DMA_CHAN_COUNT)
+        return;
+
+    PERI_REG_BIT_SET(&(LDMA->REQDIS)) = BIT(ubChannel);
+}
+void ldma_ch_req_clear(uint8_t ubChannel)
+{
+    if(ubChannel >= DMA_CHAN_COUNT)
+        return;
+
+    LDMA->REQCLEAR = BIT(ubChannel);
+}
 uint16_t ldma_ch_get_remaining_xfers(uint8_t ubChannel)
 {
     if(ubChannel >= DMA_CHAN_COUNT)
         return 0;
 
-    uint16_t usRemaining = (LDMA->CH[ubChannel].CTRL & _LDMA_CH_CTRL_XFERCNT_MASK) >> _LDMA_CH_CTRL_XFERCNT_SHIFT;
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+    {
+        uint16_t usRemaining = (LDMA->CH[ubChannel].CTRL & _LDMA_CH_CTRL_XFERCNT_MASK) >> _LDMA_CH_CTRL_XFERCNT_SHIFT;
 
-    if((LDMA->CHDONE & BIT(ubChannel)) || (!usRemaining && (LDMA->IF & BIT(ubChannel))))
-        return 0;
+        if((LDMA->CHDONE & BIT(ubChannel)) || (!usRemaining && (LDMA->IF & BIT(ubChannel))))
+            return 0;
 
-    return usRemaining + 1;
+        return usRemaining + 1;
+    }
+}
+void* ldma_ch_get_next_src_addr(uint8_t ubChannel)
+{
+    if(ubChannel >= DMA_CHAN_COUNT)
+        return NULL;
+
+    return (void *)(LDMA->CH[ubChannel].SRC);
+}
+void* ldma_ch_get_next_dst_addr(uint8_t ubChannel)
+{
+    if(ubChannel >= DMA_CHAN_COUNT)
+        return NULL;
+
+    return (void *)(LDMA->CH[ubChannel].DST);
 }

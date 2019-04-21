@@ -47,18 +47,18 @@ uint8_t bmp280_init()
 {
 	delay_ms(BMP280_T_START_PON);
 
-	if(!i2c0_write(BMP280_I2C_ADDR, 0, 0, 1)) // Check ACK from the expected address
+	if(!i2c0_write(BMP280_I2C_ADDR, 0, 0, I2C_STOP)) // Check ACK from the expected address
 		return 0;
 
 	if(bmp280_read_id() != 0x58)
         return 0;
 
-    uint8_t i, buf[24];
-
     bmp280_software_reset();
 
     while(bmp280_read_status() & BMP280_READING_CALIB)
         delay_ms(BMP280_T_CALIB_READ);
+
+    uint8_t buf[24];
 
     buf[0] = BMP280_REG_DIG_T1_H;
     buf[1] = BMP280_REG_DIG_T1_L;
@@ -86,7 +86,7 @@ uint8_t bmp280_init()
     buf[22] = BMP280_REG_DIG_P9_H;
     buf[23] = BMP280_REG_DIG_P9_L;
 
-    for(i = 0; i < 24; i++)
+    for(uint8_t i = 0; i < 24; i++)
         buf[i] = bmp280_read_register(buf[i]);
 
     DIG_T1 = (buf[0] << 8) | buf[1];

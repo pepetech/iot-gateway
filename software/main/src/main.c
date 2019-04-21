@@ -204,9 +204,10 @@ int init()
     emu_init(1); // Init EMU, ignore DCDC and switch digital power immediatly to DVDD
 
     cmu_hfxo_startup_calib(0x200, 0x145); // Config HFXO Startup for 1280 uA, 36 pF (18 pF + 2 pF CLOAD)
-    cmu_hfxo_steady_calib(0x009, 0x145); // Cnfig HFXO Steady state for 12 uA, 36 pF (18 pF + 2 pF CLOAD)
+    cmu_hfxo_steady_calib(0x009, 0x145); // Config HFXO Steady for 12 uA, 36 pF (18 pF + 2 pF CLOAD)
 
     cmu_lfxo_calib(0x08); // Config LFXO for 10 pF (5 pF + 1 pF CLOAD)
+
     cmu_init(); // Init Clocks
 
     cmu_ushfrco_calib(1, USHFRCO_CALIB_50M, 50000000); // Enable and calibrate USHFRCO for 50 MHz

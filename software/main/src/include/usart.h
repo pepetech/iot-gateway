@@ -16,7 +16,7 @@
 #define USART_SPI_MSB_FIRST 1
 
 
-#define USART0_MODE_SPI                 	// Define for SPI, comment out for UART
+//#define USART0_MODE_SPI                 	// Define for SPI, comment out for UART
 #define USART0_DMA_CHANNEL			0   	// Only relevant when in UART mode
 #define USART0_DMA_RX_BUFFER_SIZE	128		// Only relevant when in UART mode
 #define USART0_FIFO_SIZE			256     // Only relevant when in UART mode
@@ -33,7 +33,7 @@ static inline void usart0_spi_read(uint8_t* pubDst, uint32_t ulSize)
 {
     usart0_spi_transfer(NULL, ulSize, pubDst);
 }
-#else   // USART0_MODE
+#else   // USART0_MODE_SPI
 void usart0_init(uint32_t ulBaud, uint32_t ulFrameSettings, int8_t bRXLocation, int8_t bTXLocation, int8_t bCTSLocation, int8_t bRTSLocation);
 void usart0_write_byte(const uint8_t ubData);
 uint8_t usart0_read_byte();
@@ -49,7 +49,7 @@ static inline void usart0_read(uint8_t *pubDst, uint32_t ulSize)
 	while(ulSize--)
 		*pubDst++ = usart0_read_byte();
 }
-#endif  // USART0_MODE
+#endif  // USART0_MODE_SPI
 
 // - - - - - - - - - - - - - - - TEMPORARY - - - - - - - - - - - - - -
 void usart1_init(uint32_t ulBaud, uint8_t ubMode, uint8_t ubBitMode, int8_t bMISOLocation, int8_t bMOSILocation, uint8_t ubCLKLocation);

@@ -29,37 +29,37 @@ void dbg_swo_putc(char c, uint8_t ubChannel)
 }
 void dbg_swo_send_uint8(uint8_t ubData, uint8_t ubChannel)
 {
-    if (!(ITM->TCR & ITM_TCR_ITMENA_Msk))
+    if(!(ITM->TCR & ITM_TCR_ITMENA_Msk))
         return;
 
-    if (!(ITM->TER & (1 << ubChannel)))
+    if(!(ITM->TER & (1 << ubChannel)))
         return;
 
-    while(!ITM->PORT[0].u8);
+    while(!ITM->PORT[ubChannel].u8);
 
     ITM->PORT[ubChannel].u8 = ubData;
 }
 void dbg_swo_send_uint16(uint16_t usData, uint8_t ubChannel)
 {
-    if (!(ITM->TCR & ITM_TCR_ITMENA_Msk))
+    if(!(ITM->TCR & ITM_TCR_ITMENA_Msk))
         return;
 
-    if (!(ITM->TER & (1 << ubChannel)))
+    if(!(ITM->TER & (1 << ubChannel)))
         return;
 
-    while(!ITM->PORT[0].u8);
+    while(!ITM->PORT[ubChannel].u8);
 
     ITM->PORT[ubChannel].u16 = usData;
 }
 void dbg_swo_send_uint32(uint32_t ulData, uint8_t ubChannel)
 {
-    if (!(ITM->TCR & ITM_TCR_ITMENA_Msk))
+    if(!(ITM->TCR & ITM_TCR_ITMENA_Msk))
         return;
 
-    if (!(ITM->TER & (1 << ubChannel)))
+    if(!(ITM->TER & (1 << ubChannel)))
         return;
 
-    while(!ITM->PORT[0].u8);
+    while(!ITM->PORT[ubChannel].u8);
 
     ITM->PORT[ubChannel].u32 = ulData;
 }

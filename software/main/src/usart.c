@@ -56,68 +56,69 @@ void usart0_spi_transfer(const uint8_t* pubSrc, uint32_t ulSize, uint8_t* pubDst
 #else   // USART0_MODE_SPI
 static volatile uint8_t *pubUSART0DMABuffer = NULL;
 static volatile uint8_t *pubUSART0FIFO = NULL;
-static volatile uint16_t usUSART0FIFOWritePos, usUART2FIFOReadPos;
+static volatile uint16_t usUSART0FIFOWritePos, usUSART0FIFOReadPos;
 static ldma_descriptor_t __attribute__ ((aligned (4))) pUSART0DMADescriptor[2];
+
+#include "debug_macros.h"
 
 void _usart0_rx_isr()
 {
- /*   if(USART1->SR & USART_SR_IDLE)
-	{
-        REG_DISCARD(&USART1->SR); // Read SR & DR to clear interrupt flag
-	    REG_DISCARD(&USART1->DR);
+    uint32_t ulFlags = USART0->IFC;
 
-        uint32_t ulSize = (UART1_DMA_RX_BUFFER_SIZE >> 1) - ((DMA1_Channel5->CNDTR - 1) % (UART1_DMA_RX_BUFFER_SIZE >> 1)) - 1;
+    if(ulFlags & USART_IFC_TCMP0)
+    {
+        uint16_t usDMAXfersLeft = ldma_ch_get_remaining_xfers(USART0_DMA_CHANNEL);
+        uint32_t ulSize = (USART0_DMA_RX_BUFFER_SIZE >> 1) - usDMAXfersLeft;
 
         if(ulSize)
         {
-            DMA1_Channel5->CCR &= ~DMA_CCR5_EN; // Disable DMA channel
+            ldma_ch_peri_req_disable(USART0_DMA_CHANNEL);
 
-            volatile uint8_t *pubDMABufferReadPos = (DMA1_Channel5->CNDTR > (UART1_DMA_RX_BUFFER_SIZE >> 1)) ? pubUART1DMABuffer : pubUART1DMABuffer + (UART1_DMA_RX_BUFFER_SIZE >> 1);
+            volatile uint8_t *pubDMANextDst = (volatile uint8_t *)ldma_ch_get_next_dst_addr(USART0_DMA_CHANNEL);
+            volatile uint8_t *pubDMABufferReadPos = pubDMANextDst >= (pubUSART0DMABuffer + (USART0_DMA_RX_BUFFER_SIZE >> 1)) ? (pubUSART0DMABuffer + (USART0_DMA_RX_BUFFER_SIZE >> 1)) : pubUSART0DMABuffer;
+
+            if(pubDMANextDst - pubDMABufferReadPos != ulSize)
+                DBGPRINTLN_CTX("WARNING: DMA size does not match %lu != %lu", pubDMANextDst - pubDMABufferReadPos, ulSize);
 
     		while(ulSize--)
     		{
-    			pubUART1FIFO[usUART1FIFOWritePos++] = *pubDMABufferReadPos++;
+    			pubUSART0FIFO[usUSART0FIFOWritePos++] = *pubDMABufferReadPos++;
 
-    			if(usUART1FIFOWritePos >= UART1_FIFO_SIZE)
-    				usUART1FIFOWritePos = 0;
+    			if(usUSART0FIFOWritePos >= USART0_FIFO_SIZE)
+    				usUSART0FIFOWritePos = 0;
     		}
 
-            DMA1->IFCR = DMA_IFCR_CGIF5 | DMA_IFCR_CTCIF5 | DMA_IFCR_CHTIF5 | DMA_IFCR_CTEIF5; // Clear all interrupt flags otherwise DMA won't start again
-            DMA1_Channel5->CNDTR = UART1_DMA_RX_BUFFER_SIZE;
-            DMA1_Channel5->CMAR = (uint32_t)pubUART1DMABuffer;
-            DMA1_Channel5->CCR |= DMA_CCR5_EN; // Enable DMA channel
+            ldma_ch_load(USART0_DMA_CHANNEL, pUSART0DMADescriptor);
+            ldma_ch_peri_req_enable(USART0_DMA_CHANNEL);
         }
-    }*/
+    }
 }
 static void usart0_dma_isr(uint8_t ubError)
 {
-/*    volatile uint8_t *pubDMABufferReadPos = 0;
-
-    if(DMA1->ISR & DMA_ISR_HTIF5)
+    if(ubError)
     {
-        DMA1->IFCR = DMA_IFCR_CHTIF5; // Clear Half-transfer flag
+        DBGPRINTLN_CTX("WARNING: DMA channel error!");
 
-        pubDMABufferReadPos = pubUART1DMABuffer;
-    }
-    else if(DMA1->ISR & DMA_ISR_TCIF5)
-	{
-        DMA1->IFCR = DMA_IFCR_CTCIF5; // Clear Transfer complete flag
+        ldma_ch_load(USART0_DMA_CHANNEL, pUSART0DMADescriptor);
 
-        pubDMABufferReadPos = pubUART1DMABuffer + (UART1_DMA_RX_BUFFER_SIZE >> 1);
+        return;
     }
 
-    if(pubDMABufferReadPos)
+    volatile uint8_t *pubDMANextDst = (volatile uint8_t *)ldma_ch_get_next_dst_addr(USART0_DMA_CHANNEL);
+    volatile uint8_t *pubDMABufferReadPos = pubDMANextDst >= (pubUSART0DMABuffer + (USART0_DMA_RX_BUFFER_SIZE >> 1)) ? pubUSART0DMABuffer : (pubUSART0DMABuffer + (USART0_DMA_RX_BUFFER_SIZE >> 1)); // If next destination address is on the second buffer it means that the first buffer has just gone full, copy from the first, and vice versa
+
+    if(pubDMANextDst != (pubUSART0DMABuffer + (USART0_DMA_RX_BUFFER_SIZE >> 1)) && pubDMANextDst != pubUSART0DMABuffer)
+        DBGPRINTLN_CTX("WARNING: DMA dst is not aligned to any buffer 0x%08X != 0x%08X && 0x%08X != 0x%08X", pubDMANextDst, (pubUSART0DMABuffer + (USART0_DMA_RX_BUFFER_SIZE >> 1)), pubDMANextDst, pubUSART0DMABuffer);
+
+    uint32_t ulSize = (USART0_DMA_RX_BUFFER_SIZE >> 1);
+
+    while(ulSize--)
     {
-        uint32_t ulSize = (UART1_DMA_RX_BUFFER_SIZE >> 1);
+        pubUSART0FIFO[usUSART0FIFOWritePos++] = *pubDMABufferReadPos++;
 
-		while(ulSize--)
-		{
-			pubUART1FIFO[usUART1FIFOWritePos++] = *pubDMABufferReadPos++;
-
-			if(usUART1FIFOWritePos >= UART1_FIFO_SIZE)
-				usUART1FIFOWritePos = 0;
-		}
-    }*/
+        if(usUSART0FIFOWritePos >= USART0_FIFO_SIZE)
+            usUSART0FIFOWritePos = 0;
+    }
 }
 
 void usart0_init(uint32_t ulBaud, uint32_t ulFrameSettings, int8_t bRXLocation, int8_t bTXLocation, int8_t bCTSLocation, int8_t bRTSLocation)
@@ -160,7 +161,7 @@ void usart0_init(uint32_t ulBaud, uint32_t ulFrameSettings, int8_t bRXLocation, 
     memset((uint8_t *)pubUSART0FIFO, 0, USART0_FIFO_SIZE);
 
     usUSART0FIFOWritePos = 0;
-    usUART2FIFOReadPos = 0;
+    usUSART0FIFOReadPos = 0;
 
     USART0->CTRL = USART_CTRL_TXBIL_EMPTY | USART_CTRL_CSMA_NOACTION | UART_CTRL_OVS_X16;
     USART0->CTRLX = (bCTSLocation >= 0 ? USART_CTRLX_CTSEN : 0);
@@ -177,13 +178,28 @@ void usart0_init(uint32_t ulBaud, uint32_t ulFrameSettings, int8_t bRXLocation, 
     IRQ_CLEAR(USART0_RX_IRQn); // Clear pending vector
     IRQ_SET_PRIO(USART0_RX_IRQn, 2, 1); // Set priority 2,1
     IRQ_ENABLE(USART0_RX_IRQn); // Enable vector
-    USART0->IEN = USART_IEN_TCMP0; // Enable TCMP0 flag
+    USART0->IEN |= USART_IEN_TCMP0; // Enable TCMP0 flag
+
+    ldma_ch_disable(USART0_DMA_CHANNEL);
+    ldma_ch_peri_req_disable(USART0_DMA_CHANNEL);
+    ldma_ch_req_clear(USART0_DMA_CHANNEL);
 
     ldma_ch_config(USART0_DMA_CHANNEL, LDMA_CH_REQSEL_SOURCESEL_USART0 | LDMA_CH_REQSEL_SIGSEL_USART0RXDATAV, LDMA_CH_CFG_SRCINCSIGN_DEFAULT, LDMA_CH_CFG_DSTINCSIGN_POSITIVE, LDMA_CH_CFG_ARBSLOTS_DEFAULT, 0);
     ldma_ch_set_isr(USART0_DMA_CHANNEL, usart0_dma_isr);
 
-    //pUSART0DMADescriptor[0].CTRL
+    pUSART0DMADescriptor[0].CTRL = LDMA_CH_CTRL_DSTMODE_ABSOLUTE | LDMA_CH_CTRL_SRCMODE_ABSOLUTE | LDMA_CH_CTRL_DSTINC_ONE | LDMA_CH_CTRL_SIZE_BYTE | LDMA_CH_CTRL_SRCINC_ONE | LDMA_CH_CTRL_REQMODE_BLOCK | LDMA_CH_CTRL_DONEIFSEN | LDMA_CH_CTRL_BLOCKSIZE_UNIT1 | ((((USART0_DMA_RX_BUFFER_SIZE >> 1) - 1) << _LDMA_CH_CTRL_XFERCNT_SHIFT) & _LDMA_CH_CTRL_XFERCNT_MASK) | LDMA_CH_CTRL_STRUCTTYPE_TRANSFER;
+    pUSART0DMADescriptor[0].SRC = &USART0->RXDATA;
+    pUSART0DMADescriptor[0].DST = pubUSART0DMABuffer;
+    pUSART0DMADescriptor[0].LINK = 0x00000010 | LDMA_CH_LINK_LINK | LDMA_CH_LINK_LINKMODE_RELATIVE;
 
+    pUSART0DMADescriptor[1].CTRL = pUSART0DMADescriptor[0].CTRL;
+    pUSART0DMADescriptor[1].SRC = pUSART0DMADescriptor[0].SRC;
+    pUSART0DMADescriptor[1].DST = pubUSART0DMABuffer + (USART0_DMA_RX_BUFFER_SIZE >> 1);
+    pUSART0DMADescriptor[1].LINK = 0xFFFFFFF0 | LDMA_CH_LINK_LINK | LDMA_CH_LINK_LINKMODE_RELATIVE;
+
+    ldma_ch_load(USART0_DMA_CHANNEL, pUSART0DMADescriptor);
+    ldma_ch_peri_req_enable(USART0_DMA_CHANNEL);
+    ldma_ch_enable(USART0_DMA_CHANNEL);
 
     USART0->CMD = (bTXLocation >= 0 ? USART_CMD_TXEN : 0) | (bRXLocation >= 0 ? USART_CMD_RXEN : 0);
 }
@@ -202,21 +218,21 @@ uint8_t usart0_read_byte()
 
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
     {
-        ubData = pubUSART0FIFO[usUART2FIFOReadPos++];
+        ubData = pubUSART0FIFO[usUSART0FIFOReadPos++];
 
-        if(usUART2FIFOReadPos >= USART0_FIFO_SIZE)
-            usUART2FIFOReadPos = 0;
+        if(usUSART0FIFOReadPos >= USART0_FIFO_SIZE)
+            usUSART0FIFOReadPos = 0;
     }
 
     return ubData;
 }
 uint32_t usart0_available()
 {
-    return (USART0_FIFO_SIZE + usUSART0FIFOWritePos - usUART2FIFOReadPos) % USART0_FIFO_SIZE;
+    return (USART0_FIFO_SIZE + usUSART0FIFOWritePos - usUSART0FIFOReadPos) % USART0_FIFO_SIZE;
 }
 void usart0_flush()
 {
-    usUART2FIFOReadPos = usUSART0FIFOWritePos = 0;
+    usUSART0FIFOReadPos = usUSART0FIFOWritePos = 0;
 }
 #endif  // USART0_MODE_SPI
 
