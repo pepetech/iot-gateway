@@ -74,7 +74,7 @@ void sleep()
         __SEV(); // Set the event flag to ensure the next WFE will be a NOP
         __WFE(); // NOP and clear the event flag
         __WFE(); // Wait for event
-        __NOP(); // Prevent debugger crashesdelay_ms(10);
+        __NOP(); // Prevent debugger crashes
 
         cmu_init();
         cmu_update_clocks();
