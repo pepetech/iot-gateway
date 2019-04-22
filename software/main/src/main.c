@@ -47,9 +47,6 @@ void _acmp0_1_isr()
     {
         DBGPRINTLN_CTX("VBat status: %s", (ACMP0->STATUS & ACMP_STATUS_ACMPOUT) ? "HIGH" : "LOW");
     }
-
-    // FIXME: this line causes busfault
-    //REG_DISCARD(&ACMP1->IFC); // Clear all ACMP1 flags
 }
 
 // Functions
