@@ -12,6 +12,7 @@
 
 typedef struct
 {
+    uint8_t ubDrawLabelsFlag;
     uint8_t ubRedrawFlag;
     double dOldX;
     double dOldY;
@@ -46,6 +47,8 @@ typedef struct
     const font_t *pFont;
     rgb565_t xColor;
     rgb565_t xBackColor;
+    uint8_t ubLineWrapping;
+    uint8_t ubCursorWrapping;
 } tft_textbox_t;
 typedef struct
 {
@@ -88,7 +91,7 @@ void tft_draw_circle(uint16_t usX, uint16_t usY, uint16_t usR, rgb565_t xColor, 
 void tft_draw_image(const image_t *pImage, uint16_t usX, uint16_t usY);
 void tft_draw_bitmap(const uint8_t *pubBitmap, uint16_t usX, uint16_t usY, uint16_t usW, uint16_t usH, rgb565_t xColor, rgb565_t usBackColor);
 
-tft_graph_t *tft_graph_create(double gx, double gy, double w, double h, double xlo, double xhi, double xinc, double ylo, double yhi, double yinc, const char *title, const char *xlabel, const char *ylabel, const font_t *pFont, rgb565_t gcolor, rgb565_t acolor, rgb565_t pcolor, rgb565_t tcolor, rgb565_t bcolor);
+tft_graph_t *tft_graph_create(double gx, double gy, double w, double h, double xlo, double xhi, double xinc, double ylo, double yhi, double yinc, uint8_t ubDrawLabels, const char *title, const char *xlabel, const char *ylabel, const font_t *pFont, rgb565_t gcolor, rgb565_t acolor, rgb565_t pcolor, rgb565_t tcolor, rgb565_t bcolor);
 void tft_graph_delete(tft_graph_t *pxGraph);
 void tft_graph_clear(tft_graph_t *pxGraph);
 void tft_graph_draw_frame(tft_graph_t *pxGraph);
@@ -100,7 +103,7 @@ void tft_printf(const font_t *pFont, uint16_t usX, uint16_t usY, rgb565_t xColor
 
 uint16_t tft_get_text_height(const font_t *pFont, uint16_t usNumLines);
 
-tft_textbox_t *tft_textbox_create(uint16_t usX, uint16_t usY, uint16_t usNumLines, uint16_t usLenght, const font_t *pFont, rgb565_t xColor, rgb565_t xBackColor);
+tft_textbox_t *tft_textbox_create(uint16_t usX, uint16_t usY, uint16_t usNumLines, uint16_t usLenght, uint8_t ubLineWrapping, uint8_t ubCursorWrapping, const font_t *pFont, rgb565_t xColor, rgb565_t xBackColor);
 void tft_textbox_delete(tft_textbox_t *pTextbox);
 void tft_textbox_set_color(tft_textbox_t *pTextbox, rgb565_t xColor, rgb565_t xBackColor);
 void tft_textbox_clear(tft_textbox_t *pTextbox);

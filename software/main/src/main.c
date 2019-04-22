@@ -48,7 +48,8 @@ void _acmp0_1_isr()
         DBGPRINTLN_CTX("VBat status: %s", (ACMP0->STATUS & ACMP_STATUS_ACMPOUT) ? "HIGH" : "LOW");
     }
 
-    REG_DISCARD(&ACMP1->IFC); // Clear all ACMP1 flags
+    // FIXME: this line causes busfault
+    //REG_DISCARD(&ACMP1->IFC); // Clear all ACMP1 flags
 }
 
 // Functions
@@ -317,8 +318,8 @@ int init()
     DBGPRINTLN_CTX("EMU - VBAT Voltage: %.2f mV", adc_get_vbat());
     DBGPRINTLN_CTX("EMU - VIN Voltage: %.2f mV", adc_get_vin());
 
-    //play_sound(3500, 500);
-    //delay_ms(100);
+    play_sound(3500, 250);
+    delay_ms(100);
 
     // Assert CCS811 control signals otherwise the I2C scan won't detect it
     CCS811_UNRESET();
@@ -347,10 +348,10 @@ int init()
         DBGPRINTLN_CTX("ILI9488 init NOK!");
 
     // FIXME: bmp code causes usage fault
-//    if(bmp280_init())
-//        DBGPRINTLN_CTX("BMP280 init OK!");
-//    else
-//        DBGPRINTLN_CTX("BMP280 init NOK!");
+    //if(bmp280_init())
+    //    DBGPRINTLN_CTX("BMP280 init OK!");
+    //else
+    //    DBGPRINTLN_CTX("BMP280 init NOK!");
 
     /*
     if(rfm69_init(RADIO_NODE_ID, RADIO_NETWORK_ID, RADIO_AES_KEY))
@@ -363,7 +364,6 @@ int init()
 }
 int main()
 {
-    /*
     play_sound(2700, 50);
     play_sound(3000, 50);
     play_sound(3300, 50);
@@ -371,8 +371,8 @@ int main()
     play_sound(3900, 50);
     play_sound(4200, 50);
     play_sound(4500, 50);
-    */
 
+    // CLK OUT to check if the clock was properly calibrated
     //CMU->ROUTELOC0 = CMU_ROUTELOC0_CLKOUT1LOC_LOC1;
     //CMU->ROUTEPEN |= CMU_ROUTEPEN_CLKOUT1PEN;
     //CMU->CTRL |= CMU_CTRL_CLKOUTSEL1_HFXO;
@@ -435,39 +435,27 @@ int main()
     tft_bl_init(2000); // Init backlight PWM at 2 kHz
     tft_bl_set(0.25f); // Set backlight to 25%
     tft_display_on(); // Turn display on
-    tft_set_rotation(1); // Set rotation 1
+    tft_set_rotation(ILI9488_HORIZONTAL); // Set rotation 1 (horizontal, ribbon to the right)
     tft_fill_screen(RGB565_BLACK); // Fill display
 
-    uint8_t display1 = 1;
-    uint8_t display2 = 1;
-    uint8_t display3 = 1;
-    uint8_t display4 = 1;
-    uint8_t display5 = 1;
-    uint8_t display6 = 1;
-    uint8_t display7 = 1;
-    uint8_t display8 = 1;
-    uint8_t display9 = 1;
-
-    tft_graph_t *pTestGraph = tft_graph_create(60, 30, 350, 260, 0, 7, 1, -1, 1, .25, "Sin Function", "x", "sin(x)", &xSans9pFont, RGB565_DARKBLUE, RGB565_RED, RGB565_YELLOW, RGB565_WHITE, RGB565_BLACK);
+    // testing TFT graph funcions
+    tft_graph_t *pTestGraph = tft_graph_create(60, 30, 350, 260, 0, 7, 1, -1, 1, .25, 1, "Sin Function", "x", "sin(x)", &xSans9pFont, RGB565_DARKBLUE, RGB565_RED, RGB565_YELLOW, RGB565_WHITE, RGB565_BLACK);
     tft_graph_draw_frame(pTestGraph);
 
-
-    double x, y;
-
-    for(x = 0; x <= 6.3; x += .1)
+    for(double dX = 0; dX <= 6.3; dX += .1)
     {
-        y = sin(x);
-        tft_graph_draw_data(pTestGraph, &x, &y, 1);
+        double dY = sin(dX);
+        tft_graph_draw_data(pTestGraph, &dX, &dY, 1);
     }
 
-    delay_ms(1000);
+    delay_ms(3000);
 
-    tft_graph_delete(pTestGraph);
-    tft_set_rotation(0); // Set rotation 0
+    tft_graph_delete(pTestGraph);   // delete the funcion object, wont be displayed again
+
+    tft_set_rotation(ILI9488_VERTICAL); // Set rotation 0 (vertical, ribbon to the bottom)
     tft_fill_screen(RGB565_DARKGREY); // Fill display
 
     tft_terminal_t *terminal = tft_terminal_create(10, 250, 9, 300, &xSans9pFont, RGB565_GREEN, RGB565_BLACK);
-
     if(!terminal)
     {
         DBGPRINTLN_CTX("Could not allocate start terminal");
@@ -477,10 +465,9 @@ int main()
 
     tft_printf(&xSans18pFont, 10, 10, RGB565_WHITE, RGB565_DARKGREY, "Display is the wey");
 
-    tft_draw_rectangle(10, 65, 295 + 15 + 5, 75 + tft_get_text_height(&xSans9pFont, 7), RGB565_DARKGREEN, 1);
+    tft_draw_rectangle(10, 65, 295 + 15 + 5, 75 + tft_get_text_height(&xSans9pFont, 6), RGB565_DARKGREEN, 1);
 
-    tft_textbox_t *textbox = tft_textbox_create(15, 70, 7, 295, &xSans9pFont, RGB565_BLUE, RGB565_WHITE);
-
+    tft_textbox_t *textbox = tft_textbox_create(15, 70, 6, 295, 0, 0, &xSans9pFont, RGB565_BLUE, RGB565_WHITE);
     if(!textbox)
     {
         DBGPRINTLN_CTX("Could not allocate start textbox");
@@ -490,6 +477,7 @@ int main()
 
     while(1)
     {
+        /* - - - - - - - - Button Routines - - - - - - - - -*/
         static uint8_t ubLastBtn1State = 0;
         static uint8_t ubLastBtn2State = 0;
         static uint8_t ubLastBtn3State = 0;
@@ -504,7 +492,7 @@ int main()
         {
             tft_fill_screen(RGB565_DARKGREY);
             tft_printf(&xSans18pFont, 10, 10, RGB565_WHITE, RGB565_DARKGREY, "Display is the wey");
-            tft_draw_rectangle(10, 65, 295 + 15 + 5, 75 + tft_get_text_height(&xSans9pFont, 7), RGB565_DARKGREEN, 1);
+            tft_draw_rectangle(10, 65, 295 + 15 + 5, 75 + tft_get_text_height(&xSans9pFont, 6), RGB565_DARKGREEN, 1);
             tft_textbox_clear(textbox);
             tft_terminal_printf(terminal, 1, "\nA nice surprise was shown...");
 
@@ -527,7 +515,7 @@ int main()
         {
             tft_fill_screen(RGB565_DARKGREY);
             tft_printf(&xSans18pFont, 10, 10, RGB565_WHITE, RGB565_DARKGREY, "Display is the wey");
-            tft_draw_rectangle(10, 65, 295 + 15 + 5, 75 + tft_get_text_height(&xSans9pFont, 7), RGB565_DARKGREEN, 1);
+            tft_draw_rectangle(10, 65, 295 + 15 + 5, 75 + tft_get_text_height(&xSans9pFont, 6), RGB565_DARKGREEN, 1);
             tft_textbox_clear(textbox);
             tft_terminal_printf(terminal, 1, "\nPepe army was shown...");
 
@@ -568,7 +556,9 @@ int main()
 
             ubLastBtn3State = 0;
         }
+        /* - - - - - - - - Button Routines - - - - - - - - -*/
 
+        /* - - - - - - - - Main Tasks - - - - - - - - -*/
         static uint64_t ullLastTextboxUpdate = 0;
 
         if(g_ullSystemTick > (ullLastTextboxUpdate + 5000))
@@ -600,6 +590,8 @@ int main()
             //DBGPRINTLN_CTX("BMP280 Temperature: %.2f C", fTemp);
             //DBGPRINTLN_CTX("BMP280 Pressure: %.2f hPa", fPress);
 
+            tft_textbox_goto(textbox, 0, 0, 1);
+
             //tft_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
             //tft_textbox_printf(textbox, "\nBMP Temp: ");
             //tft_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
@@ -621,13 +613,23 @@ int main()
             tft_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
             tft_textbox_printf(textbox, "%lu\n\r", rtcc_get_time());
             tft_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
-            tft_textbox_printf(textbox, "Battery Charging: ");
+            tft_textbox_printf(textbox, "Battery State: ");
             tft_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
-            tft_textbox_printf(textbox, "%hhu\n\r", BAT_CHRG());
-            tft_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
-            tft_textbox_printf(textbox, "Battery Standby: ");
-            tft_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
-            tft_textbox_printf(textbox, "%hhu\n\r", BAT_STDBY());
+            switch(((BAT_STDBY() << 1) | BAT_CHRG()) & 0x03)
+            {
+                case 0b00:
+                    tft_textbox_printf(textbox, "No Vin\n\r");
+                    break;
+                case 0b01:
+                    tft_textbox_printf(textbox, "Charging\n\r");
+                    break;
+                case 0b10:
+                    tft_textbox_printf(textbox, "Charged\n\r");
+                    break;
+                case 0b11:
+                    tft_textbox_printf(textbox, "Err\n\r");
+                    break;
+            }
             tft_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
             tft_textbox_printf(textbox, "3V3 Fault: ");
             tft_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
@@ -642,9 +644,10 @@ int main()
 
         static uint64_t ullLastTask = 0;
 
-        if(g_ullSystemTick > (ullLastTask + 5000))
+        if(g_ullSystemTick > (ullLastTask + 10000))
         {
             //play_sound(2700, 10);
+            tft_terminal_printf(terminal, 1, "\nFree RAM: %lu KiB", get_free_ram() >> 10);
 
             static uint8_t ubLastState = 0;
 
@@ -658,6 +661,7 @@ int main()
 
             ullLastTask = g_ullSystemTick;
         }
+        /* - - - - - - - - Main Tasks - - - - - - - - -*/
     }
 
     return 0;

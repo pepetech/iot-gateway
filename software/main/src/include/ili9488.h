@@ -132,6 +132,10 @@
 #define ILI9488_MADCTL_BGR      0x08
 #define ILI9488_MADCTL_MH       0x04
 
+#define ILI9488_HORIZONTAL      1
+#define ILI9488_HORIZONTAL_FLIP 3
+#define ILI9488_VERTICAL        0
+#define ILI9488_VERTICAL_FLIP   2
 
 uint8_t ili9488_init();
 
