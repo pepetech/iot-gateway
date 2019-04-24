@@ -3,6 +3,7 @@
 
 #include <em_device.h>
 #include "cmu.h"
+#include "utils.h"
 
 #define DEBUG_ENABLED() !!(CoreDebug->DHCSR & CoreDebug_DHCSR_C_DEBUGEN_Msk)
 

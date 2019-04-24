@@ -24,7 +24,7 @@ void i2c0_init(uint8_t ubMode, uint8_t ubSCLLocation, uint8_t ubSDALocation)
 
     while(I2C0->STATE & I2C_STATE_BUSY);
 }
-uint8_t i2c0_transmit(uint8_t ubAddress, uint8_t* pubSrc, uint32_t ulCount, uint8_t ubStop)
+uint8_t i2c0_transmit(uint8_t ubAddress, uint8_t *pubSrc, uint32_t ulCount, uint8_t ubStop)
 {
     I2C0->IFC = _I2C_IFC_MASK;
 
@@ -64,7 +64,7 @@ uint8_t i2c0_transmit(uint8_t ubAddress, uint8_t* pubSrc, uint32_t ulCount, uint
 	if(ulCount)
 		do
 		{
-			if (ubAddress & 1) // Read
+			if(ubAddress & 1) // Read
 			{
                 while(!(I2C0->IF & (I2C_IF_RXDATAV | I2C_IF_ARBLOST | I2C_IF_BUSERR)));
 
@@ -75,9 +75,9 @@ uint8_t i2c0_transmit(uint8_t ubAddress, uint8_t* pubSrc, uint32_t ulCount, uint
                     return 0;
                 }
 
-				*(pubSrc++) = I2C0->RXDATA;
+				*pubSrc++ = I2C0->RXDATA;
 
-				if (ulCount > 1)
+				if(ulCount > 1)
                     I2C0->CMD = I2C_CMD_ACK;
                 else
                     I2C0->CMD = I2C_CMD_NACK;
@@ -86,7 +86,7 @@ uint8_t i2c0_transmit(uint8_t ubAddress, uint8_t* pubSrc, uint32_t ulCount, uint
 			{
                 I2C0->IFC = I2C_IFC_ACK;
 
-				I2C0->TXDATA = *(pubSrc++);
+				I2C0->TXDATA = *pubSrc++;
 
                 while(!(I2C0->IF & (I2C_IF_ACK | I2C_IF_NACK | I2C_IF_ARBLOST | I2C_IF_BUSERR)));
 
@@ -152,7 +152,7 @@ void i2c1_init(uint8_t ubMode, uint8_t ubSCLLocation, uint8_t ubSDALocation)
 
     while(I2C1->STATE & I2C_STATE_BUSY);
 }
-uint8_t i2c1_transmit(uint8_t ubAddress, uint8_t* pubSrc, uint32_t ulCount, uint8_t ubStop)
+uint8_t i2c1_transmit(uint8_t ubAddress, uint8_t *pubSrc, uint32_t ulCount, uint8_t ubStop)
 {
     I2C1->IFC = _I2C_IFC_MASK;
 
@@ -192,7 +192,7 @@ uint8_t i2c1_transmit(uint8_t ubAddress, uint8_t* pubSrc, uint32_t ulCount, uint
 	if(ulCount)
 		do
 		{
-			if (ubAddress & 1) // Read
+			if(ubAddress & 1) // Read
 			{
                 while(!(I2C1->IF & (I2C_IF_RXDATAV | I2C_IF_ARBLOST | I2C_IF_BUSERR)));
 
@@ -203,9 +203,9 @@ uint8_t i2c1_transmit(uint8_t ubAddress, uint8_t* pubSrc, uint32_t ulCount, uint
                     return 0;
                 }
 
-				*(pubSrc++) = I2C1->RXDATA;
+				*pubSrc++ = I2C1->RXDATA;
 
-				if (ulCount > 1)
+				if(ulCount > 1)
                     I2C1->CMD = I2C_CMD_ACK;
                 else
                     I2C1->CMD = I2C_CMD_NACK;
@@ -214,7 +214,7 @@ uint8_t i2c1_transmit(uint8_t ubAddress, uint8_t* pubSrc, uint32_t ulCount, uint
 			{
                 I2C1->IFC = I2C_IFC_ACK;
 
-				I2C1->TXDATA = *(pubSrc++);
+				I2C1->TXDATA = *pubSrc++;
 
                 while(!(I2C1->IF & (I2C_IF_ACK | I2C_IF_NACK | I2C_IF_ARBLOST | I2C_IF_BUSERR)));
 
@@ -280,7 +280,7 @@ void i2c2_init(uint8_t ubMode, uint8_t ubSCLLocation, uint8_t ubSDALocation)
 
     while(I2C2->STATE & I2C_STATE_BUSY);
 }
-uint8_t i2c2_transmit(uint8_t ubAddress, uint8_t* pubSrc, uint32_t ulCount, uint8_t ubStop)
+uint8_t i2c2_transmit(uint8_t ubAddress, uint8_t *pubSrc, uint32_t ulCount, uint8_t ubStop)
 {
     I2C2->IFC = _I2C_IFC_MASK;
 
@@ -320,7 +320,7 @@ uint8_t i2c2_transmit(uint8_t ubAddress, uint8_t* pubSrc, uint32_t ulCount, uint
 	if(ulCount)
 		do
 		{
-			if (ubAddress & 1) // Read
+			if(ubAddress & 1) // Read
 			{
                 while(!(I2C2->IF & (I2C_IF_RXDATAV | I2C_IF_ARBLOST | I2C_IF_BUSERR)));
 
@@ -331,9 +331,9 @@ uint8_t i2c2_transmit(uint8_t ubAddress, uint8_t* pubSrc, uint32_t ulCount, uint
                     return 0;
                 }
 
-				*(pubSrc++) = I2C2->RXDATA;
+				*pubSrc++ = I2C2->RXDATA;
 
-				if (ulCount > 1)
+				if(ulCount > 1)
                     I2C2->CMD = I2C_CMD_ACK;
                 else
                     I2C2->CMD = I2C_CMD_NACK;
@@ -342,7 +342,7 @@ uint8_t i2c2_transmit(uint8_t ubAddress, uint8_t* pubSrc, uint32_t ulCount, uint
 			{
                 I2C2->IFC = I2C_IFC_ACK;
 
-				I2C2->TXDATA = *(pubSrc++);
+				I2C2->TXDATA = *pubSrc++;
 
                 while(!(I2C2->IF & (I2C_IF_ACK | I2C_IF_NACK | I2C_IF_ARBLOST | I2C_IF_BUSERR)));
 

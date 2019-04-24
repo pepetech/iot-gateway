@@ -32,7 +32,7 @@ void dbg_swo_send_uint8(uint8_t ubData, uint8_t ubChannel)
     if(!(ITM->TCR & ITM_TCR_ITMENA_Msk))
         return;
 
-    if(!(ITM->TER & (1 << ubChannel)))
+    if(!(ITM->TER & BIT(ubChannel)))
         return;
 
     while(!ITM->PORT[ubChannel].u8);
@@ -44,7 +44,7 @@ void dbg_swo_send_uint16(uint16_t usData, uint8_t ubChannel)
     if(!(ITM->TCR & ITM_TCR_ITMENA_Msk))
         return;
 
-    if(!(ITM->TER & (1 << ubChannel)))
+    if(!(ITM->TER & BIT(ubChannel)))
         return;
 
     while(!ITM->PORT[ubChannel].u8);
@@ -56,7 +56,7 @@ void dbg_swo_send_uint32(uint32_t ulData, uint8_t ubChannel)
     if(!(ITM->TCR & ITM_TCR_ITMENA_Msk))
         return;
 
-    if(!(ITM->TER & (1 << ubChannel)))
+    if(!(ITM->TER & BIT(ubChannel)))
         return;
 
     while(!ITM->PORT[ubChannel].u8);

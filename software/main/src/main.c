@@ -33,7 +33,7 @@ static void sleep();
 
 static uint32_t get_free_ram();
 
-void get_device_name(char *pszDeviceName, uint32_t ulDeviceNameSize);
+static void get_device_name(char *pszDeviceName, uint32_t ulDeviceNameSize);
 static uint16_t get_device_revision();
 
 // Variables
@@ -326,29 +326,24 @@ int init()
     DBGPRINTLN_CTX("Scanning I2C bus 0...");
 
     for(uint8_t a = 0x08; a < 0x78; a++)
-    {
         if(i2c0_write(a, 0, 0, I2C_STOP))
             DBGPRINTLN_CTX("  Address 0x%02X ACKed!", a);
-    }
 
     DBGPRINTLN_CTX("Scanning I2C bus 1...");
 
     for(uint8_t a = 0x08; a < 0x78; a++)
-    {
         if(i2c1_write(a, 0, 0, I2C_STOP))
             DBGPRINTLN_CTX("  Address 0x%02X ACKed!", a);
-    }
+
+    if(bmp280_init())
+        DBGPRINTLN_CTX("BMP280 init OK!");
+    else
+        DBGPRINTLN_CTX("BMP280 init NOK!");
 
     if(ili9488_init())
         DBGPRINTLN_CTX("ILI9488 init OK!");
     else
         DBGPRINTLN_CTX("ILI9488 init NOK!");
-
-    // FIXME: bmp code causes usage fault
-    //if(bmp280_init())
-    //    DBGPRINTLN_CTX("BMP280 init OK!");
-    //else
-    //    DBGPRINTLN_CTX("BMP280 init NOK!");
 
     /*
     if(rfm69_init(RADIO_NODE_ID, RADIO_NETWORK_ID, RADIO_AES_KEY))
@@ -361,13 +356,9 @@ int init()
 }
 int main()
 {
-    play_sound(2700, 50);
     play_sound(3000, 50);
-    play_sound(3300, 50);
-    play_sound(3600, 50);
-    play_sound(3900, 50);
-    play_sound(4200, 50);
-    play_sound(4500, 50);
+    delay_ms(50);
+    play_sound(3000, 50);
 
     // CLK OUT to check if the clock was properly calibrated
     //CMU->ROUTELOC0 = CMU_ROUTELOC0_CLKOUT1LOC_LOC1;
@@ -404,11 +395,11 @@ int main()
     // ----------------- Testing battery monitoring with OpAmp + Analog Comparator ----------------- //
 
     // BMP280 info & configuration
-    //DBGPRINTLN_CTX("BMP280 version: 0x%02X", bmp280_read_version());
+    DBGPRINTLN_CTX("BMP280 version: 0x%02X", bmp280_read_version());
 
-    //bmp280_write_config(BMP280_STANDBY_1000MS | BMP280_FILTER_8);
-    //bmp280_write_control(BMP280_TEMP_OS4 | BMP280_PRESSURE_OS16 | BMP280_MODE_NORMAL);
-    //DBGPRINTLN_CTX("BMP280 write control & config!");
+    bmp280_write_config(BMP280_STANDBY_1000MS | BMP280_FILTER_8);
+    bmp280_write_control(BMP280_TEMP_OS4 | BMP280_PRESSURE_OS16 | BMP280_MODE_NORMAL);
+    DBGPRINTLN_CTX("BMP280 write control & config!");
 
     // QSPI Flash info
     uint8_t ubFlashUID[8];
@@ -426,7 +417,7 @@ int main()
     //WIFI_UNSELECT();
 
     // TFT Controller info
-    DBGPRINTLN_CTX("Display: 0x%06X", ili9488_read_id());
+    DBGPRINTLN_CTX("ILI9488 ID: 0x%06X", ili9488_read_id());
 
     // TFT Config
     tft_bl_init(2000); // Init backlight PWM at 2 kHz
@@ -581,22 +572,14 @@ int main()
 
             DBGPRINTLN_CTX("Button states (1|2|3): %hhu|%hhu|%hhu", BTN_1_STATE(), BTN_2_STATE(), BTN_3_STATE());
             */
-            //float fTemp = bmp280_read_temperature();
-            //float fPress = bmp280_read_pressure();
+            float fTemp = bmp280_read_temperature();
+            float fPress = bmp280_read_pressure();
 
-            //DBGPRINTLN_CTX("BMP280 Temperature: %.2f C", fTemp);
-            //DBGPRINTLN_CTX("BMP280 Pressure: %.2f hPa", fPress);
+            DBGPRINTLN_CTX("BMP280 Temperature: %.2f C", fTemp);
+            DBGPRINTLN_CTX("BMP280 Pressure: %.2f hPa", fPress);
 
             tft_textbox_goto(textbox, 0, 0, 1);
 
-            //tft_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
-            //tft_textbox_printf(textbox, "\nBMP Temp: ");
-            //tft_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
-            //tft_textbox_printf(textbox, "%.2f\n\r", fTemp);
-            //tft_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
-            //tft_textbox_printf(textbox, "\rBMP Press: ");
-            //tft_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
-            //tft_textbox_printf(textbox, "%.2f\n\r", fPress);
             tft_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
             tft_textbox_printf(textbox, "\rADC Temp: ");
             tft_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);

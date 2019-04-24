@@ -217,7 +217,7 @@ void gpio_init()
 
 void play_sound(uint16_t usFrequency, uint32_t ulTime)
 {
-    static uint32_t ubInit = 0;
+    static uint8_t ubInit = 0;
 
     if(!ubInit)
     {
