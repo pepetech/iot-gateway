@@ -22,9 +22,9 @@ static uint8_t bmp280_read_register(uint8_t ubRegister)
 
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
 	{
-		i2c0_write_byte(BMP280_I2C_ADDR, ubRegister, 0);
+		i2c0_write_byte(BMP280_I2C_ADDR, ubRegister, I2C_RESTART);
 
-		ubValue = i2c0_read_byte(BMP280_I2C_ADDR, 1);
+		ubValue = i2c0_read_byte(BMP280_I2C_ADDR, I2C_STOP);
 	}
 
 	return ubValue;
@@ -35,7 +35,7 @@ static void bmp280_write_register(uint8_t ubRegister, uint8_t ubValue)
 
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
 	{
-		i2c0_write(BMP280_I2C_ADDR, pubBuffer, 2, 1);
+		i2c0_write(BMP280_I2C_ADDR, pubBuffer, 2, I2C_STOP);
 	}
 }
 static void bmp280_rmw_register(uint8_t ubRegister, uint8_t ubMask, uint8_t ubValue)
@@ -47,7 +47,7 @@ uint8_t bmp280_init()
 {
 	delay_ms(BMP280_T_START_PON);
 
-	if(!i2c0_write(BMP280_I2C_ADDR, 0, 0, I2C_STOP)) // Check ACK from the expected address
+	if(!i2c0_write(BMP280_I2C_ADDR, NULL, 0, I2C_STOP)) // Check ACK from the expected address
 		return 0;
 
 	if(bmp280_read_id() != 0x58)

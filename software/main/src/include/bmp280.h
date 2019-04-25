@@ -2,6 +2,7 @@
 #define __BMP280_H__
 
 #include <em_device.h>
+#include <stdlib.h>
 #include "systick.h"
 #include "atomic.h"
 #include "i2c.h"

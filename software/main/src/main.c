@@ -326,13 +326,13 @@ int init()
     DBGPRINTLN_CTX("Scanning I2C bus 0...");
 
     for(uint8_t a = 0x08; a < 0x78; a++)
-        if(i2c0_write(a, 0, 0, I2C_STOP))
+        if(i2c0_write(a, NULL, 0, I2C_STOP))
             DBGPRINTLN_CTX("  Address 0x%02X ACKed!", a);
 
     DBGPRINTLN_CTX("Scanning I2C bus 1...");
 
     for(uint8_t a = 0x08; a < 0x78; a++)
-        if(i2c1_write(a, 0, 0, I2C_STOP))
+        if(i2c1_write(a, NULL, 0, I2C_STOP))
             DBGPRINTLN_CTX("  Address 0x%02X ACKed!", a);
 
     if(bmp280_init())
