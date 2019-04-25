@@ -229,13 +229,13 @@ void play_sound(uint16_t usFrequency, uint32_t ulTime)
         TIMER3->CC[2].CTRL = TIMER_CC_CTRL_PRSCONF_LEVEL | TIMER_CC_CTRL_CUFOA_NONE | TIMER_CC_CTRL_COFOA_TOGGLE | TIMER_CC_CTRL_CMOA_NONE | TIMER_CC_CTRL_MODE_OUTPUTCOMPARE;
 
         TIMER3->ROUTELOC0 = TIMER_ROUTELOC0_CC2LOC_LOC0;
+        TIMER3->ROUTEPEN |= TIMER_ROUTEPEN_CC2PEN;
 
         ubInit = 1;
     }
 
     if(!usFrequency)
     {
-        TIMER3->ROUTEPEN &= ~TIMER_ROUTEPEN_CC2PEN;
         TIMER3->CMD = TIMER_CMD_STOP;
 
         return;
@@ -244,13 +244,11 @@ void play_sound(uint16_t usFrequency, uint32_t ulTime)
     TIMER3->TOP = (HFPER_CLOCK_FREQ / (usFrequency << 1)) - 1; // Double the frequency
 
     TIMER3->CMD = TIMER_CMD_START;
-    TIMER3->ROUTEPEN |= TIMER_ROUTEPEN_CC2PEN;
 
     if(!ulTime)
         return;
 
     delay_ms(ulTime);
 
-    TIMER3->ROUTEPEN &= ~TIMER_ROUTEPEN_CC2PEN;
     TIMER3->CMD = TIMER_CMD_STOP;
 }
