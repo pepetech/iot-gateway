@@ -118,6 +118,13 @@ void ldma_ch_req_clear(uint8_t ubChannel)
 
     LDMA->REQCLEAR = BIT(ubChannel);
 }
+uint8_t ldma_ch_get_busy(uint8_t ubChannel)
+{
+    if(ubChannel >= DMA_CHAN_COUNT)
+        return 0;
+
+    return PERI_REG_BIT(&(LDMA->CHBUSY), ubChannel);
+}
 uint16_t ldma_ch_get_remaining_xfers(uint8_t ubChannel)
 {
     if(ubChannel >= DMA_CHAN_COUNT)
@@ -127,7 +134,7 @@ uint16_t ldma_ch_get_remaining_xfers(uint8_t ubChannel)
     {
         uint16_t usRemaining = (LDMA->CH[ubChannel].CTRL & _LDMA_CH_CTRL_XFERCNT_MASK) >> _LDMA_CH_CTRL_XFERCNT_SHIFT;
 
-        if((LDMA->CHDONE & BIT(ubChannel)) || (!usRemaining && (LDMA->IF & BIT(ubChannel))))
+        if(PERI_REG_BIT(&(LDMA->CHDONE), ubChannel) || (!usRemaining && (LDMA->IF & BIT(ubChannel))))
             return 0;
 
         return usRemaining + 1;

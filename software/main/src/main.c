@@ -19,6 +19,7 @@
 #include "qspi.h"
 #include "usart.h"
 #include "i2c.h"
+#include "ws2812b.h"
 #include "bmp280.h"
 #include "ili9488.h"
 #include "tft.h"
@@ -221,6 +222,7 @@ int init()
     systick_init(); // Init system tick
 
     gpio_init(); // Init GPIOs
+    ldma_init(); // Init LDMA
     rtcc_init(); // Init RTCC
     trng_init(); // Init TRNG
     crypto_init(); // Init Crypto engine
@@ -359,6 +361,9 @@ int main()
     play_sound(3000, 50);
     delay_ms(50);
     play_sound(3000, 50);
+
+    ws2812b_init();
+    ws2812b_set_color(0, 255, 255, 0);
 
     // CLK OUT to check if the clock was properly calibrated
     //CMU->ROUTELOC0 = CMU_ROUTELOC0_CLKOUT1LOC_LOC1;
