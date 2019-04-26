@@ -12,12 +12,12 @@
 #define LED_LOW()           PERI_REG_BIT_CLEAR(&(GPIO->P[1].DOUT)) = BIT(0)
 #define LED_TOGGLE()        GPIO->P[1].DOUTTGL = BIT(0);
 
-// RFM MACROS
-#define RFM_UNRESET()       PERI_REG_BIT_CLEAR(&(GPIO->P[0].DOUT)) = BIT(4)
-#define RFM_RESET()         PERI_REG_BIT_SET(&(GPIO->P[0].DOUT)) = BIT(4)
-#define RFM_SELECT()        PERI_REG_BIT_CLEAR(&(GPIO->P[0].DOUT)) = BIT(3)
-#define RFM_UNSELECT()      PERI_REG_BIT_SET(&(GPIO->P[0].DOUT)) = BIT(3)
-#define RFM_IRQ()           PERI_REG_BIT(&(GPIO->P[0].DIN), 6)
+// RFM69 MACROS
+#define RFM69_UNRESET()     PERI_REG_BIT_CLEAR(&(GPIO->P[0].DOUT)) = BIT(4)
+#define RFM69_RESET()       PERI_REG_BIT_SET(&(GPIO->P[0].DOUT)) = BIT(4)
+#define RFM69_SELECT()      PERI_REG_BIT_CLEAR(&(GPIO->P[0].DOUT)) = BIT(3)
+#define RFM69_UNSELECT()    PERI_REG_BIT_SET(&(GPIO->P[0].DOUT)) = BIT(3)
+#define RFM69_IRQ()         PERI_REG_BIT(&(GPIO->P[0].DIN), 6)
 
 // GSM MACROS
 #define GSM_LED_ENABLE()    PERI_REG_BIT_SET(&(GPIO->P[0].DOUT)) = BIT(10)

@@ -17,7 +17,7 @@
             "interface": "swd",
             "swoConfig": {
                 "enabled": true,
-                "swoFrequency": 2000000,
+                "swoFrequency": 6000000,
                 "cpuFrequency": 36000000,
                 "source": "probe",
                 "decoders": [

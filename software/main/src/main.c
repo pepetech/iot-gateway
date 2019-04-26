@@ -19,6 +19,8 @@
 #include "qspi.h"
 #include "usart.h"
 #include "i2c.h"
+#include "rfm69.h"
+#include "radio_protocol.h"
 #include "ws2812b.h"
 #include "bmp280.h"
 #include "ili9488.h"
@@ -27,6 +29,12 @@
 #include "fonts.h"
 
 // Structs
+
+// Radio config
+#define RADIO_GATEWAY_ID        1
+#define RADIO_NODE_ID           2
+#define RADIO_NETWORK_ID        193
+#define RADIO_AES_KEY           "TheGateway012345" // Needs to be exactly 16 bytes, no zeros allowed
 
 // Forward declarations
 static void reset() __attribute__((noreturn));
@@ -215,7 +223,7 @@ int init()
     cmu_update_clocks(); // Update Clocks
 
     dbg_init(); // Init Debug module
-    dbg_swo_config(BIT(0) | BIT(1), 2000000); // Init SWO channels 0 and 1 at 2 MHz
+    dbg_swo_config(BIT(0) | BIT(1), 6000000); // Init SWO channels 0 and 1 at 6 MHz
 
     msc_init(); // Init Flash, RAM and caches
 
@@ -244,7 +252,7 @@ int init()
     usart0_init(9000000, 0, USART_SPI_MSB_FIRST, 2, 2, 2);  // SPI0 at 9MHz on Location 2 MISO:PC10 MOSI:PC11 CLK:PC9 ESP8266 WIFI-COPROCESSOR
     usart1_init(18000000, 0, USART_SPI_MSB_FIRST, 1, 1, 1);  // SPI1 at 18MHz on Location 1 MISO:PD1 MOSI:PD0 CLK:PD2 ILI9488 Display
     usart2_init(115200, UART_FRAME_STOPBITS_ONE | UART_FRAME_PARITY_NONE | USART_FRAME_DATABITS_EIGHT, 0, 0, -1, -1); // USART2 at 115200Baud on Location 0 RTS-PC0 CTS-PC1 TX-PC2 RX-PC3 GSM
-    //usart3_init(10000000, 0, USART_SPI_MSB_FIRST, 0, 0, 0); // SPI3 at 10MHz on Location 0 MISO-PA1 MOSI-PA0 CLK-PA2 RFM
+    usart3_init(9000000, 0, USART_SPI_MSB_FIRST, 0, 0, 0); // SPI3 at 9MHz on Location 0 MISO-PA1 MOSI-PA0 CLK-PA2 RFM
 
     i2c0_init(I2C_NORMAL, 6, 6); // Init I2C0 at 100 kHz on location 6 SCL:PE13 SDA:PE12 Sensors
     i2c1_init(I2C_NORMAL, 1, 1); // Init I2C1 at 100 kHz on location 1 SCL:PB12 SDA:PB11 TFT Touch Controller
@@ -347,12 +355,10 @@ int init()
     else
         DBGPRINTLN_CTX("ILI9488 init NOK!");
 
-    /*
-    if(rfm69_init(RADIO_NODE_ID, RADIO_NETWORK_ID, RADIO_AES_KEY))
+    if(rfm69_init(RADIO_GATEWAY_ID, RADIO_NETWORK_ID, RADIO_AES_KEY))
         DBGPRINTLN_CTX("RFM69 init OK!");
     else
         DBGPRINTLN_CTX("RFM69 init NOK!");
-    */
 
     return 0;
 }
@@ -363,9 +369,7 @@ int main()
     play_sound(3000, 50);
 
     ws2812b_init();
-    ws2812b_set_color(0, 0, 0, 255);
-    delay_ms(10);
-    ws2812b_set_color(1, 255, 0, 0);
+    ws2812b_set_color(0, 0, 142, 255);
 
     // CLK OUT to check if the clock was properly calibrated
     //CMU->ROUTELOC0 = CMU_ROUTELOC0_CLKOUT1LOC_LOC1;
@@ -476,6 +480,121 @@ int main()
 
     while(1)
     {
+        /* - - - - - - - - Library Tasks - - - - - - - - -*/
+        rfm69_tick();
+        /* - - - - - - - - Library Tasks - - - - - - - - -*/
+
+        /* - - - - - - - - Main Tasks - - - - - - - - -*/
+        static uint64_t ullLastTextboxUpdate = 0;
+
+        if(g_ullSystemTick > (ullLastTextboxUpdate + 5000))
+        {
+            /*
+            DBGPRINTLN_CTX("ADC Temp: %.2f", adc_get_temperature());
+            DBGPRINTLN_CTX("EMU Temp: %.2f", emu_get_temperature());
+
+            DBGPRINTLN_CTX("LFXO: %.2f pF", cmu_lfxo_get_cap());
+
+            DBGPRINTLN_CTX("HFXO Startup: %.2f pF", cmu_hfxo_get_startup_cap());
+            DBGPRINTLN_CTX("HFXO Startup: %.2f uA", cmu_hfxo_get_startup_current());
+            DBGPRINTLN_CTX("HFXO Steady: %.2f pF", cmu_hfxo_get_steady_cap());
+            DBGPRINTLN_CTX("HFXO Steady: %.2f uA", cmu_hfxo_get_steady_current());
+            DBGPRINTLN_CTX("HFXO PMA [%03X]: %.2f uA", cmu_hfxo_get_pma_ibtrim(), cmu_hfxo_get_pma_current());
+            DBGPRINTLN_CTX("HFXO PDA [%03X]: %.2f uA", cmu_hfxo_get_pda_ibtrim(1), cmu_hfxo_get_pda_current(0));
+
+            DBGPRINTLN_CTX("RTCC Time: %lu", rtcc_get_time());
+
+            DBGPRINTLN_CTX("Battery Charging: %hhu", BAT_CHRG());
+            DBGPRINTLN_CTX("Battery Standby: %hhu", BAT_STDBY());
+            DBGPRINTLN_CTX("3V3 Fault: %hhu", VREG_ERR());
+
+            DBGPRINTLN_CTX("Button states (1|2|3): %hhu|%hhu|%hhu", BTN_1_STATE(), BTN_2_STATE(), BTN_3_STATE());
+            */
+
+            tft_textbox_goto(textbox, 0, 0, 1);
+
+            tft_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
+            tft_textbox_printf(textbox, "\rADC Temp: ");
+            tft_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
+            tft_textbox_printf(textbox, "%.2f\n\r", adc_get_temperature());
+            tft_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
+            tft_textbox_printf(textbox, "EMU Temp: ");
+            tft_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
+            tft_textbox_printf(textbox, "%.2f\n\r", emu_get_temperature());
+            tft_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
+            tft_textbox_printf(textbox, "RTCC Time: ");
+            tft_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
+            tft_textbox_printf(textbox, "%lu\n\r", rtcc_get_time());
+            tft_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
+            tft_textbox_printf(textbox, "Battery State: ");
+            tft_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
+            switch(((BAT_STDBY() << 1) | BAT_CHRG()) & 0x03)
+            {
+                case 0b00:
+                    tft_textbox_printf(textbox, "No Vin\n\r");
+                    break;
+                case 0b01:
+                    tft_textbox_printf(textbox, "Charging\n\r");
+                    break;
+                case 0b10:
+                    tft_textbox_printf(textbox, "Charged\n\r");
+                    break;
+                case 0b11:
+                    tft_textbox_printf(textbox, "Err\n\r");
+                    break;
+            }
+            tft_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
+            tft_textbox_printf(textbox, "3V3 Fault: ");
+            tft_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
+            tft_textbox_printf(textbox, "%hhu\n\r", VREG_ERR());
+            tft_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
+            tft_textbox_printf(textbox, "Button states (1|2|3): ");
+            tft_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
+            tft_textbox_printf(textbox, "%hhu|%hhu|%hhu\n", BTN_1_STATE(), BTN_2_STATE(), BTN_3_STATE());
+
+            ullLastTextboxUpdate = g_ullSystemTick;
+        }
+
+        static uint64_t ullLastTask = 0;
+
+        if(g_ullSystemTick > (ullLastTask + 2000))
+        {
+
+            DBGPRINTLN_CTX("USART2 Available: %u", usart2_available());
+
+            if(usart2_available())
+            {
+                DBGPRINT_CTX("Data: [");
+
+                while(usart2_available())
+                    DBGPRINT("%c", usart2_read_byte());
+
+                DBGPRINTLN("]");
+            }
+
+            float fTemp = bmp280_read_temperature();
+            float fPress = bmp280_read_pressure();
+
+            tft_terminal_printf(terminal, 1, "\nBMP280 Temperature: %.2f C", fTemp);
+            tft_terminal_printf(terminal, 1, "\nBMP280 Pressure: %.2f hPa", fPress);
+
+            //play_sound(2700, 10);
+            tft_terminal_printf(terminal, 1, "\nFree RAM: %lu KiB", get_free_ram() >> 10);
+
+            static uint8_t ubLastState = 0;
+
+            if(!ubLastState)
+            {
+            }
+            else
+            {
+            }
+            ubLastState = !ubLastState;
+
+            ullLastTask = g_ullSystemTick;
+        }
+        /* - - - - - - - - Main Tasks - - - - - - - - -*/
+
         /* - - - - - - - - Button Routines - - - - - - - - -*/
         static uint8_t ubLastBtn1State = 0;
         static uint8_t ubLastBtn2State = 0;
@@ -561,113 +680,6 @@ int main()
             ubLastBtn3State = 0;
         }
         /* - - - - - - - - Button Routines - - - - - - - - -*/
-
-        /* - - - - - - - - Main Tasks - - - - - - - - -*/
-        static uint64_t ullLastTextboxUpdate = 0;
-
-        if(g_ullSystemTick > (ullLastTextboxUpdate + 2000))
-        {
-            /*
-            DBGPRINTLN_CTX("ADC Temp: %.2f", adc_get_temperature());
-            DBGPRINTLN_CTX("EMU Temp: %.2f", emu_get_temperature());
-
-            DBGPRINTLN_CTX("LFXO: %.2f pF", cmu_lfxo_get_cap());
-
-            DBGPRINTLN_CTX("HFXO Startup: %.2f pF", cmu_hfxo_get_startup_cap());
-            DBGPRINTLN_CTX("HFXO Startup: %.2f uA", cmu_hfxo_get_startup_current());
-            DBGPRINTLN_CTX("HFXO Steady: %.2f pF", cmu_hfxo_get_steady_cap());
-            DBGPRINTLN_CTX("HFXO Steady: %.2f uA", cmu_hfxo_get_steady_current());
-            DBGPRINTLN_CTX("HFXO PMA [%03X]: %.2f uA", cmu_hfxo_get_pma_ibtrim(), cmu_hfxo_get_pma_current());
-            DBGPRINTLN_CTX("HFXO PDA [%03X]: %.2f uA", cmu_hfxo_get_pda_ibtrim(1), cmu_hfxo_get_pda_current(0));
-
-            DBGPRINTLN_CTX("RTCC Time: %lu", rtcc_get_time());
-
-            DBGPRINTLN_CTX("Battery Charging: %hhu", BAT_CHRG());
-            DBGPRINTLN_CTX("Battery Standby: %hhu", BAT_STDBY());
-            DBGPRINTLN_CTX("3V3 Fault: %hhu", VREG_ERR());
-
-            DBGPRINTLN_CTX("Button states (1|2|3): %hhu|%hhu|%hhu", BTN_1_STATE(), BTN_2_STATE(), BTN_3_STATE());
-            */
-
-            DBGPRINTLN_CTX("USART2 Available: %u", usart2_available());
-
-            DBGPRINT_CTX("Data: [");
-
-            while(usart2_available())
-                DBGPRINT("%c", usart2_read_byte());
-
-            DBGPRINTLN("]");
-
-            float fTemp = bmp280_read_temperature();
-            float fPress = bmp280_read_pressure();
-
-            DBGPRINTLN_CTX("BMP280 Temperature: %.2f C", fTemp);
-            DBGPRINTLN_CTX("BMP280 Pressure: %.2f hPa", fPress);
-
-            tft_textbox_goto(textbox, 0, 0, 1);
-
-            tft_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
-            tft_textbox_printf(textbox, "\rADC Temp: ");
-            tft_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
-            tft_textbox_printf(textbox, "%.2f\n\r", adc_get_temperature());
-            tft_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
-            tft_textbox_printf(textbox, "EMU Temp: ");
-            tft_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
-            tft_textbox_printf(textbox, "%.2f\n\r", emu_get_temperature());
-            tft_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
-            tft_textbox_printf(textbox, "RTCC Time: ");
-            tft_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
-            tft_textbox_printf(textbox, "%lu\n\r", rtcc_get_time());
-            tft_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
-            tft_textbox_printf(textbox, "Battery State: ");
-            tft_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
-            switch(((BAT_STDBY() << 1) | BAT_CHRG()) & 0x03)
-            {
-                case 0b00:
-                    tft_textbox_printf(textbox, "No Vin\n\r");
-                    break;
-                case 0b01:
-                    tft_textbox_printf(textbox, "Charging\n\r");
-                    break;
-                case 0b10:
-                    tft_textbox_printf(textbox, "Charged\n\r");
-                    break;
-                case 0b11:
-                    tft_textbox_printf(textbox, "Err\n\r");
-                    break;
-            }
-            tft_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
-            tft_textbox_printf(textbox, "3V3 Fault: ");
-            tft_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
-            tft_textbox_printf(textbox, "%hhu\n\r", VREG_ERR());
-            tft_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
-            tft_textbox_printf(textbox, "Button states (1|2|3): ");
-            tft_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
-            tft_textbox_printf(textbox, "%hhu|%hhu|%hhu\n", BTN_1_STATE(), BTN_2_STATE(), BTN_3_STATE());
-
-            ullLastTextboxUpdate = g_ullSystemTick;
-        }
-
-        static uint64_t ullLastTask = 0;
-
-        if(g_ullSystemTick > (ullLastTask + 10000))
-        {
-            //play_sound(2700, 10);
-            tft_terminal_printf(terminal, 1, "\nFree RAM: %lu KiB", get_free_ram() >> 10);
-
-            static uint8_t ubLastState = 0;
-
-            if(!ubLastState)
-            {
-            }
-            else
-            {
-            }
-            ubLastState = !ubLastState;
-
-            ullLastTask = g_ullSystemTick;
-        }
-        /* - - - - - - - - Main Tasks - - - - - - - - -*/
     }
 
     return 0;

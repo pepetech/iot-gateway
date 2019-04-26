@@ -14,7 +14,7 @@ static void ili9488_send_cmd(uint8_t ubCmd, uint8_t *pubParam, uint8_t ubNParam)
     {
         ILI9488_SETUP_DAT();
 
-        usart1_spi_write(pubParam, ubNParam);
+        usart1_spi_write(pubParam, ubNParam, 1);
     }
 
     ILI9488_UNSELECT();
@@ -31,7 +31,7 @@ static void ili9488_read_data(uint8_t ubCmd, uint8_t *pubData, uint8_t ubNData)
         ILI9488_SETUP_DAT();
 
         //usart1_spi_transfer_byte(0x00); // dummy byte
-        usart1_spi_read(pubData, ubNData);
+        usart1_spi_read(pubData, ubNData, 0x00);
 
         ILI9488_UNSELECT();
     }
@@ -271,9 +271,9 @@ void ili9488_send_pixel_data(rgb565_t xColor)
     ILI9488_SELECT();
     ILI9488_SETUP_DAT();
 
-    usart1_spi_transfer_byte(RGB565_EXTRACT_RED(xColor));
-    usart1_spi_transfer_byte(RGB565_EXTRACT_GREEN(xColor));
-    usart1_spi_transfer_byte(RGB565_EXTRACT_BLUE(xColor));
+    usart1_spi_write_byte(RGB565_EXTRACT_RED(xColor), 0);
+    usart1_spi_write_byte(RGB565_EXTRACT_GREEN(xColor), 0);
+    usart1_spi_write_byte(RGB565_EXTRACT_BLUE(xColor), 1);
 
     ILI9488_UNSELECT();
 }
