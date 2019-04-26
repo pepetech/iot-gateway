@@ -243,7 +243,7 @@ int init()
 
     usart0_init(9000000, 0, USART_SPI_MSB_FIRST, 2, 2, 2);  // SPI0 at 9MHz on Location 2 MISO:PC10 MOSI:PC11 CLK:PC9 ESP8266 WIFI-COPROCESSOR
     usart1_init(18000000, 0, USART_SPI_MSB_FIRST, 1, 1, 1);  // SPI1 at 18MHz on Location 1 MISO:PD1 MOSI:PD0 CLK:PD2 ILI9488 Display
-    //usart2_init(115200, 0, UART_FRAME_STOPBITS_ONE, 0, 0, 0); // USART2 at 115200Baud on Location 0 RTS-PC0 CTS-PC1 TX-PC2 RX-PC3 GSM
+    usart2_init(115200, UART_FRAME_STOPBITS_ONE | UART_FRAME_PARITY_NONE | USART_FRAME_DATABITS_EIGHT, 0, 0, -1, -1); // USART2 at 115200Baud on Location 0 RTS-PC0 CTS-PC1 TX-PC2 RX-PC3 GSM
     //usart3_init(10000000, 0, USART_SPI_MSB_FIRST, 0, 0, 0); // SPI3 at 10MHz on Location 0 MISO-PA1 MOSI-PA0 CLK-PA2 RFM
 
     i2c0_init(I2C_NORMAL, 6, 6); // Init I2C0 at 100 kHz on location 6 SCL:PE13 SDA:PE12 Sensors
@@ -363,7 +363,9 @@ int main()
     play_sound(3000, 50);
 
     ws2812b_init();
-    ws2812b_set_color(0, 255, 255, 0);
+    ws2812b_set_color(0, 0, 0, 255);
+    delay_ms(10);
+    ws2812b_set_color(1, 255, 0, 0);
 
     // CLK OUT to check if the clock was properly calibrated
     //CMU->ROUTELOC0 = CMU_ROUTELOC0_CLKOUT1LOC_LOC1;
@@ -420,6 +422,10 @@ int main()
     WIFI_UNRESET();
     delay_ms(100);
     //WIFI_UNSELECT();
+
+    GSM_PWR_KEY_SET();
+    delay_ms(1000);
+    GSM_PWR_KEY_RSET();
 
     // TFT Controller info
     DBGPRINTLN_CTX("ILI9488 ID: 0x%06X", ili9488_read_id());
@@ -521,7 +527,12 @@ int main()
         }
         else if(!BTN_3_STATE() && (ubLastBtn3State != 0))
         {
-            uint8_t ubNBytes = 38;
+            usart2_write_byte('A');
+            usart2_write_byte('T');
+            usart2_write_byte('\r');
+            usart2_write_byte('\n');
+
+            uint8_t ubNBytes = 0;
 
             uint8_t ubBuf[ubNBytes];
             memset(ubBuf, 0x00, ubNBytes);
@@ -539,7 +550,7 @@ int main()
             delay_ms(10);
 
             WIFI_SELECT();
-            usart0_spi_transfer(ubBuf, ubNBytes, ubBuf);
+            //usart0_spi_transfer(ubBuf, ubNBytes, ubBuf);
             WIFI_UNSELECT();
 
 
@@ -554,7 +565,7 @@ int main()
         /* - - - - - - - - Main Tasks - - - - - - - - -*/
         static uint64_t ullLastTextboxUpdate = 0;
 
-        if(g_ullSystemTick > (ullLastTextboxUpdate + 5000))
+        if(g_ullSystemTick > (ullLastTextboxUpdate + 2000))
         {
             /*
             DBGPRINTLN_CTX("ADC Temp: %.2f", adc_get_temperature());
@@ -577,6 +588,16 @@ int main()
 
             DBGPRINTLN_CTX("Button states (1|2|3): %hhu|%hhu|%hhu", BTN_1_STATE(), BTN_2_STATE(), BTN_3_STATE());
             */
+
+            DBGPRINTLN_CTX("USART2 Available: %u", usart2_available());
+
+            DBGPRINT_CTX("Data: [");
+
+            while(usart2_available())
+                DBGPRINT("%c", usart2_read_byte());
+
+            DBGPRINTLN("]");
+
             float fTemp = bmp280_read_temperature();
             float fPress = bmp280_read_pressure();
 

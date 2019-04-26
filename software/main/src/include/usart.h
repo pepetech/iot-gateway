@@ -65,4 +65,39 @@ static inline void usart1_spi_read(uint8_t* pubDst, uint32_t ulSize)
 }
 // - - - - - - - - - - - - - - - TEMPORARY - - - - - - - - - - - - - -
 
+//#define USART2_MODE_SPI                 	// Define for SPI, comment out for UART
+#define USART2_DMA_CHANNEL			2   	// Only relevant when in UART mode
+#define USART2_DMA_RX_BUFFER_SIZE	128		// Only relevant when in UART mode
+#define USART2_FIFO_SIZE			256     // Only relevant when in UART mode
+
+#if defined(USART2_MODE_SPI)
+void usart2_init(uint32_t ulBaud, uint8_t ubMode, uint8_t ubBitMode, int8_t bMISOLocation, int8_t bMOSILocation, uint8_t ubCLKLocation);
+uint8_t usart2_spi_transfer_byte(const uint8_t ubData);
+void usart2_spi_transfer(const uint8_t* pubSrc, uint32_t ulSize, uint8_t* pubDst);
+static inline void usart2_spi_write(const uint8_t* pubSrc, uint32_t ulSize)
+{
+    usart2_spi_transfer(pubSrc, ulSize, NULL);
+}
+static inline void usart2_spi_read(uint8_t* pubDst, uint32_t ulSize)
+{
+    usart2_spi_transfer(NULL, ulSize, pubDst);
+}
+#else   // USART2_MODE_SPI
+void usart2_init(uint32_t ulBaud, uint32_t ulFrameSettings, int8_t bRXLocation, int8_t bTXLocation, int8_t bCTSLocation, int8_t bRTSLocation);
+void usart2_write_byte(const uint8_t ubData);
+uint8_t usart2_read_byte();
+uint32_t usart2_available();
+void usart2_flush();
+static inline void usart2_write(const uint8_t *pubSrc, uint32_t ulSize)
+{
+	while(ulSize--)
+		usart2_write_byte(*pubSrc++);
+}
+static inline void usart2_read(uint8_t *pubDst, uint32_t ulSize)
+{
+	while(ulSize--)
+		*pubDst++ = usart2_read_byte();
+}
+#endif  // USART2_MODE_SPI
+
 #endif  // __USART_H__
