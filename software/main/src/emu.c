@@ -264,13 +264,11 @@ float emu_get_temperature()
 
 void emu_vmon_avdd_config(uint8_t ubEnable, float fLowThresh, float *pfLowThresh, float fHighThresh, float *pfHighThresh)
 {
-    if(!ubEnable)
-    {
-        EMU->VMONAVDDCTRL &= ~EMU_VMONAVDDCTRL_EN;
-        EMU->IEN &= ~(EMU_IEN_VMONAVDDRISE | EMU_IEN_VMONAVDDFALL);
+    EMU->VMONAVDDCTRL &= ~EMU_VMONAVDDCTRL_EN;
+    EMU->IEN &= ~(EMU_IEN_VMONAVDDRISE | EMU_IEN_VMONAVDDFALL);
 
+    if(!ubEnable)
         return;
-    }
 
     uint8_t ubThresh1V86 = (DEVINFO->VMONCAL0 >> 0) & 0xFF;
     uint8_t ubThresh2V98 = (DEVINFO->VMONCAL0 >> 8) & 0xFF;
@@ -290,13 +288,11 @@ void emu_vmon_avdd_config(uint8_t ubEnable, float fLowThresh, float *pfLowThresh
 }
 void emu_vmon_altavdd_config(uint8_t ubEnable, float fLowThresh, float *pfLowThresh)
 {
-    if(!ubEnable)
-    {
-        EMU->VMONALTAVDDCTRL &= ~EMU_VMONALTAVDDCTRL_EN;
-        EMU->IEN &= ~(EMU_IEN_VMONALTAVDDRISE | EMU_IEN_VMONALTAVDDFALL);
+    EMU->VMONALTAVDDCTRL &= ~EMU_VMONALTAVDDCTRL_EN;
+    EMU->IEN &= ~(EMU_IEN_VMONALTAVDDRISE | EMU_IEN_VMONALTAVDDFALL);
 
+    if(!ubEnable)
         return;
-    }
 
     uint8_t ubThresh1V86 = (DEVINFO->VMONCAL0 >> 16) & 0xFF;
     uint8_t ubThresh2V98 = (DEVINFO->VMONCAL0 >> 24) & 0xFF;
@@ -312,13 +308,11 @@ void emu_vmon_altavdd_config(uint8_t ubEnable, float fLowThresh, float *pfLowThr
 }
 void emu_vmon_dvdd_config(uint8_t ubEnable, float fLowThresh, float *pfLowThresh)
 {
-    if(!ubEnable)
-    {
-        EMU->VMONDVDDCTRL &= ~EMU_VMONDVDDCTRL_EN;
-        EMU->IEN &= ~(EMU_IEN_VMONDVDDRISE | EMU_IEN_VMONDVDDFALL);
+    EMU->VMONDVDDCTRL &= ~EMU_VMONDVDDCTRL_EN;
+    EMU->IEN &= ~(EMU_IEN_VMONDVDDRISE | EMU_IEN_VMONDVDDFALL);
 
+    if(!ubEnable)
         return;
-    }
 
     uint8_t ubThresh1V86 = (DEVINFO->VMONCAL1 >> 0) & 0xFF;
     uint8_t ubThresh2V98 = (DEVINFO->VMONCAL1 >> 8) & 0xFF;
@@ -334,13 +328,11 @@ void emu_vmon_dvdd_config(uint8_t ubEnable, float fLowThresh, float *pfLowThresh
 }
 void emu_vmon_iovdd_config(uint8_t ubEnable, float fLowThresh, float *pfLowThresh)
 {
-    if(!ubEnable)
-    {
-        EMU->VMONIO0CTRL &= ~EMU_VMONIO0CTRL_EN;
-        EMU->IEN &= ~(EMU_IEN_VMONIO0RISE | EMU_IEN_VMONIO0FALL);
+    EMU->VMONIO0CTRL &= ~EMU_VMONIO0CTRL_EN;
+    EMU->IEN &= ~(EMU_IEN_VMONIO0RISE | EMU_IEN_VMONIO0FALL);
 
+    if(!ubEnable)
         return;
-    }
 
     uint8_t ubThresh1V86 = (DEVINFO->VMONCAL1 >> 16) & 0xFF;
     uint8_t ubThresh2V98 = (DEVINFO->VMONCAL1 >> 24) & 0xFF;
