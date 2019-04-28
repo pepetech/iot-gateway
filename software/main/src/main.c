@@ -24,6 +24,7 @@
 #include "radio_protocol.h"
 #include "ws2812b.h"
 #include "bmp280.h"
+#include "ccs811.h"
 #include "ili9488.h"
 #include "tft.h"
 #include "images.h"
@@ -358,6 +359,11 @@ int init()
     else
         DBGPRINTLN_CTX("BMP280 init NOK!");
 
+    if(ccs811_init())
+        DBGPRINTLN_CTX("CCS811 init OK!");
+    else
+        DBGPRINTLN_CTX("CCS811 init NOK!");
+
     if(ili9488_init())
         DBGPRINTLN_CTX("ILI9488 init OK!");
     else
@@ -419,6 +425,23 @@ int main()
     bmp280_write_config(BMP280_STANDBY_1000MS | BMP280_FILTER_8);
     bmp280_write_control(BMP280_TEMP_OS4 | BMP280_PRESSURE_OS16 | BMP280_MODE_NORMAL);
     DBGPRINTLN_CTX("BMP280 write control & config!");
+
+    // CCS811 info & configuration
+    DBGPRINTLN_CTX("CCS811 Hardware version: %hhu", ccs811_read_hw_version());
+
+    uint16_t usCCSBootVersion = ccs811_read_boot_version();
+
+    DBGPRINTLN_CTX("CCS811 Bootloader version: %hu.%hu.%hu", CCS811_SW_VERSION_MAJOR(usCCSBootVersion), CCS811_SW_VERSION_MINOR(usCCSBootVersion), CCS811_SW_VERSION_TRIVIAL(usCCSBootVersion));
+
+    ccs811_app_start();
+
+    uint16_t usCCSAppVersion = ccs811_read_app_version();
+
+    DBGPRINTLN_CTX("CCS811 App version: %hu.%hu.%hu", CCS811_SW_VERSION_MAJOR(usCCSAppVersion), CCS811_SW_VERSION_MINOR(usCCSAppVersion), CCS811_SW_VERSION_TRIVIAL(usCCSAppVersion));
+
+
+    ccs811_write_meas_mode(CCS811_DRIVE_MODE_1S);
+    DBGPRINTLN_CTX("CCS811 Meas. mode config!");
 
     // QSPI Flash info
     uint8_t ubFlashUID[8];
@@ -585,6 +608,12 @@ int main()
 
             tft_terminal_printf(terminal, 1, "\nBMP280 Temperature: %.2f C", fTemp);
             tft_terminal_printf(terminal, 1, "\nBMP280 Pressure: %.2f hPa", fPress);
+
+            uint16_t usETVOC = ccs811_read_etvoc();
+            uint16_t usECO2 = ccs811_read_eco2();
+
+            tft_terminal_printf(terminal, 1, "\nCCS811 eTVOC: %hu ppb", usETVOC);
+            tft_terminal_printf(terminal, 1, "\nCCS811 eCO2: %hu ppm", usECO2);
 
             //play_sound(2700, 10);
             tft_terminal_printf(terminal, 1, "\nFree RAM: %lu KiB", get_free_ram() >> 10);

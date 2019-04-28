@@ -23,6 +23,7 @@
 #define CCS811_REG_HW_VERSION       0x21
 #define CCS811_REG_BL_FW_VERSION    0x23
 #define CCS811_REG_APP_FW_VERSION   0x24
+#define CCS811_REG_INTERNAL_STATUS  0xA0
 #define CCS811_REG_ERROR_ID         0xE0
 #define CCS811_REG_APP_ERASE        0xF1
 #define CCS811_REG_APP_DATA         0xF2
@@ -32,11 +33,13 @@
 
 // Times
 #define CCS811_T_AWAKE          1
-#define CCS811_T_DWAKE          1
+#define CCS811_T_SLEEP          1
 #define CCS811_T_RESET          10
 #define CCS811_T_APP_ERASE      500
+#define CCS811_T_APP_VERIFY     500
 #define CCS811_T_APP_DATA       50
-#define CCS811_T_START_PON      20
+#define CCS811_T_APP_START      5
+#define CCS811_T_START_PON      70
 #define CCS811_T_START_RESET    10
 
 // CCS811_REG_STATUS
@@ -65,6 +68,11 @@
 #define CCS811_ERROR_READ_REG_INVALID   0x02
 #define CCS811_ERROR_WRITE_REG_INVALID  0x01
 
+// Utility
+#define CCS811_SW_VERSION_MAJOR(x)      (((x) & 0xF000) >> 12)
+#define CCS811_SW_VERSION_MINOR(x)      (((x) & 0x0F00) >> 8)
+#define CCS811_SW_VERSION_TRIVIAL(x)    (((x) & 0x00FF) >> 0)
+
 
 uint8_t ccs811_init();
 
@@ -76,12 +84,11 @@ void ccs811_app_start();
 void ccs811_software_reset();
 void ccs811_hardware_reset();
 
-uint16_t ccs811_read_tvoc();
+uint16_t ccs811_read_etvoc();
 uint16_t ccs811_read_eco2();
 
-void ccs811_set_env_data(float fTemp, float fHumid);
-
 uint8_t ccs811_read_status();
+uint8_t ccs811_read_internal_status();
 uint8_t ccs811_read_error();
 uint8_t ccs811_read_hw_id();
 uint8_t ccs811_read_hw_version();
@@ -91,8 +98,9 @@ uint16_t ccs811_read_app_version();
 void ccs811_write_meas_mode(uint8_t ubMode);
 uint8_t ccs811_read_meas_mode();
 
+void ccs811_write_env_data(float fTemp, float fHumid);
+
 void ccs811_write_tresh(uint16_t usLowToMed, uint16_t usMedToHigh);
-uint32_t ccs811_read_thresh();
 
 void ccs811_write_baseline(uint16_t usBaseline);
 uint16_t ccs811_read_baseline();

@@ -23,7 +23,6 @@ static uint8_t bmp280_read_register(uint8_t ubRegister)
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
 	{
 		i2c0_write_byte(BMP280_I2C_ADDR, ubRegister, I2C_RESTART);
-
 		ubValue = i2c0_read_byte(BMP280_I2C_ADDR, I2C_STOP);
 	}
 
