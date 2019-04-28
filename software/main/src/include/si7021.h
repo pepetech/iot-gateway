@@ -27,6 +27,9 @@
 #define SI7021_CMD_READ_FW_VERSION1 0x84
 #define SI7021_CMD_READ_FW_VERSION2 0xB8
 
+// Times
+#define SI7021_T_START  80
+
 // User register
 #define SI7021_USER_RES_RH12_T14    0x00
 #define SI7021_USER_RES_RH8_T12     0x01
@@ -71,8 +74,8 @@ uint8_t si7021_init();
 
 void si7021_software_reset();
 
-double si7021_read_temperature();
-double si7021_read_humidity();
+float si7021_read_temperature();
+float si7021_read_humidity();
 
 void si7021_set_heater_current(uint8_t ubCurrent);
 uint8_t si7021_get_heater_current();

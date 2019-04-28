@@ -25,6 +25,7 @@
 #include "ws2812b.h"
 #include "bmp280.h"
 #include "ccs811.h"
+#include "si7021.h"
 #include "ili9488.h"
 #include "tft.h"
 #include "images.h"
@@ -364,6 +365,12 @@ int init()
     else
         DBGPRINTLN_CTX("CCS811 init NOK!");
 
+    if(si7021_init())
+        DBGPRINTLN_CTX("SI7021 init OK!");
+    else
+        DBGPRINTLN_CTX("SI7021 init NOK!");
+
+
     if(ili9488_init())
         DBGPRINTLN_CTX("ILI9488 init OK!");
     else
@@ -439,9 +446,15 @@ int main()
 
     DBGPRINTLN_CTX("CCS811 App version: %hu.%hu.%hu", CCS811_SW_VERSION_MAJOR(usCCSAppVersion), CCS811_SW_VERSION_MINOR(usCCSAppVersion), CCS811_SW_VERSION_TRIVIAL(usCCSAppVersion));
 
-
     ccs811_write_meas_mode(CCS811_DRIVE_MODE_1S);
     DBGPRINTLN_CTX("CCS811 Meas. mode config!");
+
+    // SI7021 info & configuration
+    DBGPRINTLN_CTX("SI7021 UID: 0x%016X", si7021_read_unique_id());
+    DBGPRINTLN_CTX("SI7021 Firmware version: 0x%02X", si7021_read_firmware_version());
+
+    si7021_write_user(SI7021_USER_RES_RH12_T14 | SI7021_USER_HEATER_OFF);
+    DBGPRINTLN_CTX("SI7021 write user register!");
 
     // QSPI Flash info
     uint8_t ubFlashUID[8];
@@ -609,11 +622,26 @@ int main()
             tft_terminal_printf(terminal, 1, "\nBMP280 Temperature: %.2f C", fTemp);
             tft_terminal_printf(terminal, 1, "\nBMP280 Pressure: %.2f hPa", fPress);
 
+            DBGPRINTLN_CTX("BMP280 Temperature: %.2f C", fTemp);
+            DBGPRINTLN_CTX("BMP280 Pressure: %.2f hPa", fPress);
+
             uint16_t usETVOC = ccs811_read_etvoc();
             uint16_t usECO2 = ccs811_read_eco2();
 
             tft_terminal_printf(terminal, 1, "\nCCS811 eTVOC: %hu ppb", usETVOC);
             tft_terminal_printf(terminal, 1, "\nCCS811 eCO2: %hu ppm", usECO2);
+
+            DBGPRINTLN_CTX("CCS811 eTVOC: %hu ppb", usETVOC);
+            DBGPRINTLN_CTX("CCS811 eCO2: %hu ppm", usECO2);
+
+            float fSITemp = si7021_read_temperature();
+            float fSIHumid = si7021_read_humidity();
+
+            tft_terminal_printf(terminal, 1, "\nSI7021 Temperature: %.2f C", fSITemp);
+            tft_terminal_printf(terminal, 1, "\nSI7021 Humidity: %.1f %%RH", fSIHumid);
+
+            DBGPRINTLN_CTX("SI7021 Temperature: %.2f C", fSITemp);
+            DBGPRINTLN_CTX("SI7021 Humidity: %.1f %%RH", fSIHumid);
 
             //play_sound(2700, 10);
             tft_terminal_printf(terminal, 1, "\nFree RAM: %lu KiB", get_free_ram() >> 10);

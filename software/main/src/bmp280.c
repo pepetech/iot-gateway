@@ -18,19 +18,18 @@ static int32_t T_FINE;
 
 static uint8_t bmp280_read_register(uint8_t ubRegister)
 {
-	uint8_t ubValue;
-
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
 	{
 		i2c0_write_byte(BMP280_I2C_ADDR, ubRegister, I2C_RESTART);
-		ubValue = i2c0_read_byte(BMP280_I2C_ADDR, I2C_STOP);
+		return i2c0_read_byte(BMP280_I2C_ADDR, I2C_STOP);
 	}
-
-	return ubValue;
 }
 static void bmp280_write_register(uint8_t ubRegister, uint8_t ubValue)
 {
-	uint8_t pubBuffer[2] = {ubRegister, ubValue};
+	uint8_t pubBuffer[2];
+
+    pubBuffer[0] = ubRegister;
+    pubBuffer[1] = ubValue;
 
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
 	{
@@ -113,18 +112,22 @@ void bmp280_software_reset()
 
 float bmp280_read_temperature()
 {
-	uint8_t buf[3] = {BMP280_REG_TEMP_H, BMP280_REG_TEMP_L, BMP280_REG_TEMP_XL};
+	uint8_t pubBuffer[3];
+
+    pubBuffer[0] = BMP280_REG_TEMP_H;
+    pubBuffer[1] = BMP280_REG_TEMP_L;
+    pubBuffer[2] = BMP280_REG_TEMP_XL;
 
 	for(uint8_t i = 0; i < 3; i++)
-		buf[i] = bmp280_read_register(buf[i]);
+		pubBuffer[i] = bmp280_read_register(pubBuffer[i]);
 
 	int32_t var1, var2, T, adc_T;
 
-	adc_T = buf[0];
+	adc_T = pubBuffer[0];
 	adc_T <<= 8;
-	adc_T |= buf[1];
+	adc_T |= pubBuffer[1];
 	adc_T <<= 4;
-	adc_T |= buf[2] >> 4;
+	adc_T |= pubBuffer[2] >> 4;
 
 	if(adc_T == 0x80000)
 		return 0.f;
@@ -138,19 +141,23 @@ float bmp280_read_temperature()
 }
 float bmp280_read_pressure()
 {
-	uint8_t buf[3] = {BMP280_REG_PRESSURE_H, BMP280_REG_PRESSURE_L, BMP280_REG_PRESSURE_XL};
+	uint8_t pubBuffer[3];
+
+    pubBuffer[0] = BMP280_REG_PRESSURE_H;
+    pubBuffer[1] = BMP280_REG_PRESSURE_L;
+    pubBuffer[2] = BMP280_REG_PRESSURE_XL;
 
 	for(uint8_t i = 0; i < 3; i++)
-		buf[i] = bmp280_read_register(buf[i]);
+		pubBuffer[i] = bmp280_read_register(pubBuffer[i]);
 
 	int32_t adc_P;
 	int64_t var1, var2, p;
 
-	adc_P = buf[0];
+	adc_P = pubBuffer[0];
 	adc_P <<= 8;
-	adc_P |= buf[1];
+	adc_P |= pubBuffer[1];
 	adc_P <<= 4;
-	adc_P |= buf[2] >> 4;
+	adc_P |= pubBuffer[2] >> 4;
 
 	if(adc_P == 0x80000)
 		return 0.f;

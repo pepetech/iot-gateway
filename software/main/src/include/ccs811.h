@@ -32,6 +32,7 @@
 #define CCS811_REG_SW_RESET         0xFF
 
 // Times
+#define CCS811_T_START          70
 #define CCS811_T_AWAKE          1
 #define CCS811_T_SLEEP          1
 #define CCS811_T_RESET          10
@@ -39,8 +40,6 @@
 #define CCS811_T_APP_VERIFY     500
 #define CCS811_T_APP_DATA       50
 #define CCS811_T_APP_START      5
-#define CCS811_T_START_PON      70
-#define CCS811_T_START_RESET    10
 
 // CCS811_REG_STATUS
 #define CCS811_FW_MODE_BOOT     0x00
