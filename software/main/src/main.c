@@ -370,7 +370,6 @@ int init()
     else
         DBGPRINTLN_CTX("SI7021 init NOK!");
 
-
     if(ili9488_init())
         DBGPRINTLN_CTX("ILI9488 init OK!");
     else
@@ -603,7 +602,6 @@ int main()
 
         if(g_ullSystemTick > (ullLastTask + 2000))
         {
-
             DBGPRINTLN_CTX("USART2 Available: %u", usart2_available());
 
             if(usart2_available())

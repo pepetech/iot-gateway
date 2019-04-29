@@ -2,7 +2,7 @@
 
 void rmu_init(uint32_t ulPinMode, uint32_t ulSysMode, uint32_t ulLockupMode, uint32_t ulWatchdogMode)
 {
-    RMU->CTRL = (RMU->CTRL & ~(_RMU_CTRL_PINRMODE_MASK | _RMU_CTRL_SYSRMODE_MASK | _RMU_CTRL_LOCKUPRMODE_MASK | _RMU_CTRL_WDOGRMODE_MASK)) | (ulPinMode | _RMU_CTRL_PINRMODE_MASK) | (ulSysMode | _RMU_CTRL_SYSRMODE_MASK) | (ulLockupMode | _RMU_CTRL_LOCKUPRMODE_MASK) | (ulWatchdogMode | _RMU_CTRL_WDOGRMODE_MASK);
+    RMU->CTRL = (RMU->CTRL & ~(_RMU_CTRL_PINRMODE_MASK | _RMU_CTRL_SYSRMODE_MASK | _RMU_CTRL_LOCKUPRMODE_MASK | _RMU_CTRL_WDOGRMODE_MASK)) | (ulPinMode & _RMU_CTRL_PINRMODE_MASK) | (ulSysMode & _RMU_CTRL_SYSRMODE_MASK) | (ulLockupMode & _RMU_CTRL_LOCKUPRMODE_MASK) | (ulWatchdogMode & _RMU_CTRL_WDOGRMODE_MASK);
 }
 
 uint8_t rmu_get_reset_reason()
