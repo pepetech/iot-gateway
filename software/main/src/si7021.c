@@ -2,15 +2,11 @@
 
 static uint8_t si7021_read_register(uint8_t ubRegister)
 {
-	uint8_t ubValue;
-
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
 	{
 		i2c0_write_byte(SI7021_I2C_ADDR, ubRegister, I2C_RESTART);
-		ubValue = i2c0_read_byte(SI7021_I2C_ADDR, I2C_STOP);
+		return i2c0_read_byte(SI7021_I2C_ADDR, I2C_STOP);
 	}
-
-	return ubValue;
 }
 static uint16_t si7021_read_register16(uint8_t ubRegister)
 {

@@ -56,50 +56,50 @@ uint8_t bmp280_init()
     while(bmp280_read_status() & BMP280_READING_CALIB)
         delay_ms(BMP280_T_CALIB_READ);
 
-    uint8_t buf[24];
+    uint8_t pubBuffer[24];
 
-    buf[0] = BMP280_REG_DIG_T1_H;
-    buf[1] = BMP280_REG_DIG_T1_L;
-    buf[2] = BMP280_REG_DIG_T2_H;
-    buf[3] = BMP280_REG_DIG_T2_L;
-    buf[4] = BMP280_REG_DIG_T3_H;
-    buf[5] = BMP280_REG_DIG_T3_L;
+    pubBuffer[0] = BMP280_REG_DIG_T1_H;
+    pubBuffer[1] = BMP280_REG_DIG_T1_L;
+    pubBuffer[2] = BMP280_REG_DIG_T2_H;
+    pubBuffer[3] = BMP280_REG_DIG_T2_L;
+    pubBuffer[4] = BMP280_REG_DIG_T3_H;
+    pubBuffer[5] = BMP280_REG_DIG_T3_L;
 
-    buf[6] = BMP280_REG_DIG_P1_H;
-    buf[7] = BMP280_REG_DIG_P1_L;
-    buf[8] = BMP280_REG_DIG_P2_H;
-    buf[9] = BMP280_REG_DIG_P2_L;
-    buf[10] = BMP280_REG_DIG_P3_H;
-    buf[11] = BMP280_REG_DIG_P3_L;
-    buf[12] = BMP280_REG_DIG_P4_H;
-    buf[13] = BMP280_REG_DIG_P4_L;
-    buf[14] = BMP280_REG_DIG_P5_H;
-    buf[15] = BMP280_REG_DIG_P5_L;
-    buf[16] = BMP280_REG_DIG_P6_H;
-    buf[17] = BMP280_REG_DIG_P6_L;
-    buf[18] = BMP280_REG_DIG_P7_H;
-    buf[19] = BMP280_REG_DIG_P7_L;
-    buf[20] = BMP280_REG_DIG_P8_H;
-    buf[21] = BMP280_REG_DIG_P8_L;
-    buf[22] = BMP280_REG_DIG_P9_H;
-    buf[23] = BMP280_REG_DIG_P9_L;
+    pubBuffer[6] = BMP280_REG_DIG_P1_H;
+    pubBuffer[7] = BMP280_REG_DIG_P1_L;
+    pubBuffer[8] = BMP280_REG_DIG_P2_H;
+    pubBuffer[9] = BMP280_REG_DIG_P2_L;
+    pubBuffer[10] = BMP280_REG_DIG_P3_H;
+    pubBuffer[11] = BMP280_REG_DIG_P3_L;
+    pubBuffer[12] = BMP280_REG_DIG_P4_H;
+    pubBuffer[13] = BMP280_REG_DIG_P4_L;
+    pubBuffer[14] = BMP280_REG_DIG_P5_H;
+    pubBuffer[15] = BMP280_REG_DIG_P5_L;
+    pubBuffer[16] = BMP280_REG_DIG_P6_H;
+    pubBuffer[17] = BMP280_REG_DIG_P6_L;
+    pubBuffer[18] = BMP280_REG_DIG_P7_H;
+    pubBuffer[19] = BMP280_REG_DIG_P7_L;
+    pubBuffer[20] = BMP280_REG_DIG_P8_H;
+    pubBuffer[21] = BMP280_REG_DIG_P8_L;
+    pubBuffer[22] = BMP280_REG_DIG_P9_H;
+    pubBuffer[23] = BMP280_REG_DIG_P9_L;
 
     for(uint8_t i = 0; i < 24; i++)
-        buf[i] = bmp280_read_register(buf[i]);
+        pubBuffer[i] = bmp280_read_register(pubBuffer[i]);
 
-    DIG_T1 = (buf[0] << 8) | buf[1];
-    DIG_T2 = (int16_t)((buf[2] << 8) | buf[3]);
-    DIG_T3 = (int16_t)((buf[4] << 8) | buf[5]);
+    DIG_T1 = (pubBuffer[0] << 8) | pubBuffer[1];
+    DIG_T2 = (int16_t)((pubBuffer[2] << 8) | pubBuffer[3]);
+    DIG_T3 = (int16_t)((pubBuffer[4] << 8) | pubBuffer[5]);
 
-    DIG_P1 = (buf[6] << 8) | buf[7];
-    DIG_P2 = (int16_t)((buf[8] << 8) | buf[9]);
-    DIG_P3 = (int16_t)((buf[10] << 8) | buf[11]);
-    DIG_P4 = (int16_t)((buf[12] << 8) | buf[13]);
-    DIG_P5 = (int16_t)((buf[14] << 8) | buf[15]);
-    DIG_P6 = (int16_t)((buf[16] << 8) | buf[17]);
-    DIG_P7 = (int16_t)((buf[18] << 8) | buf[19]);
-    DIG_P8 = (int16_t)((buf[20] << 8) | buf[21]);
-    DIG_P9 = (int16_t)((buf[22] << 8) | buf[23]);
+    DIG_P1 = (pubBuffer[6] << 8) | pubBuffer[7];
+    DIG_P2 = (int16_t)((pubBuffer[8] << 8) | pubBuffer[9]);
+    DIG_P3 = (int16_t)((pubBuffer[10] << 8) | pubBuffer[11]);
+    DIG_P4 = (int16_t)((pubBuffer[12] << 8) | pubBuffer[13]);
+    DIG_P5 = (int16_t)((pubBuffer[14] << 8) | pubBuffer[15]);
+    DIG_P6 = (int16_t)((pubBuffer[16] << 8) | pubBuffer[17]);
+    DIG_P7 = (int16_t)((pubBuffer[18] << 8) | pubBuffer[19]);
+    DIG_P8 = (int16_t)((pubBuffer[20] << 8) | pubBuffer[21]);
+    DIG_P9 = (int16_t)((pubBuffer[22] << 8) | pubBuffer[23]);
 
     return 1;
 }
