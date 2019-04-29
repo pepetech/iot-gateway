@@ -449,7 +449,7 @@ int main()
     DBGPRINTLN_CTX("CCS811 Meas. mode config!");
 
     // SI7021 info & configuration
-    DBGPRINTLN_CTX("SI7021 UID: 0x%016X", si7021_read_unique_id());
+    DBGPRINTLN_CTX("SI7021 UID: 0x%016llX", si7021_read_unique_id());
     DBGPRINTLN_CTX("SI7021 Firmware version: 0x%02X", si7021_read_firmware_version());
 
     si7021_write_user(SI7021_USER_RES_RH12_T14 | SI7021_USER_HEATER_OFF);
@@ -481,25 +481,11 @@ int main()
     tft_bl_init(2000); // Init backlight PWM at 2 kHz
     tft_bl_set(0.25f); // Set backlight to 25%
     tft_display_on(); // Turn display on
-    tft_set_rotation(ILI9488_HORIZONTAL); // Set rotation 1 (horizontal, ribbon to the right)
-    tft_fill_screen(RGB565_BLACK); // Fill display
-
-    // testing TFT graph funcions
-    tft_graph_t *pTestGraph = tft_graph_create(60, 30, 350, 260, 0, 7, 1, -1, 1, .25, 1, "Sin Function", "x", "sin(x)", &xSans9pFont, RGB565_DARKBLUE, RGB565_RED, RGB565_YELLOW, RGB565_WHITE, RGB565_BLACK);
-    tft_graph_draw_frame(pTestGraph);
-
-    for(double dX = 0; dX <= 6.3; dX += .1)
-    {
-        double dY = sin(dX);
-        tft_graph_draw_data(pTestGraph, &dX, &dY, 1);
-    }
-
-    delay_ms(3000);
-
-    tft_graph_delete(pTestGraph);   // delete the funcion object, wont be displayed again
-
-    tft_set_rotation(ILI9488_VERTICAL); // Set rotation 0 (vertical, ribbon to the bottom)
+    tft_set_rotation(ILI9488_VERTICAL); // Set rotation 1 (horizontal, ribbon to the right)
     tft_fill_screen(RGB565_DARKGREY); // Fill display
+
+    tft_graph_t *pGraph = tft_graph_create(60, 30, 250, 150, 0, 30, 1, 28, 32, .5, 1, "Temperature", "t", "C", &xSans9pFont, RGB565_WHITE, RGB565_BLACK, RGB565_YELLOW, RGB565_BLACK, RGB565_DARKGREY);
+    tft_graph_draw_frame(pGraph);
 
     tft_terminal_t *terminal = tft_terminal_create(10, 250, 9, 300, &xSans9pFont, RGB565_GREEN, RGB565_BLACK);
     if(!terminal)
@@ -509,8 +495,8 @@ int main()
         while(1);
     }
 
-    tft_printf(&xSans18pFont, 10, 10, RGB565_WHITE, RGB565_DARKGREY, "Display is the wey");
-
+    //tft_printf(&xSans18pFont, 10, 10, RGB565_WHITE, RGB565_DARKGREY, "Display is the wey");
+/*
     tft_draw_rectangle(10, 65, 295 + 15 + 5, 75 + tft_get_text_height(&xSans9pFont, 6), RGB565_DARKGREEN, 1);
 
     tft_textbox_t *textbox = tft_textbox_create(15, 70, 6, 295, 0, 0, &xSans9pFont, RGB565_BLUE, RGB565_WHITE);
@@ -520,7 +506,7 @@ int main()
 
         while(1);
     }
-
+*/
     while(1)
     {
         /* - - - - - - - - Library Tasks - - - - - - - - -*/
@@ -528,80 +514,77 @@ int main()
         /* - - - - - - - - Library Tasks - - - - - - - - -*/
 
         /* - - - - - - - - Main Tasks - - - - - - - - -*/
-        static uint64_t ullLastTextboxUpdate = 0;
+        static uint64_t ullLastLedUpdate = 0;
 
-        if(g_ullSystemTick > (ullLastTextboxUpdate + 5000))
+        if(g_ullSystemTick > (ullLastLedUpdate + 500))
         {
-            /*
-            DBGPRINTLN_CTX("ADC Temp: %.2f", adc_get_temperature());
+            uint32_t ullColor = trng_pop_random();
+            // FIXME: sum real weird going on
+            //ws2812b_set_color(0, (uint8_t)((ullColor >> 16) & 0xFF), (uint8_t)((ullColor >> 8) & 0xFF), (uint8_t)(ullColor & 0xFF));
+
+            //static uint8_t ubLastState = 0;
+
+            //if(!ubLastState)
+            //{
+            //}
+            //else
+            //{
+            //}
+            //ubLastState = !ubLastState;
+
+            ullLastLedUpdate = g_ullSystemTick;
+        }
+
+        static uint64_t ullLastGraphRoutine = 0;
+
+        if(g_ullSystemTick > (ullLastGraphRoutine + 1000))
+        {
+            static uint8_t ubCount = 0;
+
+            if(ubCount == 31)
+            {
+                tft_graph_clear(pGraph);
+                tft_graph_draw_frame(pGraph);
+                ubCount = 0;
+            }
+
+            float fCount = ubCount;
+            float fTemp = bmp280_read_temperature();
+
+            tft_graph_draw_data(pGraph, &fCount, &fTemp, 1);
+
+            ubCount++;
+
+            ullLastGraphRoutine = g_ullSystemTick;
+        }
+
+        static uint64_t ullLastSwoPrint = 0;
+
+        if(g_ullSystemTick > (ullLastSwoPrint + 10000))
+        {
+
+            DBGPRINTLN_CTX("\rADC Temp: %.2f", adc_get_temperature());
             DBGPRINTLN_CTX("EMU Temp: %.2f", emu_get_temperature());
-
-            DBGPRINTLN_CTX("LFXO: %.2f pF", cmu_lfxo_get_cap());
-
-            DBGPRINTLN_CTX("HFXO Startup: %.2f pF", cmu_hfxo_get_startup_cap());
-            DBGPRINTLN_CTX("HFXO Startup: %.2f uA", cmu_hfxo_get_startup_current());
-            DBGPRINTLN_CTX("HFXO Steady: %.2f pF", cmu_hfxo_get_steady_cap());
-            DBGPRINTLN_CTX("HFXO Steady: %.2f uA", cmu_hfxo_get_steady_current());
-            DBGPRINTLN_CTX("HFXO PMA [%03X]: %.2f uA", cmu_hfxo_get_pma_ibtrim(), cmu_hfxo_get_pma_current());
-            DBGPRINTLN_CTX("HFXO PDA [%03X]: %.2f uA", cmu_hfxo_get_pda_ibtrim(1), cmu_hfxo_get_pda_current(0));
-
             DBGPRINTLN_CTX("RTCC Time: %lu", rtcc_get_time());
-
-            DBGPRINTLN_CTX("Battery Charging: %hhu", BAT_CHRG());
-            DBGPRINTLN_CTX("Battery Standby: %hhu", BAT_STDBY());
-            DBGPRINTLN_CTX("3V3 Fault: %hhu", VREG_ERR());
-
-            DBGPRINTLN_CTX("Button states (1|2|3): %hhu|%hhu|%hhu", BTN_1_STATE(), BTN_2_STATE(), BTN_3_STATE());
-            */
-
-            tft_textbox_goto(textbox, 0, 0, 1);
-
-            tft_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
-            tft_textbox_printf(textbox, "\rADC Temp: ");
-            tft_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
-            tft_textbox_printf(textbox, "%.2f\n\r", adc_get_temperature());
-            tft_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
-            tft_textbox_printf(textbox, "EMU Temp: ");
-            tft_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
-            tft_textbox_printf(textbox, "%.2f\n\r", emu_get_temperature());
-            tft_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
-            tft_textbox_printf(textbox, "RTCC Time: ");
-            tft_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
-            tft_textbox_printf(textbox, "%lu\n\r", rtcc_get_time());
-            tft_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
-            tft_textbox_printf(textbox, "Battery State: ");
-            tft_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
             switch(((BAT_STDBY() << 1) | BAT_CHRG()) & 0x03)
             {
                 case 0b00:
-                    tft_textbox_printf(textbox, "No Vin\n\r");
+                    DBGPRINTLN_CTX("Battery State: No Vin\n\r");
                     break;
                 case 0b01:
-                    tft_textbox_printf(textbox, "Charging\n\r");
+                    DBGPRINTLN_CTX("Battery State: Charging\n\r");
                     break;
                 case 0b10:
-                    tft_textbox_printf(textbox, "Charged\n\r");
+                    DBGPRINTLN_CTX("Battery State: Charged\n\r");
                     break;
                 case 0b11:
-                    tft_textbox_printf(textbox, "Err\n\r");
+                    DBGPRINTLN_CTX("Battery State: Err\n\r");
                     break;
             }
-            tft_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
-            tft_textbox_printf(textbox, "3V3 Fault: ");
-            tft_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
-            tft_textbox_printf(textbox, "%hhu\n\r", VREG_ERR());
-            tft_textbox_set_color(textbox, RGB565_BLUE, RGB565_WHITE);
-            tft_textbox_printf(textbox, "Button states (1|2|3): ");
-            tft_textbox_set_color(textbox, RGB565_RED, RGB565_WHITE);
-            tft_textbox_printf(textbox, "%hhu|%hhu|%hhu\n", BTN_1_STATE(), BTN_2_STATE(), BTN_3_STATE());
+            DBGPRINTLN_CTX("3V3 Fault: ");
+            DBGPRINTLN_CTX("%hhu", VREG_ERR());
+            DBGPRINTLN_CTX("Button states (1|2|3): %hhu|%hhu|%hhu", BTN_1_STATE(), BTN_2_STATE(), BTN_3_STATE());
 
-            ullLastTextboxUpdate = g_ullSystemTick;
-        }
-
-        static uint64_t ullLastTask = 0;
-
-        if(g_ullSystemTick > (ullLastTask + 2000))
-        {
             DBGPRINTLN_CTX("USART2 Available: %u", usart2_available());
 
             if(usart2_available())
@@ -617,8 +600,8 @@ int main()
             float fTemp = bmp280_read_temperature();
             float fPress = bmp280_read_pressure();
 
-            tft_terminal_printf(terminal, 1, "\nBMP280 Temperature: %.2f C", fTemp);
-            tft_terminal_printf(terminal, 1, "\nBMP280 Pressure: %.2f hPa", fPress);
+            tft_terminal_printf(terminal, 0, "\nBMP280 Temperature: %.2f C", fTemp);
+            tft_terminal_printf(terminal, 0, "\nBMP280 Pressure: %.2f hPa", fPress);
 
             DBGPRINTLN_CTX("BMP280 Temperature: %.2f C", fTemp);
             DBGPRINTLN_CTX("BMP280 Pressure: %.2f hPa", fPress);
@@ -626,8 +609,8 @@ int main()
             uint16_t usETVOC = ccs811_read_etvoc();
             uint16_t usECO2 = ccs811_read_eco2();
 
-            tft_terminal_printf(terminal, 1, "\nCCS811 eTVOC: %hu ppb", usETVOC);
-            tft_terminal_printf(terminal, 1, "\nCCS811 eCO2: %hu ppm", usECO2);
+            tft_terminal_printf(terminal, 0, "\nCCS811 eTVOC: %hu ppb", usETVOC);
+            tft_terminal_printf(terminal, 0, "\nCCS811 eCO2: %hu ppm", usECO2);
 
             DBGPRINTLN_CTX("CCS811 eTVOC: %hu ppb", usETVOC);
             DBGPRINTLN_CTX("CCS811 eCO2: %hu ppm", usECO2);
@@ -635,8 +618,8 @@ int main()
             float fSITemp = si7021_read_temperature();
             float fSIHumid = si7021_read_humidity();
 
-            tft_terminal_printf(terminal, 1, "\nSI7021 Temperature: %.2f C", fSITemp);
-            tft_terminal_printf(terminal, 1, "\nSI7021 Humidity: %.1f %%RH", fSIHumid);
+            tft_terminal_printf(terminal, 0, "\nSI7021 Temperature: %.2f C", fSITemp);
+            tft_terminal_printf(terminal, 0, "\nSI7021 Humidity: %.1f %%RH", fSIHumid);
 
             DBGPRINTLN_CTX("SI7021 Temperature: %.2f C", fSITemp);
             DBGPRINTLN_CTX("SI7021 Humidity: %.1f %%RH", fSIHumid);
@@ -644,18 +627,9 @@ int main()
             //play_sound(2700, 10);
             tft_terminal_printf(terminal, 1, "\nFree RAM: %lu KiB", get_free_ram() >> 10);
 
-            static uint8_t ubLastState = 0;
-
-            if(!ubLastState)
-            {
-            }
-            else
-            {
-            }
-            ubLastState = !ubLastState;
-
-            ullLastTask = g_ullSystemTick;
+            ullLastSwoPrint = g_ullSystemTick;
         }
+
         /* - - - - - - - - Main Tasks - - - - - - - - -*/
 
         /* - - - - - - - - Button Routines - - - - - - - - -*/
@@ -665,16 +639,16 @@ int main()
 
         if(BTN_1_STATE() && (ubLastBtn1State != 1))
         {
-            tft_draw_image(&xSurpriseImage, 0, 0);
+            //tft_draw_image(&xSurpriseImage, 0, 0);
 
             ubLastBtn1State = 1;
         }
         else if(!BTN_1_STATE() && (ubLastBtn1State != 0))
         {
             tft_fill_screen(RGB565_DARKGREY);
-            tft_printf(&xSans18pFont, 10, 10, RGB565_WHITE, RGB565_DARKGREY, "Display is the wey");
-            tft_draw_rectangle(10, 65, 295 + 15 + 5, 75 + tft_get_text_height(&xSans9pFont, 6), RGB565_DARKGREEN, 1);
-            tft_textbox_clear(textbox);
+            //tft_printf(&xSans18pFont, 10, 10, RGB565_WHITE, RGB565_DARKGREY, "Display is the wey");
+            //tft_draw_rectangle(10, 65, 295 + 15 + 5, 75 + tft_get_text_height(&xSans9pFont, 6), RGB565_DARKGREEN, 1);
+            //tft_textbox_clear(textbox);
             tft_terminal_printf(terminal, 1, "\nA nice surprise was shown...");
 
             ubLastBtn1State = 0;
@@ -695,9 +669,9 @@ int main()
         else if(!BTN_2_STATE() && (ubLastBtn2State != 0))
         {
             tft_fill_screen(RGB565_DARKGREY);
-            tft_printf(&xSans18pFont, 10, 10, RGB565_WHITE, RGB565_DARKGREY, "Display is the wey");
-            tft_draw_rectangle(10, 65, 295 + 15 + 5, 75 + tft_get_text_height(&xSans9pFont, 6), RGB565_DARKGREEN, 1);
-            tft_textbox_clear(textbox);
+            //tft_printf(&xSans18pFont, 10, 10, RGB565_WHITE, RGB565_DARKGREY, "Display is the wey");
+            //tft_draw_rectangle(10, 65, 295 + 15 + 5, 75 + tft_get_text_height(&xSans9pFont, 6), RGB565_DARKGREEN, 1);
+            //tft_textbox_clear(textbox);
             tft_terminal_printf(terminal, 1, "\nPepe army was shown...");
 
             ubLastBtn2State = 0;

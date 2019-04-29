@@ -168,13 +168,13 @@ static uint8_t rfm69_pack_header(const rfm69_packet_header_t *pHeader, uint8_t *
 {
     if(!pubBuffer || !ubBufferSize)
 		return 0;
-	
+
 	if(ubBufferSize < RFM69_PACKET_HEADER_SIZE)
 		return 0;
 
     if(!pHeader)
         return 0;
-	
+
 	uint8_t ubFlags = ((!!pHeader->ubACKRequested) << RFM69_CTL_ACKR) |
 					  ((!!pHeader->ubACKSent) << RFM69_CTL_ACKS) |
 					  ((!!pHeader->ubRELRequested) << RFM69_CTL_RELR) |
@@ -186,15 +186,15 @@ static uint8_t rfm69_pack_header(const rfm69_packet_header_t *pHeader, uint8_t *
 	pubBuffer += sizeof(uint8_t);
 
 	memcpy(pubBuffer, &pHeader->usID, sizeof(uint16_t));
-	
+
 	pubBuffer += sizeof(uint16_t);
 
 	memcpy(pubBuffer, &pHeader->bRemoteRSSI, sizeof(int8_t));
-	
+
 	pubBuffer += sizeof(int8_t);
 
 	memcpy(pubBuffer, &pHeader->ubReceiverNodeID, sizeof(uint8_t));
-	
+
 	pubBuffer += sizeof(uint8_t);
 
 	memcpy(pubBuffer, &pHeader->ubSenderNodeID, sizeof(uint8_t));
@@ -207,17 +207,17 @@ static uint8_t rfm69_unpack_header(rfm69_packet_header_t *pHeader, const uint8_t
 {
     if(!pubBuffer || !ubBufferSize)
 		return 0;
-	
+
 	if(ubBufferSize < RFM69_PACKET_HEADER_SIZE)
 		return 0;
 
     if(!pHeader)
         return 0;
-	
+
 	uint8_t ubFlags;
 
 	memcpy(&ubFlags, pubBuffer, sizeof(uint8_t));
-	
+
 	pubBuffer += sizeof(uint8_t);
 
 	pHeader->ubACKRequested = !!(ubFlags & BIT(RFM69_CTL_ACKR));
@@ -227,19 +227,19 @@ static uint8_t rfm69_unpack_header(rfm69_packet_header_t *pHeader, const uint8_t
 	pHeader->ubQoSLevel = !!(ubFlags & BIT(RFM69_CTL_QOS));
 
 	memcpy(&pHeader->usID, pubBuffer, sizeof(uint16_t));
-	
+
 	pubBuffer += sizeof(uint16_t);
 
 	memcpy(&pHeader->bRemoteRSSI, pubBuffer, sizeof(int8_t));
-	
+
 	pubBuffer += sizeof(int8_t);
 
 	memcpy(&pHeader->ubReceiverNodeID, pubBuffer, sizeof(uint8_t));
-	
+
 	pubBuffer += sizeof(uint8_t);
 
 	memcpy(&pHeader->ubSenderNodeID, pubBuffer, sizeof(uint8_t));
-	
+
 	pubBuffer += sizeof(uint8_t);
 
 	return 1;
@@ -278,13 +278,13 @@ static uint8_t rfm69_parse_payload(rfm69_packet_header_t *pHeader, uint8_t **ppu
 {
     if(!pubBuffer || !ubBufferSize)
 		return 0;
-	
+
 	if(ubBufferSize < RFM69_PACKET_HEADER_SIZE)
 		return 0;
-		
+
     if(!pHeader)
 		return 0;
-	
+
 	rfm69_unpack_header(pHeader, pubBuffer, RFM69_PACKET_HEADER_SIZE);
 
 	pubBuffer += RFM69_PACKET_HEADER_SIZE;
@@ -523,12 +523,12 @@ void rfm69_tick()
 
 		if(g_ullSystemTick - pPacket->ullLastRetry < pPacket->usRetryDelay)
 			continue;
-		
+
 		uint8_t ubPayloadSize;
 
 		if(!rfm69_build_pending_packet_payload(pPacket, pubTXBuffer, RFM69_MAX_PAYLOAD_SIZE, &ubPayloadSize))
 			continue;
-		
+
 		if(!blob_fifo_write(pRadioTXPacketFIFO, pubTXBuffer, ubPayloadSize))
 			continue;
 
@@ -542,12 +542,12 @@ void rfm69_tick()
 
 		if(g_ullSystemTick - pPacket->ullLastRetry < pPacket->usRetryDelay)
 			continue;
-		
+
 		uint8_t ubPayloadSize;
 
 		if(!rfm69_build_pending_packet_payload(pPacket, pubTXBuffer, RFM69_MAX_PAYLOAD_SIZE, &ubPayloadSize))
 			continue;
-		
+
 		if(!blob_fifo_write(pRadioTXPacketFIFO, pubTXBuffer, ubPayloadSize))
 			continue;
 
@@ -561,12 +561,12 @@ void rfm69_tick()
 
 		if(g_ullSystemTick - pPacket->ullLastRetry < pPacket->usRetryDelay)
 			continue;
-		
+
 		uint8_t ubPayloadSize;
 
 		if(!rfm69_build_pending_packet_payload(pPacket, pubTXBuffer, RFM69_MAX_PAYLOAD_SIZE, &ubPayloadSize))
 			continue;
-		
+
 		if(!blob_fifo_write(pRadioTXPacketFIFO, pubTXBuffer, ubPayloadSize))
 			continue;
 
