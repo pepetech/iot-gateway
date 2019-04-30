@@ -428,9 +428,40 @@ void tft_graph_draw_data(tft_graph_t *pxGraph, float *pfXData, float *pfYData, u
         uint16_t usXH = (*pfXData - pxGraph->dXLowBound) * pxGraph->usWidth / (pxGraph->dXUppBound - pxGraph->dXLowBound) + pxGraph->usOriginX;
         uint16_t usYH = (*pfYData - pxGraph->dYLowBound) * (pxGraph->usOriginY - pxGraph->usHeigth - pxGraph->usOriginY) / (pxGraph->dYUppBound - pxGraph->dYLowBound) + pxGraph->usOriginY;
 
-        tft_draw_line(pxGraph->dOldX, pxGraph->dOldY, usXH, usYH, pxGraph->xPColor);
-        tft_draw_line(pxGraph->dOldX, pxGraph->dOldY + 1, usXH, usYH + 1, pxGraph->xPColor);
-        tft_draw_line(pxGraph->dOldX, pxGraph->dOldY - 1, usXH, usYH - 1, pxGraph->xPColor);
+        uint8_t ubDrawFlag = 1;
+
+        if(usXH > (pxGraph->usOriginX + pxGraph->usWidth))
+        {
+            usXH = (pxGraph->usOriginX + pxGraph->usWidth);
+
+            ubDrawFlag = 0;
+        }
+        if(usXH < pxGraph->usOriginX)
+        {
+            usXH = pxGraph->usOriginX;
+
+            ubDrawFlag = 0;
+        }
+
+        if(usYH > pxGraph->usOriginY)
+        {
+            usYH = pxGraph->usOriginY;
+
+            ubDrawFlag = 0;
+        }
+        if(usYH < (pxGraph->usOriginY - pxGraph->usHeigth))
+        {
+            usYH = (pxGraph->usOriginY - pxGraph->usHeigth);
+
+            ubDrawFlag = 0;
+        }
+
+        if(ubDrawFlag)
+        {
+            tft_draw_line(pxGraph->dOldX, pxGraph->dOldY, usXH, usYH, pxGraph->xPColor);
+            tft_draw_line(pxGraph->dOldX, pxGraph->dOldY + 1, usXH, usYH + 1, pxGraph->xPColor);
+            tft_draw_line(pxGraph->dOldX, pxGraph->dOldY - 1, usXH, usYH - 1, pxGraph->xPColor);
+        }
 
         pxGraph->dOldX = usXH;
         pxGraph->dOldY = usYH;
