@@ -284,15 +284,15 @@ tft_graph_t *tft_graph_create(float fGx, float fGy, float fW, float fH, float fX
     pxNewGraph->dYLowBound = fYlo;
     pxNewGraph->dYUppBound = fYhi;
     pxNewGraph->dYInc = fYinc;
-    pxNewGraph->pubXfmt = (char *)malloc(sprintf(NULL, xlabelfmt) + 1);
+    pxNewGraph->pubXfmt = (char *)malloc(strlen(xlabelfmt) + 1);
     if(!pxNewGraph->pubXfmt)
     {
         free(pxNewGraph);
 
         return NULL;
     }
-    sprintf(pxNewGraph->pubXfmt, xlabelfmt);
-    pxNewGraph->pubYfmt = (char *)malloc(sprintf(NULL, ylabelfmt) + 1);
+    strcpy(pxNewGraph->pubXfmt, xlabelfmt);
+    pxNewGraph->pubYfmt = (char *)malloc(strlen(xlabelfmt) + 1);
     if(!pxNewGraph->pubYfmt)
     {
         free(pxNewGraph->pubYfmt);
@@ -300,8 +300,8 @@ tft_graph_t *tft_graph_create(float fGx, float fGy, float fW, float fH, float fX
 
         return NULL;
     }
-    sprintf(pxNewGraph->pubYfmt, ylabelfmt);
-    pxNewGraph->pubTitle = (char *)malloc(sprintf(NULL, title) + 1);
+    strcpy(pxNewGraph->pubYfmt, ylabelfmt);
+    pxNewGraph->pubTitle = (char *)malloc(strlen(title) + 1);
     if(!pxNewGraph->pubTitle)
     {
         free(pxNewGraph->pubXfmt);
@@ -310,8 +310,8 @@ tft_graph_t *tft_graph_create(float fGx, float fGy, float fW, float fH, float fX
 
         return NULL;
     }
-    sprintf(pxNewGraph->pubTitle, title);
-    pxNewGraph->pubXLabel = (char *)malloc(sprintf(NULL, xlabel) + 1);
+    strcpy(pxNewGraph->pubTitle, title);
+    pxNewGraph->pubXLabel = (char *)malloc(strlen(xlabel) + 1);
     if(!pxNewGraph->pubXLabel)
     {
         free(pxNewGraph->pubXfmt);
@@ -321,8 +321,8 @@ tft_graph_t *tft_graph_create(float fGx, float fGy, float fW, float fH, float fX
 
         return NULL;
     }
-    sprintf(pxNewGraph->pubXLabel, xlabel);
-    pxNewGraph->pubYLabel = (char *)malloc(sprintf(NULL, ylabel) + 1);
+    strcpy(pxNewGraph->pubXLabel, xlabel);
+    pxNewGraph->pubYLabel = (char *)malloc(strlen(ylabel) + 1);
     if(!pxNewGraph->pubYLabel)
     {
         free(pxNewGraph->pubXfmt);
@@ -333,7 +333,7 @@ tft_graph_t *tft_graph_create(float fGx, float fGy, float fW, float fH, float fX
 
         return NULL;
     }
-    sprintf(pxNewGraph->pubYLabel, ylabel);
+    strcpy(pxNewGraph->pubYLabel, ylabel);
     pxNewGraph->pFont = pFont;
     pxNewGraph->xGColor = gcolor;
     pxNewGraph->xAColor = acolor;

@@ -255,13 +255,14 @@ int init()
     fDVDDHighThresh = fDVDDLowThresh + 0.026f; // Hysteresis from datasheet
     fIOVDDHighThresh = fIOVDDLowThresh + 0.026f; // Hysteresis from datasheet
 
-    usart0_init(9000000, 0, USART_SPI_MSB_FIRST, 2, 2, 2);  // SPI0 at 9MHz on Location 2 MISO:PC10 MOSI:PC11 CLK:PC9 ESP8266 WIFI-COPROCESSOR
+    usart0_init(12000000, 0, USART_SPI_MSB_FIRST, 2, 2, 2);  // SPI0 at 12MHz(clock skipping) on Location 2 MISO:PC10 MOSI:PC11 CLK:PC9 ESP8266 WIFI-COPROCESSOR
+    USART0->CTRL |= UART_CTRL_SMSDELAY;
     usart1_init(18000000, 0, USART_SPI_MSB_FIRST, 1, 1, 1);  // SPI1 at 18MHz on Location 1 MISO:PD1 MOSI:PD0 CLK:PD2 ILI9488 Display
     usart2_init(115200, UART_FRAME_STOPBITS_ONE | UART_FRAME_PARITY_NONE | USART_FRAME_DATABITS_EIGHT, 0, 0, -1, -1); // USART2 at 115200Baud on Location 0 RTS-PC0 CTS-PC1 TX-PC2 RX-PC3 GSM
     usart3_init(9000000, 0, USART_SPI_MSB_FIRST, 0, 0, 0); // SPI3 at 9MHz on Location 0 MISO-PA1 MOSI-PA0 CLK-PA2 RFM
 
-    i2c0_init(I2C_NORMAL, 6, 6); // Init I2C0 at 100 kHz on location 6 SCL:PE13 SDA:PE12 Sensors
-    i2c1_init(I2C_NORMAL, 1, 1); // Init I2C1 at 100 kHz on location 1 SCL:PB12 SDA:PB11 TFT Touch Controller
+    i2c0_init(I2C_FAST, 6, 6); // Init I2C0 at 100 kHz on location 6 SCL:PE13 SDA:PE12 Sensors
+    i2c1_init(I2C_FAST, 1, 1); // Init I2C1 at 400 kHz on location 1 SCL:PB12 SDA:PB11 TFT Touch Controller
 
     char szDeviceName[32];
 
@@ -533,13 +534,14 @@ int main()
         /* - - - - - - - - Main Tasks - - - - - - - - -*/
         static uint64_t ullLastLedUpdate = 0;
 
-        if(g_ullSystemTick > (ullLastLedUpdate + 500))
+        if(g_ullSystemTick > (ullLastLedUpdate + 250))
         {
             uint32_t ulColor = trng_pop_random();
 
             ws2812b_set_color(0, (uint8_t)((ulColor >> 16) & 0xFF), (uint8_t)((ulColor >> 8) & 0xFF), (uint8_t)(ulColor & 0xFF));
 
-            if(ft6x36_get_touch_stat())
+            //if(ft6x36_get_touch_stat())
+            if(0)
             {
                 ft6x36_touch_points_t xTPs;
                 ft6x36_get_points(&xTPs);
@@ -712,18 +714,21 @@ int main()
         }
         else if(!BTN_3_STATE() && (ubLastBtn3State != 0))
         {
-            usart2_write_byte('A');
-            usart2_write_byte('T');
-            usart2_write_byte('\r');
-            usart2_write_byte('\n');
+            //usart2_write_byte('A');
+            //usart2_write_byte('T');
+            //usart2_write_byte('\r');
+            //usart2_write_byte('\n');
 
-            uint8_t ubNBytes = 0;
+            uint8_t ubNBytes = 37;
 
             uint8_t ubBuf[ubNBytes];
             memset(ubBuf, 0x00, ubNBytes);
 
-            ubBuf[0] = 0x03;
-            ubBuf[1] = 0x05;
+            for(uint8_t ubI = 0; ubI < ubNBytes; ubI++)
+                ubBuf[ubI] = (uint8_t)(trng_pop_random() & 0xFF);
+
+            ubBuf[0] = 0x02;
+            //ubBuf[1] = 0x05;
 
             tft_terminal_printf(terminal, 1, "\nTransfering %d byte(s) to wifi-coprocessor...", ubNBytes);
             DBGPRINTLN_CTX("Transfering %d byte(s) to wifi-coprocessor...", ubNBytes);
@@ -735,9 +740,8 @@ int main()
             delay_ms(10);
 
             WIFI_SELECT();
-            //usart0_spi_transfer(ubBuf, ubNBytes, ubBuf);
+            usart0_spi_transfer(ubBuf, ubNBytes, ubBuf);
             WIFI_UNSELECT();
-
 
             DBGPRINTLN_CTX("Received:");
             for(uint8_t ubI = 0; ubI < ubNBytes; ubI++)

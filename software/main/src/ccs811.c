@@ -12,8 +12,8 @@ static uint8_t ccs811_read_register(uint8_t ubRegister)
 		i2c0_write_byte(CCS811_I2C_ADDR, ubRegister, I2C_RESTART);
 		ubValue = i2c0_read_byte(CCS811_I2C_ADDR, I2C_STOP);
 
-        CCS811_SLEEP();
         delay_ms(CCS811_T_SLEEP);
+        CCS811_SLEEP();
 	}
 
 	return ubValue;
@@ -32,8 +32,8 @@ static void ccs811_write_register(uint8_t ubRegister, uint8_t ubValue)
 
 		i2c0_write(CCS811_I2C_ADDR, pubBuffer, 2, I2C_STOP);
 
-        CCS811_SLEEP();
         delay_ms(CCS811_T_SLEEP);
+        CCS811_SLEEP();
 	}
 }
 static void ccs811_rmw_register(uint8_t ubRegister, uint8_t ubMask, uint8_t ubValue)
@@ -76,8 +76,8 @@ void ccs811_app_erase()
 
 		i2c0_write(CCS811_I2C_ADDR, pubBuffer, 5, I2C_STOP);
 
-        CCS811_SLEEP();
         delay_ms(CCS811_T_SLEEP);
+        CCS811_SLEEP();
     }
 
 	delay_ms(CCS811_T_APP_ERASE);
@@ -98,8 +98,8 @@ void ccs811_app_send_data(uint8_t *pubSrc)
 
 		i2c0_write(CCS811_I2C_ADDR, pubBuffer, 9, I2C_STOP);
 
-        CCS811_SLEEP();
         delay_ms(CCS811_T_SLEEP);
+        CCS811_SLEEP();
     }
 
 	delay_ms(CCS811_T_APP_DATA);
@@ -113,8 +113,8 @@ uint8_t ccs811_app_verify()
 
 		i2c0_write_byte(CCS811_I2C_ADDR, CCS811_REG_APP_VERIFY, I2C_STOP);
 
-        CCS811_SLEEP();
         delay_ms(CCS811_T_SLEEP);
+        CCS811_SLEEP();
     }
 
     delay_ms(CCS811_T_APP_VERIFY);
@@ -133,8 +133,8 @@ void ccs811_app_start()
 
 		i2c0_write_byte(CCS811_I2C_ADDR, CCS811_REG_APP_START, I2C_STOP);
 
-        CCS811_SLEEP();
         delay_ms(CCS811_T_SLEEP);
+        CCS811_SLEEP();
     }
 
     delay_ms(CCS811_T_APP_START);
@@ -157,8 +157,8 @@ void ccs811_software_reset()
 
 		i2c0_write(CCS811_I2C_ADDR, pubBuffer, 5, I2C_STOP);
 
-        CCS811_SLEEP();
         delay_ms(CCS811_T_SLEEP);
+        CCS811_SLEEP();
     }
 
 	delay_ms(CCS811_T_START);
@@ -183,8 +183,8 @@ uint16_t ccs811_read_etvoc()
 		i2c0_write_byte(CCS811_I2C_ADDR, CCS811_REG_ALG_RESULT_DATA, I2C_RESTART);
 		i2c0_read(CCS811_I2C_ADDR, pubBuffer, 4, I2C_STOP);
 
-        CCS811_SLEEP();
         delay_ms(CCS811_T_SLEEP);
+        CCS811_SLEEP();
     }
 
     return ((uint16_t)pubBuffer[2] << 8) | ((uint16_t)pubBuffer[3] << 0);
@@ -201,8 +201,8 @@ uint16_t ccs811_read_eco2()
 		i2c0_write_byte(CCS811_I2C_ADDR, CCS811_REG_ALG_RESULT_DATA, I2C_RESTART);
 		i2c0_read(CCS811_I2C_ADDR, pubBuffer, 2, I2C_STOP);
 
-        CCS811_SLEEP();
         delay_ms(CCS811_T_SLEEP);
+        CCS811_SLEEP();
     }
 
     return ((uint16_t)pubBuffer[0] << 8) | ((uint16_t)pubBuffer[1] << 0);
@@ -240,8 +240,8 @@ uint16_t ccs811_read_boot_version()
 		i2c0_write_byte(CCS811_I2C_ADDR, CCS811_REG_BL_FW_VERSION, I2C_RESTART);
 		i2c0_read(CCS811_I2C_ADDR, pubBuffer, 2, I2C_STOP);
 
-        CCS811_SLEEP();
         delay_ms(CCS811_T_SLEEP);
+        CCS811_SLEEP();
     }
 
     return ((uint16_t)pubBuffer[0] << 8) | ((uint16_t)pubBuffer[1] << 0);
@@ -258,8 +258,8 @@ uint16_t ccs811_read_app_version()
 		i2c0_write_byte(CCS811_I2C_ADDR, CCS811_REG_APP_FW_VERSION, I2C_RESTART);
 		i2c0_read(CCS811_I2C_ADDR, pubBuffer, 2, I2C_STOP);
 
-        CCS811_SLEEP();
         delay_ms(CCS811_T_SLEEP);
+        CCS811_SLEEP();
     }
 
     return ((uint16_t)pubBuffer[0] << 8) | ((uint16_t)pubBuffer[1] << 0);
@@ -294,8 +294,8 @@ void ccs811_write_env_data(float fTemp, float fHumid)
 
 		i2c0_write(CCS811_I2C_ADDR, pubBuffer, 5, I2C_STOP);
 
-        CCS811_SLEEP();
         delay_ms(CCS811_T_SLEEP);
+        CCS811_SLEEP();
     }
 }
 
@@ -316,8 +316,8 @@ void ccs811_write_tresh(uint16_t usLowToMed, uint16_t usMedToHigh)
 
 		i2c0_write(CCS811_I2C_ADDR, pubBuffer, 5, I2C_STOP);
 
-        CCS811_SLEEP();
         delay_ms(CCS811_T_SLEEP);
+        CCS811_SLEEP();
     }
 }
 
@@ -336,8 +336,8 @@ void ccs811_write_baseline(uint16_t usBaseline)
 
 		i2c0_write(CCS811_I2C_ADDR, pubBuffer, 3, I2C_STOP);
 
-        CCS811_SLEEP();
         delay_ms(CCS811_T_SLEEP);
+        CCS811_SLEEP();
     }
 }
 uint16_t ccs811_read_baseline()
@@ -352,8 +352,8 @@ uint16_t ccs811_read_baseline()
 		i2c0_write_byte(CCS811_I2C_ADDR, CCS811_REG_BASELINE, I2C_RESTART);
 		i2c0_read(CCS811_I2C_ADDR, pubBuffer, 2, I2C_STOP);
 
-        CCS811_SLEEP();
         delay_ms(CCS811_T_SLEEP);
+        CCS811_SLEEP();
     }
 
     return ((uint16_t)pubBuffer[0] << 8) | ((uint16_t)pubBuffer[1] << 0);
