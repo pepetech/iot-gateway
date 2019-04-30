@@ -90,7 +90,7 @@ SOURCES = $(ASSOURCES) $(CSOURCES) $(CXXSOURCES)
 OBJECTS = $(ASOBJECTS) $(COBJECTS) $(CXXOBJECTS)
 
 multi:
-	$(MAKE) -j${MAX_PARALLEL} all
+	@$(MAKE) -j${MAX_PARALLEL} all
 
 all: clean-bin make-dir version $(TARGET).bin $(TARGET).hex $(TARGET).lss mem-usage
 
