@@ -49,7 +49,7 @@
 #define SPI_BUFFER_SIZE 8192
 
 #define SPI_TASK_SIZE   20
-#define SPI_TASK_PRIO   0
+#define SPI_TASK_PRIO   2
 
 #define SPI_SIGNAL_READ_STATUS_DONE     0
 #define SPI_SIGNAL_WRITE_STATUS_DONE    1

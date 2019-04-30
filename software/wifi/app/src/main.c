@@ -5,7 +5,7 @@ static ets_timer_t sntp_timer;
 static uint8_t update_scheduled = 0;
 static uint32_t update_new_version = 0;
 static ets_event_t spi_task_queue[SPI_TASK_SIZE];
-statis uint32_t spi_status = 0x00000000;
+static uint32_t spi_status = 0x00000000;
 
 // Forward declarations
 static void spi_isr(void *arg);
@@ -72,10 +72,15 @@ void spi_isr(void *arg)
         {
             uint32_t data = REG(SPI1_ADDR); // Address register used as additional 4 bytes of data
 
-            // 1 (data >> 0) & 0xFF
-            // 2 (data >> 8) & 0xFF
-            // 3 (data >> 16) & 0xFF
-            // 4 (data >> 24) & 0xFF
+            // 1 (data >> 24) & 0xFF
+            // 2 (data >> 16) & 0xFF
+            // 3 (data >> 8) & 0xFF
+            // 4 (data >> 0) & 0xFF
+
+            DBGPRINT("%02X ", (data >> 24) & 0xFF);
+            DBGPRINT("%02X ", (data >> 16) & 0xFF);
+            DBGPRINT("%02X ", (data >> 8) & 0xFF);
+            DBGPRINT("%02X ", (data >> 0) & 0xFF);
 
             for(uint8_t i = 0; i < 8; i++)
             {
@@ -85,6 +90,11 @@ void spi_isr(void *arg)
                 // 2 (data >> 8) & 0xFF
                 // 3 (data >> 16) & 0xFF
                 // 4 (data >> 24) & 0xFF
+
+                DBGPRINT("%02X ", (data >> 0) & 0xFF);
+                DBGPRINT("%02X ", (data >> 8) & 0xFF);
+                DBGPRINT("%02X ", (data >> 16) & 0xFF);
+                DBGPRINT("%02X ", (data >> 24) & 0xFF);
 
                 ets_post(SPI_TASK_PRIO, SPI_SIGNAL_WRITE_DATA_DONE, NULL);
             }
@@ -102,7 +112,14 @@ void spi_isr(void *arg)
 
 void spi_task_handler(ets_event_t *event)
 {
+    if(!event)
+        return;
 
+    switch(event->sig)
+    {
+        default:
+        break;
+    }
 }
 
 void tick_timer_callback(void *arg)
@@ -174,6 +191,15 @@ void spi_init()
 
     REG(SPI1_WSTATUS) = spi_status;
 
+    REG(SPI1_W(8)) = 0x00112233;
+    REG(SPI1_W(9)) = 0x44556677;
+    REG(SPI1_W(10)) = 0x00112233;
+    REG(SPI1_W(11)) = 0x44556677;
+    REG(SPI1_W(12)) = 0x00112233;
+    REG(SPI1_W(13)) = 0x44556677;
+    REG(SPI1_W(14)) = 0x00112233;
+    REG(SPI1_W(15)) = 0x44556677;
+
     ets_isr_attach(ETS_INUM_SPI, spi_isr, NULL);
     ets_isr_unmask(BIT(ETS_INUM_SPI));
 
@@ -194,10 +220,9 @@ void spi_set_data(uint8_t *data, uint32_t len)
 
         if(!byte_index)
         {
-            REG(SPI1_W(wi)) = word;
+            REG(SPI1_W(word_index++)) = word;
 
             word = 0;
-            word_index++;
         }
     }
 }
