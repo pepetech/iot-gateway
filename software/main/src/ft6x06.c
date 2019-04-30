@@ -62,7 +62,7 @@ void ft6x06_set_threshold(uint8_t ubThreshold)
 
 uint8_t ft6x06_get_touch_stat()
 {
-    return ft6x06_read_register(FT6X06_TD_STATUS);
+    return ft6x06_read_register(FT6X06_TD_STATUS) & 0x0F;
 }
 
 void ft6x06_get_points(touch_points_t *pTpData)
