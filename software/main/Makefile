@@ -1,3 +1,4 @@
+# App Config
 ARM_LIBROOT ?= /mnt/e/Projetos/ARM/ARMdev/lib/
 DEVICEDIR = $(ARM_LIBROOT)/SiliconLabs.EFM32GG11B_DFP.5.7.0/Device/SiliconLabs/EFM32GG11B/Include
 COREDIR = $(ARM_LIBROOT)/ARM.CMSIS.5.4.0/CMSIS/Include
@@ -7,7 +8,8 @@ LFXO_VALUE = 32768UL
 APP_ADDRESS = 0x00000000
 APP_NAME = gateway
 
-#######################################################
+# Multiprocessing
+MAX_PARALLEL =
 
 # Directories
 TARGETDIR = bin
@@ -21,7 +23,7 @@ SOURCEDIRSTRUCT := $(filter-out %/include, $(STRUCT))
 INCLUDEDIRSTRUCT := $(filter %/include, $(STRUCT)) $(DEVICEDIR)/ $(COREDIR)/
 OBJECTDIRSTRUCT := $(subst $(SOURCEDIR), $(OBJECTDIR), $(SOURCEDIRSTRUCT))
 
-# Build type
+# Build typr
 BUILD_TYPE ?= debug
 
 # Version
@@ -87,6 +89,8 @@ CXXOBJECTS := $(subst $(SOURCEDIR), $(OBJECTDIR), $(CXXSOURCES:%.cpp=%.o))
 SOURCES = $(ASSOURCES) $(CSOURCES) $(CXXSOURCES)
 OBJECTS = $(ASOBJECTS) $(COBJECTS) $(CXXOBJECTS)
 
+multi:
+	$(MAKE) -j${MAX_PARALLEL} all
 
 all: clean-bin make-dir version $(TARGET).bin $(TARGET).hex $(TARGET).lss mem-usage
 
@@ -172,3 +176,5 @@ clean: clean-bin
 	@rm -rf $(OBJECTDIR)/*
 
 -include $(OBJECTS:.o=.d)
+
+.PHONY: clean clean-bin make-dir mem-usage version dec-version inc-version reset erase flash debug all multi
