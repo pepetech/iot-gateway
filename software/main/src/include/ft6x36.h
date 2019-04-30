@@ -92,20 +92,22 @@ typedef struct
     uint16_t usY2;
     uint8_t ubZ2;       // touch pressure
     uint8_t ubA2;       // touch Area
-} touch_points_t;
+} ft6x36_touch_points_t;
 
-uint8_t ft6x06_init();
+uint8_t ft6x36_init();
+void ft6x36_isr();
+void ft6x36_tick();
 
-uint8_t ft6x06_get_vendor_id();
-uint8_t ft6x06_get_chip_id();
-uint8_t ft6x06_get_firmware_version();
+uint8_t ft6x36_get_vendor_id();
+uint8_t ft6x36_get_chip_id();
+uint8_t ft6x36_get_firmware_version();
 
-uint8_t ft6x06_get_point_rate();
-uint8_t ft6x06_get_threshold();
-void ft6x06_set_threshold(uint8_t ubThreshold);
+uint8_t ft6x36_get_point_rate();
+uint8_t ft6x36_get_threshold();
+void ft6x36_set_threshold(uint8_t ubThreshold);
 
-uint8_t ft6x06_get_touch_stat();
+uint8_t ft6x36_get_touch_stat();
 
-void ft6x06_get_points(touch_points_t *pTpData);
+void ft6x36_get_points(ft6x36_touch_points_t *pTpData);
 
 #endif // __FT6X06_H__

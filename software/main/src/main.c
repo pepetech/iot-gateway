@@ -26,11 +26,11 @@
 #include "bmp280.h"
 #include "ccs811.h"
 #include "si7021.h"
+#include "ft6x36.h"
 #include "ili9488.h"
 #include "tft.h"
 #include "images.h"
 #include "fonts.h"
-#include "ft6x06.h"
 
 // Structs
 
@@ -376,7 +376,7 @@ int init()
     else
         DBGPRINTLN_CTX("ILI9488 init NOK!");
 
-    if(ft6x06_init())
+    if(ft6x36_init())
         DBGPRINTLN_CTX("FT6236 init OK!");
     else
         DBGPRINTLN_CTX("FT6236 init NOK!");
@@ -386,6 +386,8 @@ int init()
     else
         DBGPRINTLN_CTX("RFM69 init NOK!");
 
+    ws2812b_init();
+
     return 0;
 }
 int main()
@@ -394,7 +396,6 @@ int main()
     delay_ms(50);
     play_sound(3000, 50);
 
-    ws2812b_init();
     ws2812b_set_color(0, 0, 142, 255);
 
     // CLK OUT to check if the clock was properly calibrated
@@ -485,12 +486,12 @@ int main()
 
     // TFT Touch info
     DBGPRINTLN_CTX("FT6236 Touch controller");
-    DBGPRINTLN_CTX("Vendor ID: 0x%02X", ft6x06_get_vendor_id());
-    DBGPRINTLN_CTX("Chip ID: 0x%02X", ft6x06_get_chip_id());
-    DBGPRINTLN_CTX("Firmware V: 0x%02X", ft6x06_get_firmware_version());
-    DBGPRINTLN_CTX("Point Rate Hz: %hu", ft6x06_get_point_rate());
-    DBGPRINTLN_CTX("Thresh: 0x%02X", ft6x06_get_threshold());
-    ft6x06_set_threshold(128);
+    DBGPRINTLN_CTX("Vendor ID: 0x%02X", ft6x36_get_vendor_id());
+    DBGPRINTLN_CTX("Chip ID: 0x%02X", ft6x36_get_chip_id());
+    DBGPRINTLN_CTX("Firmware V: 0x%02X", ft6x36_get_firmware_version());
+    DBGPRINTLN_CTX("Point Rate Hz: %hu", ft6x36_get_point_rate());
+    DBGPRINTLN_CTX("Thresh: 0x%02X", ft6x36_get_threshold());
+    ft6x36_set_threshold(128);
 
     // TFT Config
     tft_bl_init(2000); // Init backlight PWM at 2 kHz
@@ -526,6 +527,7 @@ int main()
     {
         /* - - - - - - - - Library Tasks - - - - - - - - -*/
         rfm69_tick();
+        ft6x36_tick();
         /* - - - - - - - - Library Tasks - - - - - - - - -*/
 
         /* - - - - - - - - Main Tasks - - - - - - - - -*/
@@ -533,14 +535,14 @@ int main()
 
         if(g_ullSystemTick > (ullLastLedUpdate + 500))
         {
-            //uint32_t ullColor = trng_pop_random();
-            // FIXME: sum real weird going on
-            //ws2812b_set_color(0, (uint8_t)((ullColor >> 16) & 0xFF), (uint8_t)((ullColor >> 8) & 0xFF), (uint8_t)(ullColor & 0xFF));
+            uint32_t ulColor = trng_pop_random();
 
-            if(ft6x06_get_touch_stat())
+            ws2812b_set_color(0, (uint8_t)((ulColor >> 16) & 0xFF), (uint8_t)((ulColor >> 8) & 0xFF), (uint8_t)(ulColor & 0xFF));
+
+            if(ft6x36_get_touch_stat())
             {
-                touch_points_t xTPs;
-                ft6x06_get_points(&xTPs);
+                ft6x36_touch_points_t xTPs;
+                ft6x36_get_points(&xTPs);
                 DBGPRINTLN_CTX("Gesture ID: 0x%02X", xTPs.ubID);
                 DBGPRINTLN_CTX("N points: %u", xTPs.ubStat);
                 DBGPRINTLN_CTX("Point 1 Evnt: %u", xTPs.ubEvnt1);

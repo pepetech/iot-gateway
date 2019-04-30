@@ -66,7 +66,7 @@ void ws2812b_set_color(uint16_t usLED, uint8_t ubRed, uint8_t ubGreen, uint8_t u
     uint32_t ulData = ((uint32_t)ubGreen << 16) | ((uint32_t)ubRed << 8) | ((uint32_t)ubBlue << 0);
     uint32_t ulBufferOffset = (uint32_t)usLED * 3 * 8;
 
-    static uint8_t ubBufferCount = 3 * 8;
+    uint8_t ubBufferCount = 3 * 8;
     uint8_t ubT0High = (HFPER_CLOCK_FREQ * WS2812B_T0H) - 1;
     uint8_t ubT1High = (HFPER_CLOCK_FREQ * WS2812B_T1H) - 1;
 
