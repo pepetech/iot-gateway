@@ -23,7 +23,7 @@ SOURCEDIRSTRUCT := $(filter-out %/include, $(STRUCT))
 INCLUDEDIRSTRUCT := $(filter %/include, $(STRUCT)) $(DEVICEDIR)/ $(COREDIR)/
 OBJECTDIRSTRUCT := $(subst $(SOURCEDIR), $(OBJECTDIR), $(SOURCEDIRSTRUCT))
 
-# Build typr
+# Build type
 BUILD_TYPE ?= debug
 
 # Version
@@ -89,10 +89,11 @@ CXXOBJECTS := $(subst $(SOURCEDIR), $(OBJECTDIR), $(CXXSOURCES:%.cpp=%.o))
 SOURCES = $(ASSOURCES) $(CSOURCES) $(CXXSOURCES)
 OBJECTS = $(ASOBJECTS) $(COBJECTS) $(CXXOBJECTS)
 
-multi:
-	@$(MAKE) -j${MAX_PARALLEL} all
+all: clean-bin make-dir version compile mem-usage
 
-all: clean-bin make-dir version $(TARGET).bin $(TARGET).hex $(TARGET).lss mem-usage
+compile:
+	@$(MAKE) --no-print-directory -j${MAX_PARALLEL} $(TARGET).elf
+	@$(MAKE) --no-print-directory -j${MAX_PARALLEL} $(TARGET).bin $(TARGET).hex $(TARGET).lss
 
 $(TARGET).lss: $(TARGET).elf
 	@echo Creating LSS file \'$@\'...
@@ -136,16 +137,6 @@ $(OBJECTDIR)/%.o: $(SOURCEDIR)/%.cpp
 debug: $(TARGET).elf
 	$(GDB) $(TARGET).elf
 
-flash: clean-bin make-dir version $(TARGET).bin $(TARGET).hex $(TARGET).lss mem-usage
-	@echo ---------------------------------------------------------------------------
-	@st-flash --reset write $(TARGET).bin $(APP_ADDRESS)
-
-erase:
-	@st-flash erase
-
-reset:
-	@st-flash reset
-
 inc-version:
 	@echo $$(($(BUILD_VERSION) + 1)) > $(TARGETDIR)/.version
 	@if test -f .vscode/launch.json; then sed -i 's/v$(BUILD_VERSION).$(APP_NAME)/v$(shell echo $$(($(BUILD_VERSION) + 1))).$(APP_NAME)/g' .vscode/launch.json; fi
@@ -177,4 +168,4 @@ clean: clean-bin
 
 -include $(OBJECTS:.o=.d)
 
-.PHONY: clean clean-bin make-dir mem-usage version dec-version inc-version reset erase flash debug all multi
+.PHONY: clean clean-bin make-dir mem-usage version dec-version inc-version debug compile all

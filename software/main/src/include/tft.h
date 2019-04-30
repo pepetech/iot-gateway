@@ -26,6 +26,8 @@ typedef struct
     float dYLowBound;
     float dYUppBound;
     float dYInc;
+    char *pubXfmt;
+    char *pubYfmt;
     char *pubTitle;
     char *pubXLabel;
     char *pubYLabel;
@@ -91,7 +93,7 @@ void tft_draw_circle(uint16_t usX, uint16_t usY, uint16_t usR, rgb565_t xColor, 
 void tft_draw_image(const image_t *pImage, uint16_t usX, uint16_t usY);
 void tft_draw_bitmap(const uint8_t *pubBitmap, uint16_t usX, uint16_t usY, uint16_t usW, uint16_t usH, rgb565_t xColor, rgb565_t usBackColor);
 
-tft_graph_t *tft_graph_create(float fGx, float fGy, float fW, float fH, float fXlo, float fXhi, float fXinc, float fYlo, float fYhi, float fYinc, uint8_t ubDrawLabels, const char *title, const char *xlabel, const char *ylabel, const font_t *pFont, rgb565_t gcolor, rgb565_t acolor, rgb565_t pcolor, rgb565_t tcolor, rgb565_t bcolor);
+tft_graph_t *tft_graph_create(float fGx, float fGy, float fW, float fH, float fXlo, float fXhi, float fXinc, float fYlo, float fYhi, float fYinc, uint8_t ubDrawLabels, const char *xlabelfmt, const char *ylabelfmt, const char *title, const char *xlabel, const char *ylabel, const font_t *pFont, rgb565_t gcolor, rgb565_t acolor, rgb565_t pcolor, rgb565_t tcolor, rgb565_t bcolor);
 void tft_graph_delete(tft_graph_t *pxGraph);
 void tft_graph_clear(tft_graph_t *pxGraph);
 void tft_graph_draw_frame(tft_graph_t *pxGraph);

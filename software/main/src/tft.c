@@ -266,7 +266,7 @@ static uint16_t tft_get_str_pix_len(const font_t *pFont, uint8_t *pubStr)
     return usLength;
 }
 
-tft_graph_t *tft_graph_create(float fGx, float fGy, float fW, float fH, float fXlo, float fXhi, float fXinc, float fYlo, float fYhi, float fYinc, uint8_t ubDrawLabels, const char *title, const char *xlabel, const char *ylabel, const font_t *pFont, rgb565_t gcolor, rgb565_t acolor, rgb565_t pcolor, rgb565_t tcolor, rgb565_t bcolor)
+tft_graph_t *tft_graph_create(float fGx, float fGy, float fW, float fH, float fXlo, float fXhi, float fXinc, float fYlo, float fYhi, float fYinc, uint8_t ubDrawLabels, const char *xlabelfmt, const char *ylabelfmt, const char *title, const char *xlabel, const char *ylabel, const font_t *pFont, rgb565_t gcolor, rgb565_t acolor, rgb565_t pcolor, rgb565_t tcolor, rgb565_t bcolor)
 {
     tft_graph_t *pxNewGraph = (tft_graph_t *)malloc(sizeof(tft_graph_t));
     if (!pxNewGraph)
@@ -284,27 +284,53 @@ tft_graph_t *tft_graph_create(float fGx, float fGy, float fW, float fH, float fX
     pxNewGraph->dYLowBound = fYlo;
     pxNewGraph->dYUppBound = fYhi;
     pxNewGraph->dYInc = fYinc;
+    pxNewGraph->pubXfmt = (char *)malloc(sprintf(NULL, xlabelfmt) + 1);
+    if(!pxNewGraph->pubXfmt)
+    {
+        free(pxNewGraph);
+
+        return NULL;
+    }
+    sprintf(pxNewGraph->pubXfmt, xlabelfmt);
+    pxNewGraph->pubYfmt = (char *)malloc(sprintf(NULL, ylabelfmt) + 1);
+    if(!pxNewGraph->pubYfmt)
+    {
+        free(pxNewGraph->pubYfmt);
+        free(pxNewGraph);
+
+        return NULL;
+    }
+    sprintf(pxNewGraph->pubYfmt, ylabelfmt);
     pxNewGraph->pubTitle = (char *)malloc(sprintf(NULL, title) + 1);
     if(!pxNewGraph->pubTitle)
     {
+        free(pxNewGraph->pubXfmt);
+        free(pxNewGraph->pubYfmt);
         free(pxNewGraph);
+
         return NULL;
     }
     sprintf(pxNewGraph->pubTitle, title);
     pxNewGraph->pubXLabel = (char *)malloc(sprintf(NULL, xlabel) + 1);
     if(!pxNewGraph->pubXLabel)
     {
+        free(pxNewGraph->pubXfmt);
+        free(pxNewGraph->pubYfmt);
         free(pxNewGraph->pubTitle);
         free(pxNewGraph);
+
         return NULL;
     }
     sprintf(pxNewGraph->pubXLabel, xlabel);
     pxNewGraph->pubYLabel = (char *)malloc(sprintf(NULL, ylabel) + 1);
     if(!pxNewGraph->pubYLabel)
     {
+        free(pxNewGraph->pubXfmt);
+        free(pxNewGraph->pubYfmt);
         free(pxNewGraph->pubXLabel);
         free(pxNewGraph->pubTitle);
         free(pxNewGraph);
+
         return NULL;
     }
     sprintf(pxNewGraph->pubYLabel, ylabel);
@@ -319,6 +345,8 @@ tft_graph_t *tft_graph_create(float fGx, float fGy, float fW, float fH, float fX
 }
 void tft_graph_delete(tft_graph_t *pxGraph)
 {
+    free(pxGraph->pubXfmt);
+    free(pxGraph->pubYfmt);
     free(pxGraph->pubTitle);
     free(pxGraph->pubXLabel);
     free(pxGraph->pubYLabel);
@@ -346,10 +374,10 @@ void tft_graph_draw_frame(tft_graph_t *pxGraph)
 
         if(pxGraph->ubDrawLabelsFlag)
         {
-            char *pubYlabel = (char *)malloc(sprintf(NULL, "%.2f", fI) + 1);
+            char *pubYlabel = (char *)malloc(sprintf(NULL, pxGraph->pubYfmt, fI) + 1);
             if(pubYlabel)
             {
-                sprintf(pubYlabel, "%.2f", fI);
+                sprintf(pubYlabel, pxGraph->pubYfmt, fI);
                 tft_printf(&xSans9pFont, pxGraph->usOriginX - tft_get_str_pix_len(pxGraph->pFont, pubYlabel) - pxGraph->pFont->ubLineOffset, usYH - ((pxGraph->pFont->ubYAdvance + pxGraph->pFont->ubLineOffset) / 2), pxGraph->xTColor, pxGraph->xBColor, pubYlabel);
                 free(pubYlabel);
             }
@@ -367,10 +395,10 @@ void tft_graph_draw_frame(tft_graph_t *pxGraph)
 
         if(pxGraph->ubDrawLabelsFlag)
         {
-            char *pubXlabel = (char *)malloc(sprintf(NULL, "%.2f", fI) + 1);
+            char *pubXlabel = (char *)malloc(sprintf(NULL, pxGraph->pubXfmt, fI) + 1);
             if(pubXlabel)
             {
-                sprintf(pubXlabel, "%.2f", fI);
+                sprintf(pubXlabel, pxGraph->pubXfmt, fI);
                 tft_printf(pxGraph->pFont, usXH - (tft_get_str_pix_len(pxGraph->pFont, pubXlabel) / 2), pxGraph->usOriginY, pxGraph->xTColor, pxGraph->xBColor, pubXlabel);
                 free(pubXlabel);
             }

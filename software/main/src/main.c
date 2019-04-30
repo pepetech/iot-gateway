@@ -499,7 +499,7 @@ int main()
     tft_set_rotation(ILI9488_VERTICAL); // Set rotation 1 (horizontal, ribbon to the right)
     tft_fill_screen(RGB565_DARKGREY); // Fill display
 
-    tft_graph_t *pGraph = tft_graph_create(60, 30, 200, 100, 0, 30, 5, 25, 32, .5, 1, "Temperature", "t", "C", &xSans9pFont, RGB565_WHITE, RGB565_BLACK, RGB565_YELLOW, RGB565_BLACK, RGB565_DARKGREY);
+    tft_graph_t *pGraph = tft_graph_create(60, 30, 220, 150, 0, 30, 5, 25, 32, 1, 1, "%.0f", "%.0f", "Temperature", "t", "C", &xSans9pFont, RGB565_WHITE, RGB565_BLACK, RGB565_YELLOW, RGB565_BLACK, RGB565_DARKGREY);
     tft_graph_draw_frame(pGraph);
 
     tft_terminal_t *terminal = tft_terminal_create(10, 250, 9, 300, &xSans9pFont, RGB565_GREEN, RGB565_BLACK);
@@ -533,9 +533,22 @@ int main()
 
         if(g_ullSystemTick > (ullLastLedUpdate + 500))
         {
-            uint32_t ullColor = trng_pop_random();
+            //uint32_t ullColor = trng_pop_random();
             // FIXME: sum real weird going on
             //ws2812b_set_color(0, (uint8_t)((ullColor >> 16) & 0xFF), (uint8_t)((ullColor >> 8) & 0xFF), (uint8_t)(ullColor & 0xFF));
+
+            if(ft6x06_get_touch_stat())
+            {
+                touch_points_t xTPs;
+                ft6x06_get_points(&xTPs);
+                DBGPRINTLN_CTX("Gesture ID: 0x%02X", xTPs.ubID);
+                DBGPRINTLN_CTX("N points: %u", xTPs.ubStat);
+                DBGPRINTLN_CTX("Point 1 Evnt: %u", xTPs.ubEvnt1);
+                DBGPRINTLN_CTX("Point 1 X: %u", xTPs.usX1);
+                DBGPRINTLN_CTX("Point 1 Y: %u", xTPs.usY1);
+                DBGPRINTLN_CTX("Point 1 Pressure: %u", xTPs.ubZ1);
+                DBGPRINTLN_CTX("Point 1 Area: %u", xTPs.ubA1);
+            }
 
             //static uint8_t ubLastState = 0;
 
@@ -578,26 +591,25 @@ int main()
         if(g_ullSystemTick > (ullLastSwoPrint + 10000))
         {
 
-            DBGPRINTLN_CTX("\rADC Temp: %.2f", adc_get_temperature());
+            DBGPRINTLN_CTX("ADC Temp: %.2f", adc_get_temperature());
             DBGPRINTLN_CTX("EMU Temp: %.2f", emu_get_temperature());
             DBGPRINTLN_CTX("RTCC Time: %lu", rtcc_get_time());
             switch(((BAT_STDBY() << 1) | BAT_CHRG()) & 0x03)
             {
                 case 0b00:
-                    DBGPRINTLN_CTX("Battery State: No Vin\n\r");
+                    DBGPRINTLN_CTX("Battery State: No Vin");
                     break;
                 case 0b01:
-                    DBGPRINTLN_CTX("Battery State: Charging\n\r");
+                    DBGPRINTLN_CTX("Battery State: Charging");
                     break;
                 case 0b10:
-                    DBGPRINTLN_CTX("Battery State: Charged\n\r");
+                    DBGPRINTLN_CTX("Battery State: Charged");
                     break;
                 case 0b11:
-                    DBGPRINTLN_CTX("Battery State: Err\n\r");
+                    DBGPRINTLN_CTX("Battery State: Err");
                     break;
             }
-            DBGPRINTLN_CTX("3V3 Fault: ");
-            DBGPRINTLN_CTX("%hhu", VREG_ERR());
+            DBGPRINTLN_CTX("3V3 Fault: %hhu", VREG_ERR());
             DBGPRINTLN_CTX("Button states (1|2|3): %hhu|%hhu|%hhu", BTN_1_STATE(), BTN_2_STATE(), BTN_3_STATE());
 
             DBGPRINTLN_CTX("USART2 Available: %u", usart2_available());
