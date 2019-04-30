@@ -30,6 +30,7 @@
 #include "tft.h"
 #include "images.h"
 #include "fonts.h"
+#include "ft6x06.h"
 
 // Structs
 
@@ -375,6 +376,11 @@ int init()
     else
         DBGPRINTLN_CTX("ILI9488 init NOK!");
 
+    if(ft6x06_init())
+        DBGPRINTLN_CTX("FT6236 init OK!");
+    else
+        DBGPRINTLN_CTX("FT6236 init NOK!");
+
     if(rfm69_init(RADIO_GATEWAY_ID, RADIO_NETWORK_ID, RADIO_AES_KEY))
         DBGPRINTLN_CTX("RFM69 init OK!");
     else
@@ -477,6 +483,15 @@ int main()
     // TFT Controller info
     DBGPRINTLN_CTX("ILI9488 ID: 0x%06X", ili9488_read_id());
 
+    // TFT Touch info
+    DBGPRINTLN_CTX("FT6236 Touch controller");
+    DBGPRINTLN_CTX("Vendor ID: 0x%02X", ft6x06_get_vendor_id());
+    DBGPRINTLN_CTX("Chip ID: 0x%02X", ft6x06_get_chip_id());
+    DBGPRINTLN_CTX("Firmware V: 0x%02X", ft6x06_get_firmware_version());
+    DBGPRINTLN_CTX("Point Rate Hz: %hu", ft6x06_get_point_rate());
+    DBGPRINTLN_CTX("Thresh: 0x%02X", ft6x06_get_threshold());
+    ft6x06_set_threshold(128);
+
     // TFT Config
     tft_bl_init(2000); // Init backlight PWM at 2 kHz
     tft_bl_set(0.25f); // Set backlight to 25%
@@ -484,13 +499,13 @@ int main()
     tft_set_rotation(ILI9488_VERTICAL); // Set rotation 1 (horizontal, ribbon to the right)
     tft_fill_screen(RGB565_DARKGREY); // Fill display
 
-    tft_graph_t *pGraph = tft_graph_create(60, 30, 250, 150, 0, 30, 1, 28, 32, .5, 1, "Temperature", "t", "C", &xSans9pFont, RGB565_WHITE, RGB565_BLACK, RGB565_YELLOW, RGB565_BLACK, RGB565_DARKGREY);
+    tft_graph_t *pGraph = tft_graph_create(60, 30, 200, 100, 0, 30, 5, 25, 32, .5, 1, "Temperature", "t", "C", &xSans9pFont, RGB565_WHITE, RGB565_BLACK, RGB565_YELLOW, RGB565_BLACK, RGB565_DARKGREY);
     tft_graph_draw_frame(pGraph);
 
     tft_terminal_t *terminal = tft_terminal_create(10, 250, 9, 300, &xSans9pFont, RGB565_GREEN, RGB565_BLACK);
     if(!terminal)
     {
-        DBGPRINTLN_CTX("Could not allocate start terminal");
+        DBGPRINTLN_CTX("Could not create terminal");
 
         while(1);
     }
