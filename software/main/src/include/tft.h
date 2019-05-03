@@ -37,12 +37,12 @@ struct tft_graph_t
     uint16_t usOriginY;
     uint16_t usWidth;
     uint16_t usHeigth;
-    float dXLowBound;
-    float dXUppBound;
-    float dXInc;
-    float dYLowBound;
-    float dYUppBound;
-    float dYInc;
+    float fXLowBound;
+    float fXUppBound;
+    float fXInc;
+    float fYLowBound;
+    float fYUppBound;
+    float fYInc;
     char *pubXfmt;
     char *pubYfmt;
     char *pubTitle;

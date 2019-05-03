@@ -611,7 +611,7 @@ int main()
                     break;
 
                 case 2: // terminal
-                    tft_terminal_printf(pTerminal, 1, "Free RAM: %hu\n", get_free_ram());
+                    tft_terminal_printf(pTerminal, 1, "Free RAM: %lu\n", get_free_ram());
                     break;
 
                 case 3: // text box
@@ -647,7 +647,7 @@ int main()
                             break;
                     }
                     tft_textbox_set_color(pTextbox, RGB565_BLUE, RGB565_WHITE);
-                    tft_textbox_printf(pTextbox, "3V3 Fault: \n\r");
+                    tft_textbox_printf(pTextbox, "3V3 Fault: ");
                     tft_textbox_set_color(pTextbox, RGB565_RED, RGB565_WHITE);
                     tft_textbox_printf(pTextbox, "%hhu\n\r", VREG_ERR());
                     tft_textbox_set_color(pTextbox, RGB565_BLUE, RGB565_WHITE);
@@ -810,69 +810,84 @@ void button_callback_test(uint8_t ubButtonID)
     switch(ubButtonID)
     {
         case 0: // image
-            ubScreenNum = 0;
-            tft_fill_screen(RGB565_WHITE);
-            for(uint8_t x = 0; x < 4; x++)
+            if(ubScreenNum != 0)
             {
-                for(uint8_t y = 0; y < 6; y++)
+                ubScreenNum = 0;
+                tft_fill_screen(RGB565_WHITE);
+                for(uint8_t x = 0; x < 4; x++)
                 {
-                    tft_draw_image(&xPepeImage, 32 + (x * 64), 32 + (y * 64));
+                    for(uint8_t y = 0; y < 6; y++)
+                    {
+                        tft_draw_image(&xPepeImage, 32 + (x * 64), 32 + (y * 64));
+                    }
                 }
+                tft_button_draw(pButtons[0], "img", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+                tft_button_draw(pButtons[1], "grph", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+                tft_button_draw(pButtons[2], "trm", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+                tft_button_draw(pButtons[3], "txt", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+                tft_button_draw(pButtons[4], "blnk", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
             }
-            tft_button_draw(pButtons[0], "img", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
-            tft_button_draw(pButtons[1], "grph", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
-            tft_button_draw(pButtons[2], "trm", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
-            tft_button_draw(pButtons[3], "txt", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
-            tft_button_draw(pButtons[4], "blnk", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
             DBGPRINTLN_CTX("Button 0 Pressed!");
             break;
 
         case 1: // graph
-            ubScreenNum = 1;
-            tft_fill_screen(RGB565_DARKGREY);
-            tft_graph_draw_frame(pGraph);
-            tft_button_draw(pButtons[0], "img", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
-            tft_button_draw(pButtons[1], "grph", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
-            tft_button_draw(pButtons[2], "trm", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
-            tft_button_draw(pButtons[3], "txt", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
-            tft_button_draw(pButtons[4], "blnk", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+            if(ubScreenNum != 1)
+            {
+                ubScreenNum = 1;
+                tft_fill_screen(RGB565_DARKGREY);
+                tft_graph_draw_frame(pGraph);
+                tft_button_draw(pButtons[0], "img", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+                tft_button_draw(pButtons[1], "grph", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+                tft_button_draw(pButtons[2], "trm", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+                tft_button_draw(pButtons[3], "txt", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+                tft_button_draw(pButtons[4], "blnk", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+            }
             DBGPRINTLN_CTX("Button 1 Pressed!");
             break;
 
         case 2: // terminal
-            ubScreenNum = 2;
-            tft_fill_screen(RGB565_BLACK);
-            tft_terminal_update(pTerminal);
-            tft_button_draw(pButtons[0], "img", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
-            tft_button_draw(pButtons[1], "grph", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
-            tft_button_draw(pButtons[2], "trm", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
-            tft_button_draw(pButtons[3], "txt", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
-            tft_button_draw(pButtons[4], "blnk", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+            if(ubScreenNum != 2)
+            {
+                ubScreenNum = 2;
+                tft_fill_screen(RGB565_BLACK);
+                tft_terminal_update(pTerminal);
+                tft_button_draw(pButtons[0], "img", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+                tft_button_draw(pButtons[1], "grph", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+                tft_button_draw(pButtons[2], "trm", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+                tft_button_draw(pButtons[3], "txt", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+                tft_button_draw(pButtons[4], "blnk", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+            }
             DBGPRINTLN_CTX("Button 2 Pressed!");
             break;
 
         case 3: // text box
-            ubScreenNum = 3;
-            tft_fill_screen(RGB565_WHITE);
-            tft_draw_rectangle(10, 65, 295 + 15 + 5, 75 + tft_get_text_height(&xSans9pFont, 6), RGB565_DARKGREEN, 1);
-            tft_textbox_clear(pTextbox);
-            tft_printf(&xSans18pFont, 10, 10, RGB565_DARKGREY, RGB565_WHITE, "Display is the wey");
-            tft_button_draw(pButtons[0], "img", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
-            tft_button_draw(pButtons[1], "grph", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
-            tft_button_draw(pButtons[2], "trm", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
-            tft_button_draw(pButtons[3], "txt", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
-            tft_button_draw(pButtons[4], "blnk", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+        if(ubScreenNum != 3)
+            {
+                ubScreenNum = 3;
+                tft_fill_screen(RGB565_WHITE);
+                tft_draw_rectangle(10, 65, 295 + 15 + 5, 75 + tft_get_text_height(&xSans9pFont, 6), RGB565_DARKGREEN, 1);
+                tft_textbox_clear(pTextbox);
+                tft_printf(&xSans18pFont, 10, 10, RGB565_DARKGREY, RGB565_WHITE, "Display is the wey");
+                tft_button_draw(pButtons[0], "img", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+                tft_button_draw(pButtons[1], "grph", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+                tft_button_draw(pButtons[2], "trm", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+                tft_button_draw(pButtons[3], "txt", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+                tft_button_draw(pButtons[4], "blnk", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+            }
             DBGPRINTLN_CTX("Button 3 Pressed!");
             break;
 
         case 4: // blank
-            ubScreenNum = 4;
-            tft_fill_screen(RGB565_BLACK);
-            tft_button_draw(pButtons[0], "img", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
-            tft_button_draw(pButtons[1], "grph", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
-            tft_button_draw(pButtons[2], "trm", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
-            tft_button_draw(pButtons[3], "txt", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
-            tft_button_draw(pButtons[4], "blnk", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+            if(ubScreenNum != 4)
+            {
+                ubScreenNum = 4;
+                tft_fill_screen(RGB565_BLACK);
+                tft_button_draw(pButtons[0], "img", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+                tft_button_draw(pButtons[1], "grph", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+                tft_button_draw(pButtons[2], "trm", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+                tft_button_draw(pButtons[3], "txt", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+                tft_button_draw(pButtons[4], "blnk", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+            }
             DBGPRINTLN_CTX("Button 4 Pressed!");
             break;
 

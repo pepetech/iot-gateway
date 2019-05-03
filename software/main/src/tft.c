@@ -381,7 +381,7 @@ void tft_set_button_callback(tft_button_callback_fn_t pfFunc)
 void tft_button_draw(tft_button_t *pButton, const uint8_t *pubStr, const font_t *pxFont, rgb565_t xBColor, rgb565_t xTColor)
 {
     tft_draw_rectangle(pButton->usOriginX, pButton->usOriginY, pButton->usOriginX + pButton->usWidth - 1, pButton->usOriginY + pButton->usHeight - 1, xBColor, 1);
-    tft_printf(pxFont, pButton->usOriginX + (pButton->usWidth / 2) - (tft_get_str_pix_len(pxFont, pubStr) / 2), pButton->usOriginY + pButton->usHeight + (pxFont->ubYAdvance / 2), xTColor, xBColor, pubStr);
+    tft_printf(pxFont, pButton->usOriginX + ((pButton->usWidth - tft_get_str_pix_len(pxFont, pubStr)) / 2) - 1, pButton->usOriginY + ((pButton->usHeight - pxFont->ubYAdvance - pxFont->ubLineOffset) / 2) - 1, xTColor, xBColor, pubStr);
 }
 
 tft_graph_t *tft_graph_create(float fGx, float fGy, float fW, float fH, float fXlo, float fXhi, float fXinc, float fYlo, float fYhi, float fYinc, uint8_t ubDrawLabels, const char *xlabelfmt, const char *ylabelfmt, const char *title, const char *xlabel, const char *ylabel, const font_t *pFont, rgb565_t gcolor, rgb565_t acolor, rgb565_t pcolor, rgb565_t tcolor, rgb565_t bcolor)
@@ -396,12 +396,12 @@ tft_graph_t *tft_graph_create(float fGx, float fGy, float fW, float fH, float fX
     pxNewGraph->usOriginY = fGy + fH - 1;
     pxNewGraph->usWidth = fW;
     pxNewGraph->usHeigth = fH;
-    pxNewGraph->dXLowBound = fXlo;
-    pxNewGraph->dXUppBound = fXhi;
-    pxNewGraph->dXInc = fXinc;
-    pxNewGraph->dYLowBound = fYlo;
-    pxNewGraph->dYUppBound = fYhi;
-    pxNewGraph->dYInc = fYinc;
+    pxNewGraph->fXLowBound = fXlo;
+    pxNewGraph->fXUppBound = fXhi;
+    pxNewGraph->fXInc = fXinc;
+    pxNewGraph->fYLowBound = fYlo;
+    pxNewGraph->fYUppBound = fYhi;
+    pxNewGraph->fYInc = fYinc;
     pxNewGraph->pubXfmt = (char *)malloc(strlen(xlabelfmt) + 1);
     if(!pxNewGraph->pubXfmt)
     {
@@ -479,9 +479,9 @@ void tft_graph_clear(tft_graph_t *pxGraph)
 void tft_graph_draw_frame(tft_graph_t *pxGraph)
 {
     // draw y scale
-    for(float fI = pxGraph->dYLowBound; fI <= pxGraph->dYUppBound; fI += pxGraph->dYInc)
+    for(float fI = pxGraph->fYLowBound; fI <= pxGraph->fYUppBound; fI += pxGraph->fYInc)
     {
-        uint16_t usYH =  (fI - pxGraph->dYLowBound) * (pxGraph->usOriginY - pxGraph->usHeigth - pxGraph->usOriginY) / (pxGraph->dYUppBound - pxGraph->dYLowBound) + pxGraph->usOriginY;
+        uint16_t usYH =  (fI - pxGraph->fYLowBound) * (pxGraph->usOriginY - pxGraph->usHeigth - pxGraph->usOriginY) / (pxGraph->fYUppBound - pxGraph->fYLowBound) + pxGraph->usOriginY;
 
         if(fI == 0)
         {
@@ -503,9 +503,9 @@ void tft_graph_draw_frame(tft_graph_t *pxGraph)
     }
 
     // draw x scale
-    for(float fI = pxGraph->dXLowBound; fI <= pxGraph->dXUppBound; fI += pxGraph->dXInc)
+    for(float fI = pxGraph->fXLowBound; fI <= pxGraph->fXUppBound; fI += pxGraph->fXInc)
     {
-        uint16_t usXH =  (fI - pxGraph->dXLowBound) * pxGraph->usWidth / (pxGraph->dXUppBound - pxGraph->dXLowBound) + pxGraph->usOriginX;
+        uint16_t usXH =  (fI - pxGraph->fXLowBound) * pxGraph->usWidth / (pxGraph->fXUppBound - pxGraph->fXLowBound) + pxGraph->usOriginX;
         if(fI == 0)
             tft_draw_line(usXH, pxGraph->usOriginY, usXH, pxGraph->usOriginY - pxGraph->usHeigth, pxGraph->xAColor);
         else
@@ -527,7 +527,7 @@ void tft_graph_draw_frame(tft_graph_t *pxGraph)
     {
         tft_printf(pxGraph->pFont, pxGraph->usOriginX + (pxGraph->usWidth / 2) - (tft_get_str_pix_len(pxGraph->pFont, pxGraph->pubTitle) / 2), pxGraph->usOriginY - pxGraph->usHeigth - pxGraph->pFont->ubYAdvance - pxGraph->pFont->ubLineOffset, pxGraph->xTColor, pxGraph->xBColor, pxGraph->pubTitle);
 
-        tft_printf(pxGraph->pFont, pxGraph->usOriginX + pxGraph->usWidth + pxGraph->pFont->ubLineOffset, -pxGraph->dYLowBound * (pxGraph->usOriginY - pxGraph->usHeigth - pxGraph->usOriginY) / (pxGraph->dYUppBound - pxGraph->dYLowBound) + pxGraph->usOriginY - pxGraph->pFont->ubYAdvance, pxGraph->xAColor, pxGraph->xBColor, pxGraph->pubXLabel);
+        tft_printf(pxGraph->pFont, pxGraph->usOriginX + pxGraph->usWidth + pxGraph->pFont->ubLineOffset, -pxGraph->fYLowBound * (pxGraph->usOriginY - pxGraph->usHeigth - pxGraph->usOriginY) / (pxGraph->fYUppBound - pxGraph->fYLowBound) + pxGraph->usOriginY - pxGraph->pFont->ubYAdvance, pxGraph->xAColor, pxGraph->xBColor, pxGraph->pubXLabel);
 
         tft_printf(pxGraph->pFont, pxGraph->usOriginX, pxGraph->usOriginY - pxGraph->usHeigth - pxGraph->pFont->ubYAdvance - pxGraph->pFont->ubLineOffset, pxGraph->xAColor, pxGraph->xBColor, pxGraph->pubYLabel);
     }
@@ -536,15 +536,15 @@ void tft_graph_draw_data(tft_graph_t *pxGraph, float *pfXData, float *pfYData, u
 {
     if(pxGraph->ubRedrawFlag)
     {
-        pxGraph->dOldX = (*pfXData - pxGraph->dXLowBound) * pxGraph->usWidth / (pxGraph->dXUppBound - pxGraph->dXLowBound) + pxGraph->usOriginX;
-        pxGraph->dOldY = (*pfYData - pxGraph->dYLowBound) * (pxGraph->usOriginY - pxGraph->usHeigth - pxGraph->usOriginY) / (pxGraph->dYUppBound - pxGraph->dYLowBound) + pxGraph->usOriginY;
+        pxGraph->dOldX = (*pfXData - pxGraph->fXLowBound) * pxGraph->usWidth / (pxGraph->fXUppBound - pxGraph->fXLowBound) + pxGraph->usOriginX;
+        pxGraph->dOldY = (*pfYData - pxGraph->fYLowBound) * (pxGraph->usOriginY - pxGraph->usHeigth - pxGraph->usOriginY) / (pxGraph->fYUppBound - pxGraph->fYLowBound) + pxGraph->usOriginY;
         pxGraph->ubRedrawFlag = 0;
     }
 
     while(usDataPoints--)
     {
-        uint16_t usXH = (*pfXData - pxGraph->dXLowBound) * pxGraph->usWidth / (pxGraph->dXUppBound - pxGraph->dXLowBound) + pxGraph->usOriginX;
-        uint16_t usYH = (*pfYData - pxGraph->dYLowBound) * (pxGraph->usOriginY - pxGraph->usHeigth - pxGraph->usOriginY) / (pxGraph->dYUppBound - pxGraph->dYLowBound) + pxGraph->usOriginY;
+        uint16_t usXH = (*pfXData - pxGraph->fXLowBound) * pxGraph->usWidth / (pxGraph->fXUppBound - pxGraph->fXLowBound) + pxGraph->usOriginX;
+        uint16_t usYH = (*pfYData - pxGraph->fYLowBound) * (pxGraph->usOriginY - pxGraph->usHeigth - pxGraph->usOriginY) / (pxGraph->fYUppBound - pxGraph->fYLowBound) + pxGraph->usOriginY;
 
         uint8_t ubDrawFlag = 1;
 
@@ -854,7 +854,7 @@ void tft_terminal_draw_string(tft_terminal_t *pTerminal, char *pszStr)
 
     memset(pszTempStr, 0, ubMaxStrLen + 1);
 
-    uint8_t ubStrLen = snprintf(pszTempStr, ubMaxStrLen + 1, pTerminal->ppszBuf[pTerminal->pTextbox->usNumLines - 1]);
+    uint8_t ubStrLen = strlen(pTerminal->ppszBuf[pTerminal->pTextbox->usNumLines - 1]);
 
     free(pTerminal->ppszBuf[pTerminal->pTextbox->usNumLines - 1]);
 
@@ -871,7 +871,7 @@ void tft_terminal_draw_string(tft_terminal_t *pTerminal, char *pszStr)
                 return;
             }
 
-            snprintf(pTerminal->ppszBuf[pTerminal->pTextbox->usNumLines - 1], ubStrLen + 1, pszTempStr);
+            strcpy(pTerminal->ppszBuf[pTerminal->pTextbox->usNumLines - 1], pszTempStr);
 
             tft_terminal_scroll(pTerminal, 1);
 
@@ -898,7 +898,7 @@ void tft_terminal_draw_string(tft_terminal_t *pTerminal, char *pszStr)
                     return;
                 }
 
-                snprintf(pTerminal->ppszBuf[pTerminal->pTextbox->usNumLines - 1], ubStrLen + 1, pszTempStr);
+                strcpy(pTerminal->ppszBuf[pTerminal->pTextbox->usNumLines - 1], pszTempStr);
 
                 tft_terminal_scroll(pTerminal, 1);
 
@@ -924,7 +924,7 @@ void tft_terminal_draw_string(tft_terminal_t *pTerminal, char *pszStr)
         return;
     }
 
-    snprintf(pTerminal->ppszBuf[pTerminal->pTextbox->usNumLines - 1], ubStrLen + 1, pszTempStr);
+    strcpy(pTerminal->ppszBuf[pTerminal->pTextbox->usNumLines - 1], pszTempStr);
 
     free(pszTempStr);
 }
