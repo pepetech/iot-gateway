@@ -1,5 +1,60 @@
 #include "tft.h"
 
+static tft_button_t *pButtons = NULL;
+static tft_button_callback_fn_t pfButtonCallback = NULL;
+
+void tft_touch_callback(uint8_t ubEvent, uint16_t usX, uint16_t usY)
+{
+    switch(gubIli9488Rotation)
+    {
+        case ILI9488_HORIZONTAL:
+            usX = (usX * ILI9488_TFTWIDTH) / ILI9488_TFTHEIGHT;
+            usY = (usY * ILI9488_TFTHEIGHT) / ILI9488_TFTWIDTH;
+            break;
+        case ILI9488_VERTICAL:
+            break;
+        case ILI9488_HORIZONTAL_FLIP:
+            usX = ILI9488_TFTWIDTH - usX;
+            usY = ILI9488_TFTHEIGHT - usY;
+            usX = (usX * ILI9488_TFTWIDTH) / ILI9488_TFTHEIGHT;
+            usY = (usY * ILI9488_TFTHEIGHT) / ILI9488_TFTWIDTH;
+            break;
+        case ILI9488_VERTICAL_FLIP:
+            usX = ILI9488_TFTWIDTH - usX;
+            usY = ILI9488_TFTHEIGHT - usY;
+            break;
+
+        default:
+            break;
+    }
+
+    if(ubEvent == FT6X06_EVENT_PRESS_DOWN)
+    {
+        for(tft_button_t *pButton = pButtons; pButton; pButton = pButton->pNext)
+        {
+            if((usX >= pButton->usOriginX) &&
+            (usX < (pButton->usOriginX + pButton->usWidth)) &&
+            (usY >= pButton->usOriginY) &&
+            (usY < (pButton->usOriginY + pButton->usHeight)) )
+                pfButtonCallback(pButton->ubID);
+        }
+    }
+
+    static uint16_t usLastX, usLastY;
+
+    if(ubEvent == FT6X06_EVENT_CONTACT)
+    {
+        tft_draw_line(usLastX, usLastY, usX, usY, RGB565_YELLOW);
+    }
+
+    usLastX = usX;
+    usLastY = usY;
+}
+
+void tft_init()
+{
+    ft6x36_set_callback(tft_touch_callback);
+}
 void tft_bl_init(uint32_t ulFrequency)
 {
     CMU->HFPERCLKEN1 |= CMU_HFPERCLKEN1_WTIMER2;
@@ -253,7 +308,7 @@ static uint8_t tft_search_char(char * ubStr, uint8_t ubChar)
 
     return ubCnt;
 }
-static uint16_t tft_get_str_pix_len(const font_t *pFont, uint8_t *pubStr)
+static uint16_t tft_get_str_pix_len(const font_t *pFont, const uint8_t *pubStr)
 {
     uint16_t usLength = 0;
 
@@ -264,6 +319,69 @@ static uint16_t tft_get_str_pix_len(const font_t *pFont, uint8_t *pubStr)
     }
 
     return usLength;
+}
+
+tft_button_t *tft_button_create(uint8_t ubID, uint16_t usX, uint16_t usY, uint16_t usWidth, uint16_t usHeight)
+{
+    tft_button_t *pNewButton = (tft_button_t *)malloc(sizeof(tft_button_t));
+
+    if(!pNewButton)
+        return NULL;
+
+    memset(pNewButton, 0, sizeof(rfm69_pending_packet_t));
+
+    pNewButton->ubID = ubID;
+    pNewButton->usOriginX = usX;
+    pNewButton->usOriginY = usY;
+    pNewButton->usWidth = usWidth;
+    pNewButton->usHeight = usHeight;
+
+	// Insert at the head of the list
+    pNewButton->pNext = pButtons;
+    pNewButton->pPrev = NULL;
+
+    if(pButtons)
+        pButtons->pPrev = pNewButton;
+
+    pButtons = pNewButton;
+
+    return pNewButton;
+}
+void tft_button_delete(tft_button_t *pButton)
+{
+    if(!pButton)
+        return;
+
+    if(pButtons == pButton)
+        pButtons = pButton->pNext;
+
+    if(pButton->pPrev)
+        pButton->pPrev->pNext = pButton->pNext;
+
+    if(pButton->pNext)
+        pButton->pNext->pPrev = pButton->pPrev;
+
+    free(pButton);
+}
+void tft_button_clear()
+{
+    while(pButtons)
+    {
+        tft_button_t *pButton = pButtons;
+
+        pButtons = pButton->pNext;
+
+        free(pButton);
+    }
+}
+void tft_set_button_callback(tft_button_callback_fn_t pfFunc)
+{
+    pfButtonCallback = pfFunc;
+}
+void tft_button_draw(tft_button_t *pButton, const uint8_t *pubStr, const font_t *pxFont, rgb565_t xBColor, rgb565_t xTColor)
+{
+    tft_draw_rectangle(pButton->usOriginX, pButton->usOriginY, pButton->usOriginX + pButton->usWidth - 1, pButton->usOriginY + pButton->usHeight - 1, xBColor, 1);
+    tft_printf(pxFont, pButton->usOriginX + (pButton->usWidth / 2) - (tft_get_str_pix_len(pxFont, pubStr) / 2), pButton->usOriginY + pButton->usHeight + (pxFont->ubYAdvance / 2), xTColor, xBColor, pubStr);
 }
 
 tft_graph_t *tft_graph_create(float fGx, float fGy, float fW, float fH, float fXlo, float fXhi, float fXinc, float fYlo, float fYhi, float fYinc, uint8_t ubDrawLabels, const char *xlabelfmt, const char *ylabelfmt, const char *title, const char *xlabel, const char *ylabel, const font_t *pFont, rgb565_t gcolor, rgb565_t acolor, rgb565_t pcolor, rgb565_t tcolor, rgb565_t bcolor)

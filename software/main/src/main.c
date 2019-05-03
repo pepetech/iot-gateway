@@ -49,7 +49,14 @@ static uint32_t get_free_ram();
 static void get_device_name(char *pszDeviceName, uint32_t ulDeviceNameSize);
 static uint16_t get_device_revision();
 
+void button_callback_test(uint8_t ubButtonID);
+
 // Variables
+static uint8_t ubScreenNum = 0;
+tft_graph_t *pGraph = NULL;
+tft_terminal_t *pTerminal = NULL;
+tft_textbox_t *pTextbox = NULL;
+tft_button_t *pButtons[5] = {NULL};
 
 // ISRs
 void _acmp0_1_isr()
@@ -261,7 +268,7 @@ int init()
     usart2_init(115200, UART_FRAME_STOPBITS_ONE | UART_FRAME_PARITY_NONE | USART_FRAME_DATABITS_EIGHT, 0, 0, -1, -1); // USART2 at 115200Baud on Location 0 RTS-PC0 CTS-PC1 TX-PC2 RX-PC3 GSM
     usart3_init(9000000, 0, USART_SPI_MSB_FIRST, 0, 0, 0); // SPI3 at 9MHz on Location 0 MISO-PA1 MOSI-PA0 CLK-PA2 RFM
 
-    i2c0_init(I2C_FAST, 6, 6); // Init I2C0 at 100 kHz on location 6 SCL:PE13 SDA:PE12 Sensors
+    i2c0_init(I2C_FAST, 6, 6); // Init I2C0 at 400 kHz on location 6 SCL:PE13 SDA:PE12 Sensors
     i2c1_init(I2C_FAST, 1, 1); // Init I2C1 at 400 kHz on location 1 SCL:PB12 SDA:PB11 TFT Touch Controller
 
     char szDeviceName[32];
@@ -337,7 +344,7 @@ int init()
     DBGPRINTLN_CTX("EMU - VBAT Voltage: %.2f mV", adc_get_vbat());
     DBGPRINTLN_CTX("EMU - VIN Voltage: %.2f mV", adc_get_vin());
 
-    play_sound(3500, 250);
+    play_sound(3000, 250);
     delay_ms(100);
 
     // Assert CCS811 control signals otherwise the I2C scan won't detect it
@@ -486,44 +493,79 @@ int main()
     DBGPRINTLN_CTX("ILI9488 ID: 0x%06X", ili9488_read_id());
 
     // TFT Touch info
-    DBGPRINTLN_CTX("FT6236 Touch controller");
-    DBGPRINTLN_CTX("Vendor ID: 0x%02X", ft6x36_get_vendor_id());
-    DBGPRINTLN_CTX("Chip ID: 0x%02X", ft6x36_get_chip_id());
-    DBGPRINTLN_CTX("Firmware V: 0x%02X", ft6x36_get_firmware_version());
-    DBGPRINTLN_CTX("Point Rate Hz: %hu", ft6x36_get_point_rate());
-    DBGPRINTLN_CTX("Thresh: 0x%02X", ft6x36_get_threshold());
-    ft6x36_set_threshold(128);
+    DBGPRINTLN_CTX("FT6236 Vendor ID: 0x%02X", ft6x36_get_vendor_id());
+    DBGPRINTLN_CTX("FT6236 Chip ID: 0x%02X", ft6x36_get_chip_id());
+    DBGPRINTLN_CTX("FT6236 Firmware V: 0x%02X", ft6x36_get_firmware_version());
 
     // TFT Config
+    tft_init();
+    tft_set_button_callback(button_callback_test);
     tft_bl_init(2000); // Init backlight PWM at 2 kHz
-    tft_bl_set(0.25f); // Set backlight to 25%
+    tft_bl_set(0); // Set backlight to 0%
     tft_display_on(); // Turn display on
     tft_set_rotation(ILI9488_VERTICAL); // Set rotation 1 (horizontal, ribbon to the right)
-    tft_fill_screen(RGB565_DARKGREY); // Fill display
+    tft_fill_screen(RGB565_BLACK); // Fill display
 
-    tft_graph_t *pGraph = tft_graph_create(60, 30, 220, 150, 0, 30, 5, 25, 32, 1, 1, "%.0f", "%.0f", "Temperature", "t", "C", &xSans9pFont, RGB565_WHITE, RGB565_BLACK, RGB565_YELLOW, RGB565_BLACK, RGB565_DARKGREY);
-    tft_graph_draw_frame(pGraph);
-
-    tft_terminal_t *terminal = tft_terminal_create(10, 250, 9, 300, &xSans9pFont, RGB565_GREEN, RGB565_BLACK);
-    if(!terminal)
+    pGraph = tft_graph_create(60, 30, 220, 360, 0, 30, 5, 25, 35, 0.5, 1, "%.0f", "%.2f", "Temperature", "t", "C", &xSans9pFont, RGB565_WHITE, RGB565_BLACK, RGB565_YELLOW, RGB565_BLACK, RGB565_DARKGREY);
+    if(!pGraph)
     {
-        DBGPRINTLN_CTX("Could not create terminal");
-
+        DBGPRINTLN_CTX("Could not allocate graph");
         while(1);
     }
 
-    //tft_printf(&xSans18pFont, 10, 10, RGB565_WHITE, RGB565_DARKGREY, "Display is the wey");
-/*
-    tft_draw_rectangle(10, 65, 295 + 15 + 5, 75 + tft_get_text_height(&xSans9pFont, 6), RGB565_DARKGREEN, 1);
-
-    tft_textbox_t *textbox = tft_textbox_create(15, 70, 6, 295, 0, 0, &xSans9pFont, RGB565_BLUE, RGB565_WHITE);
-    if(!textbox)
+    pTerminal = tft_terminal_create(10, 10, 18, 300, &xSans9pFont, RGB565_GREEN, RGB565_BLACK);
+    if(!pTerminal)
     {
-        DBGPRINTLN_CTX("Could not allocate start textbox");
-
+        DBGPRINTLN_CTX("Could not allocate terminal");
         while(1);
     }
-*/
+
+    pTextbox = tft_textbox_create(15, 70, 6, 295, 0, 0, &xSans9pFont, RGB565_BLUE, RGB565_WHITE);
+    if(!pTextbox)
+    {
+        DBGPRINTLN_CTX("Could not allocate textbox");
+        while(1);
+    }
+
+    pButtons[0] = tft_button_create(0, 10, 420, 50, 50);
+    if(!pButtons[0])
+    {
+        DBGPRINTLN_CTX("Could not allocate button");
+        while(1);
+    }
+
+    pButtons[1] = tft_button_create(1, 70, 420, 50, 50);
+    if(!pButtons[1])
+    {
+        DBGPRINTLN_CTX("Could not allocate button");
+        while(1);
+    }
+
+    pButtons[2] = tft_button_create(2, 130, 420, 50, 50);
+    if(!pButtons[2])
+    {
+        DBGPRINTLN_CTX("Could not allocate button");
+        while(1);
+    }
+
+    pButtons[3] = tft_button_create(3, 190, 420, 50, 50);
+    if(!pButtons[3])
+    {
+        DBGPRINTLN_CTX("Could not allocate button");
+        while(1);
+    }
+
+    pButtons[4] = tft_button_create(4, 250, 420, 50, 50);
+    if(!pButtons[4])
+    {
+        DBGPRINTLN_CTX("Could not allocate button");
+        while(1);
+    }
+
+    button_callback_test(4);
+
+    tft_bl_set(0.5f); // Set backlight to 50%
+
     while(1)
     {
         /* - - - - - - - - Library Tasks - - - - - - - - -*/
@@ -534,60 +576,91 @@ int main()
         /* - - - - - - - - Main Tasks - - - - - - - - -*/
         static uint64_t ullLastLedUpdate = 0;
 
-        if(g_ullSystemTick > (ullLastLedUpdate + 250))
+        if(g_ullSystemTick > (ullLastLedUpdate + 1000))
         {
             uint32_t ulColor = trng_pop_random();
 
             ws2812b_set_color(0, (uint8_t)((ulColor >> 16) & 0xFF), (uint8_t)((ulColor >> 8) & 0xFF), (uint8_t)(ulColor & 0xFF));
 
-            //if(ft6x36_get_touch_stat())
-            if(0)
-            {
-                ft6x36_touch_points_t xTPs;
-                ft6x36_get_points(&xTPs);
-                DBGPRINTLN_CTX("Gesture ID: 0x%02X", xTPs.ubID);
-                DBGPRINTLN_CTX("N points: %u", xTPs.ubStat);
-                DBGPRINTLN_CTX("Point 1 Evnt: %u", xTPs.ubEvnt1);
-                DBGPRINTLN_CTX("Point 1 X: %u", xTPs.usX1);
-                DBGPRINTLN_CTX("Point 1 Y: %u", xTPs.usY1);
-                DBGPRINTLN_CTX("Point 1 Pressure: %u", xTPs.ubZ1);
-                DBGPRINTLN_CTX("Point 1 Area: %u", xTPs.ubA1);
-            }
-
-            //static uint8_t ubLastState = 0;
-
-            //if(!ubLastState)
-            //{
-            //}
-            //else
-            //{
-            //}
-            //ubLastState = !ubLastState;
-
             ullLastLedUpdate = g_ullSystemTick;
         }
 
-        static uint64_t ullLastGraphRoutine = 0;
+        static uint64_t ullLastTftRoutine = 0;
 
-        if(g_ullSystemTick > (ullLastGraphRoutine + 1000))
+        if(g_ullSystemTick > (ullLastTftRoutine + 1000))
         {
             static uint8_t ubCount = 0;
 
-            if(ubCount == 31)
+            switch(ubScreenNum)
             {
-                tft_graph_clear(pGraph);
-                tft_graph_draw_frame(pGraph);
-                ubCount = 0;
+                case 1: // graph
+
+                    if(ubCount == 31)
+                    {
+                        tft_graph_clear(pGraph);
+                        tft_graph_draw_frame(pGraph);
+                        ubCount = 0;
+                    }
+
+                    float fCount = ubCount;
+                    float fTemp = bmp280_read_temperature();
+
+                    tft_graph_draw_data(pGraph, &fCount, &fTemp, 1);
+
+                    ubCount++;
+                    break;
+
+                case 2: // terminal
+                    tft_terminal_printf(pTerminal, 1, "Free RAM: %hu\n", get_free_ram());
+                    break;
+
+                case 3: // text box
+                    tft_textbox_goto(pTextbox, 0, 0, 1);
+                    tft_textbox_set_color(pTextbox, RGB565_BLUE, RGB565_WHITE);
+                    tft_textbox_printf(pTextbox, "ADC Temp: ");
+                    tft_textbox_set_color(pTextbox, RGB565_RED, RGB565_WHITE);
+                    tft_textbox_printf(pTextbox, "%.2f\n\r", adc_get_temperature());
+                    tft_textbox_set_color(pTextbox, RGB565_BLUE, RGB565_WHITE);
+                    tft_textbox_printf(pTextbox, "EMU Temp: ");
+                    tft_textbox_set_color(pTextbox, RGB565_RED, RGB565_WHITE);
+                    tft_textbox_printf(pTextbox, "%.2f\n\r", emu_get_temperature());
+                    tft_textbox_set_color(pTextbox, RGB565_BLUE, RGB565_WHITE);
+                    tft_textbox_printf(pTextbox, "RTCC Time: ");
+                    tft_textbox_set_color(pTextbox, RGB565_RED, RGB565_WHITE);
+                    tft_textbox_printf(pTextbox, "%lu\n\r", rtcc_get_time());
+                    tft_textbox_set_color(pTextbox, RGB565_BLUE, RGB565_WHITE);
+                    tft_textbox_printf(pTextbox, "Battery State: ");
+                    tft_textbox_set_color(pTextbox, RGB565_RED, RGB565_WHITE);
+                    switch(((BAT_STDBY() << 1) | BAT_CHRG()) & 0x03)
+                    {
+                        case 0b00:
+                            tft_textbox_printf(pTextbox, "No Vin\n\r");
+                            break;
+                        case 0b01:
+                            tft_textbox_printf(pTextbox, "Charging\n\r");
+                            break;
+                        case 0b10:
+                            tft_textbox_printf(pTextbox, "Charged\n\r");
+                            break;
+                        case 0b11:
+                            tft_textbox_printf(pTextbox, "Err\n\r");
+                            break;
+                    }
+                    tft_textbox_set_color(pTextbox, RGB565_BLUE, RGB565_WHITE);
+                    tft_textbox_printf(pTextbox, "3V3 Fault: \n\r");
+                    tft_textbox_set_color(pTextbox, RGB565_RED, RGB565_WHITE);
+                    tft_textbox_printf(pTextbox, "%hhu\n\r", VREG_ERR());
+                    tft_textbox_set_color(pTextbox, RGB565_BLUE, RGB565_WHITE);
+                    tft_textbox_printf(pTextbox, "Button states (1|2|3): ");
+                    tft_textbox_set_color(pTextbox, RGB565_RED, RGB565_WHITE);
+                    tft_textbox_printf(pTextbox, "%hhu|%hhu|%hhu", BTN_1_STATE(), BTN_2_STATE(), BTN_3_STATE());
+                    break;
+
+                default:
+                    break;
             }
 
-            float fCount = ubCount;
-            float fTemp = bmp280_read_temperature();
-
-            tft_graph_draw_data(pGraph, &fCount, &fTemp, 1);
-
-            ubCount++;
-
-            ullLastGraphRoutine = g_ullSystemTick;
+            ullLastTftRoutine = g_ullSystemTick;
         }
 
         static uint64_t ullLastSwoPrint = 0;
@@ -631,8 +704,8 @@ int main()
             float fTemp = bmp280_read_temperature();
             float fPress = bmp280_read_pressure();
 
-            tft_terminal_printf(terminal, 0, "\nBMP280 Temperature: %.2f C", fTemp);
-            tft_terminal_printf(terminal, 0, "\nBMP280 Pressure: %.2f hPa", fPress);
+            //tft_terminal_printf(terminal, 0, "\nBMP280 Temperature: %.2f C", fTemp);
+            //tft_terminal_printf(terminal, 0, "\nBMP280 Pressure: %.2f hPa", fPress);
 
             DBGPRINTLN_CTX("BMP280 Temperature: %.2f C", fTemp);
             DBGPRINTLN_CTX("BMP280 Pressure: %.2f hPa", fPress);
@@ -640,8 +713,8 @@ int main()
             uint16_t usETVOC = ccs811_read_etvoc();
             uint16_t usECO2 = ccs811_read_eco2();
 
-            tft_terminal_printf(terminal, 0, "\nCCS811 eTVOC: %hu ppb", usETVOC);
-            tft_terminal_printf(terminal, 0, "\nCCS811 eCO2: %hu ppm", usECO2);
+            //tft_terminal_printf(terminal, 0, "\nCCS811 eTVOC: %hu ppb", usETVOC);
+            //tft_terminal_printf(terminal, 0, "\nCCS811 eCO2: %hu ppm", usECO2);
 
             DBGPRINTLN_CTX("CCS811 eTVOC: %hu ppb", usETVOC);
             DBGPRINTLN_CTX("CCS811 eCO2: %hu ppm", usECO2);
@@ -649,14 +722,14 @@ int main()
             float fSITemp = si7021_read_temperature();
             float fSIHumid = si7021_read_humidity();
 
-            tft_terminal_printf(terminal, 0, "\nSI7021 Temperature: %.2f C", fSITemp);
-            tft_terminal_printf(terminal, 0, "\nSI7021 Humidity: %.1f %%RH", fSIHumid);
+            //tft_terminal_printf(terminal, 0, "\nSI7021 Temperature: %.2f C", fSITemp);
+            //tft_terminal_printf(terminal, 0, "\nSI7021 Humidity: %.1f %%RH", fSIHumid);
 
             DBGPRINTLN_CTX("SI7021 Temperature: %.2f C", fSITemp);
             DBGPRINTLN_CTX("SI7021 Humidity: %.1f %%RH", fSIHumid);
 
             //play_sound(2700, 10);
-            tft_terminal_printf(terminal, 1, "\nFree RAM: %lu KiB", get_free_ram() >> 10);
+            //tft_terminal_printf(terminal, 1, "\nFree RAM: %lu KiB", get_free_ram() >> 10);
 
             ullLastSwoPrint = g_ullSystemTick;
         }
@@ -670,41 +743,19 @@ int main()
 
         if(BTN_1_STATE() && (ubLastBtn1State != 1))
         {
-            //tft_draw_image(&xSurpriseImage, 0, 0);
-
             ubLastBtn1State = 1;
         }
         else if(!BTN_1_STATE() && (ubLastBtn1State != 0))
         {
-            tft_fill_screen(RGB565_DARKGREY);
-            //tft_printf(&xSans18pFont, 10, 10, RGB565_WHITE, RGB565_DARKGREY, "Display is the wey");
-            //tft_draw_rectangle(10, 65, 295 + 15 + 5, 75 + tft_get_text_height(&xSans9pFont, 6), RGB565_DARKGREEN, 1);
-            //tft_textbox_clear(textbox);
-            tft_terminal_printf(terminal, 1, "\nA nice surprise was shown...");
-
             ubLastBtn1State = 0;
         }
 
         if(BTN_2_STATE() && (ubLastBtn2State != 1))
         {
-            tft_fill_screen(RGB565_WHITE);
-            for(uint8_t x = 0; x < 4; x++)
-            {
-                for(uint8_t y = 0; y < 6; y++)
-                {
-                    tft_draw_image(&xPepeImage, 32 + (x * 64), 32 + (y * 64));
-                }
-            }
             ubLastBtn2State = 1;
         }
         else if(!BTN_2_STATE() && (ubLastBtn2State != 0))
         {
-            tft_fill_screen(RGB565_DARKGREY);
-            //tft_printf(&xSans18pFont, 10, 10, RGB565_WHITE, RGB565_DARKGREY, "Display is the wey");
-            //tft_draw_rectangle(10, 65, 295 + 15 + 5, 75 + tft_get_text_height(&xSans9pFont, 6), RGB565_DARKGREEN, 1);
-            //tft_textbox_clear(textbox);
-            tft_terminal_printf(terminal, 1, "\nPepe army was shown...");
-
             ubLastBtn2State = 0;
         }
 
@@ -730,7 +781,6 @@ int main()
             ubBuf[0] = 0x02;
             //ubBuf[1] = 0x05;
 
-            tft_terminal_printf(terminal, 1, "\nTransfering %d byte(s) to wifi-coprocessor...", ubNBytes);
             DBGPRINTLN_CTX("Transfering %d byte(s) to wifi-coprocessor...", ubNBytes);
             DBGPRINTLN_CTX("Content:");
             for(uint8_t ubI = 0; ubI < ubNBytes; ubI++)
@@ -753,4 +803,81 @@ int main()
     }
 
     return 0;
+}
+
+void button_callback_test(uint8_t ubButtonID)
+{
+    switch(ubButtonID)
+    {
+        case 0: // image
+            ubScreenNum = 0;
+            tft_fill_screen(RGB565_WHITE);
+            for(uint8_t x = 0; x < 4; x++)
+            {
+                for(uint8_t y = 0; y < 6; y++)
+                {
+                    tft_draw_image(&xPepeImage, 32 + (x * 64), 32 + (y * 64));
+                }
+            }
+            tft_button_draw(pButtons[0], "img", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+            tft_button_draw(pButtons[1], "grph", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+            tft_button_draw(pButtons[2], "trm", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+            tft_button_draw(pButtons[3], "txt", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+            tft_button_draw(pButtons[4], "blnk", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+            DBGPRINTLN_CTX("Button 0 Pressed!");
+            break;
+
+        case 1: // graph
+            ubScreenNum = 1;
+            tft_fill_screen(RGB565_DARKGREY);
+            tft_graph_draw_frame(pGraph);
+            tft_button_draw(pButtons[0], "img", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+            tft_button_draw(pButtons[1], "grph", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+            tft_button_draw(pButtons[2], "trm", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+            tft_button_draw(pButtons[3], "txt", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+            tft_button_draw(pButtons[4], "blnk", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+            DBGPRINTLN_CTX("Button 1 Pressed!");
+            break;
+
+        case 2: // terminal
+            ubScreenNum = 2;
+            tft_fill_screen(RGB565_BLACK);
+            tft_terminal_update(pTerminal);
+            tft_button_draw(pButtons[0], "img", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+            tft_button_draw(pButtons[1], "grph", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+            tft_button_draw(pButtons[2], "trm", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+            tft_button_draw(pButtons[3], "txt", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+            tft_button_draw(pButtons[4], "blnk", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+            DBGPRINTLN_CTX("Button 2 Pressed!");
+            break;
+
+        case 3: // text box
+            ubScreenNum = 3;
+            tft_fill_screen(RGB565_WHITE);
+            tft_draw_rectangle(10, 65, 295 + 15 + 5, 75 + tft_get_text_height(&xSans9pFont, 6), RGB565_DARKGREEN, 1);
+            tft_textbox_clear(pTextbox);
+            tft_printf(&xSans18pFont, 10, 10, RGB565_DARKGREY, RGB565_WHITE, "Display is the wey");
+            tft_button_draw(pButtons[0], "img", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+            tft_button_draw(pButtons[1], "grph", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+            tft_button_draw(pButtons[2], "trm", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+            tft_button_draw(pButtons[3], "txt", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+            tft_button_draw(pButtons[4], "blnk", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+            DBGPRINTLN_CTX("Button 3 Pressed!");
+            break;
+
+        case 4: // blank
+            ubScreenNum = 4;
+            tft_fill_screen(RGB565_BLACK);
+            tft_button_draw(pButtons[0], "img", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+            tft_button_draw(pButtons[1], "grph", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+            tft_button_draw(pButtons[2], "trm", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+            tft_button_draw(pButtons[3], "txt", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+            tft_button_draw(pButtons[4], "blnk", &xSans9pFont, RGB565_CYAN, RGB565_BLACK);
+            DBGPRINTLN_CTX("Button 4 Pressed!");
+            break;
+
+        default:
+            DBGPRINTLN_CTX("Sum Ting Wong");
+            break;
+    }
 }

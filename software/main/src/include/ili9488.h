@@ -137,6 +137,8 @@
 #define ILI9488_VERTICAL        0
 #define ILI9488_VERTICAL_FLIP   2
 
+extern uint8_t gubIli9488Rotation;
+
 uint8_t ili9488_init();
 
 uint32_t ili9488_read_id();

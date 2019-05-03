@@ -1,5 +1,6 @@
 #include "ili9488.h"
 
+uint8_t gubIli9488Rotation;
 static uint16_t usMaxWidth;
 static uint16_t usMaxHeigth;
 
@@ -47,6 +48,8 @@ uint8_t ili9488_init()
     delay_ms(120);
 
     uint8_t ubBuf[15];
+
+    gubIli9488Rotation = 0;
 
     ubBuf[0] =  0x00;
     ubBuf[1] =  0x03;
@@ -190,6 +193,8 @@ void ili9488_set_rotation(uint8_t ubRotation)
         default:
             return;
     }
+
+    gubIli9488Rotation = ubRotation;
 
     ili9488_send_cmd(ILI9488_MEM_A_CTL, &ubBuf, 1);
 }

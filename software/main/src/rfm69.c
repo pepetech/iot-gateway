@@ -155,9 +155,7 @@ static uint8_t rfm69_clear_pending_packets(rfm69_pending_packet_t **ppList)
 
         (*ppList) = pPacket->pNext;
 
-    	memset(pPacket->pubData, 0xDE, pPacket->ubDataSize);
 		free(pPacket->pubData);
-    	memset(pPacket, 0xDE, sizeof(rfm69_pending_packet_t));
         free(pPacket);
     }
 

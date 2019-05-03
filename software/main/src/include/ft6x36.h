@@ -67,10 +67,10 @@
 #define FT6X06_VALID_TP         0x0F
 
 // Event Flag
-#define FT6X06_EVNT_PRESS_DOWN  0b00
-#define FT6X06_EVNT_LIFT_UP     0b01
-#define FT6X06_EVNT_CONTACT     0b10
-#define FT6X06_EVNT_NO_EVENT    0b11
+#define FT6X06_EVENT_PRESS_DOWN  0b00
+#define FT6X06_EVENT_LIFT_UP     0b01
+#define FT6X06_EVENT_CONTACT     0b10
+#define FT6X06_EVENT_NO_EVENT    0b11
 
 // ID's (verification pending)
 #define FT62XX_VENDID 0x11
@@ -78,36 +78,16 @@
 #define FT6236_CHIPID 0x36
 #define FT6236U_CHIPID 0x64
 
-typedef struct
-{
-    uint8_t ubID;
-    uint8_t ubStat;
-    uint8_t ubEvnt1;
-    uint16_t usX1;
-    uint16_t usY1;
-    uint8_t ubZ1;       // touch pressure
-    uint8_t ubA1;       // touch Area
-    uint8_t ubEvnt2;
-    uint16_t usX2;
-    uint16_t usY2;
-    uint8_t ubZ2;       // touch pressure
-    uint8_t ubA2;       // touch Area
-} ft6x36_touch_points_t;
+typedef void (* ft6x36_callback_fn_t)(uint8_t, uint16_t, uint16_t);
 
 uint8_t ft6x36_init();
 void ft6x36_isr();
 void ft6x36_tick();
 
+void ft6x36_set_callback(ft6x36_callback_fn_t pfFunc);
+
 uint8_t ft6x36_get_vendor_id();
 uint8_t ft6x36_get_chip_id();
 uint8_t ft6x36_get_firmware_version();
-
-uint8_t ft6x36_get_point_rate();
-uint8_t ft6x36_get_threshold();
-void ft6x36_set_threshold(uint8_t ubThreshold);
-
-uint8_t ft6x36_get_touch_stat();
-
-void ft6x36_get_points(ft6x36_touch_points_t *pTpData);
 
 #endif // __FT6X06_H__
