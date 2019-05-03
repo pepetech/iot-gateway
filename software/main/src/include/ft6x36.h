@@ -8,8 +8,6 @@
 #include "gpio.h"
 #include "i2c.h"
 
-#include "debug_macros.h"
-
 #define FT6X06_I2C_ADDR 0x38
 
 // Registers
@@ -72,7 +70,7 @@
 #define FT6X06_EVENT_CONTACT     0b10
 #define FT6X06_EVENT_NO_EVENT    0b11
 
-// ID's (verification pending)
+// ID's
 #define FT62XX_VENDID 0x11
 #define FT6206_CHIPID 0x06
 #define FT6236_CHIPID 0x36

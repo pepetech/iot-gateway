@@ -73,6 +73,7 @@ struct tft_terminal_t
 {
     tft_textbox_t *pTextbox;
     char **ppszBuf;
+    uint8_t ubUpdatePending;
 };
 
 static inline void tft_display_on()

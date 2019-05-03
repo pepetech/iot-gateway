@@ -820,6 +820,8 @@ tft_terminal_t *tft_terminal_create(uint16_t usX, uint16_t usY, uint16_t usNumLi
 
     memset(pNewTerminal->ppszBuf, 0, usNumLines * sizeof(char *));
 
+    pNewTerminal->ubUpdatePending = 0;
+
     return pNewTerminal;
 }
 void tft_terminal_delete(tft_terminal_t *pTerminal)
@@ -936,6 +938,8 @@ void tft_terminal_update(tft_terminal_t *pTerminal)
 
         tft_textbox_draw_string(pTerminal->pTextbox, pTerminal->ppszBuf[ubI]);
     }
+
+    pTerminal->ubUpdatePending = 0;
 }
 void tft_terminal_clear(tft_terminal_t *pTerminal)
 {
@@ -950,6 +954,9 @@ void tft_terminal_clear(tft_terminal_t *pTerminal)
 }
 void tft_terminal_printf(tft_terminal_t *pTerminal, uint8_t ubUpdate, const char* pszFmt, ...)
 {
+    if(!pTerminal)
+        return;
+
     va_list args;
 	va_start(args, pszFmt);
 
@@ -973,6 +980,8 @@ void tft_terminal_printf(tft_terminal_t *pTerminal, uint8_t ubUpdate, const char
 
     if(ubUpdate)
         tft_terminal_update(pTerminal);
+    else
+        pTerminal->ubUpdatePending = 1;
 }
 
 // TODO: draw_line_graph()

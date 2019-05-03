@@ -8,6 +8,7 @@
 #include "nvic.h"
 #include "rfm69.h"
 #include "ft6x36.h"
+#include "si7210.h"
 
 // LED MACROS
 #define LED_HIGH()          PERI_REG_BIT_SET(&(GPIO->P[1].DOUT)) = BIT(0)

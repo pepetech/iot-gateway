@@ -7,6 +7,9 @@ static void gpio_isr(uint32_t ulFlags)
 
     if(ulFlags & BIT(12))
         ft6x36_isr();
+
+    if(ulFlags & BIT(13))
+        si7210_isr();
 }
 void _gpio_even_isr()
 {
@@ -215,7 +218,7 @@ void gpio_init()
     IRQ_SET_PRIO(GPIO_ODD_IRQn, 0, 0); // Set priority 0,0 (max)
     IRQ_ENABLE(GPIO_EVEN_IRQn); // Enable vector
     IRQ_ENABLE(GPIO_ODD_IRQn); // Enable vector
-    GPIO->IEN = BIT(4) | BIT(12); // Enable interrupts
+    GPIO->IEN = BIT(4) | BIT(12) | BIT(13); // Enable interrupts
 }
 
 void play_sound(uint16_t usFrequency, uint32_t ulTime)

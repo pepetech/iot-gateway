@@ -26,6 +26,7 @@
 #include "bmp280.h"
 #include "ccs811.h"
 #include "si7021.h"
+#include "si7210.h"
 #include "ft6x36.h"
 #include "ili9488.h"
 #include "tft.h"
@@ -49,7 +50,8 @@ static uint32_t get_free_ram();
 static void get_device_name(char *pszDeviceName, uint32_t ulDeviceNameSize);
 static uint16_t get_device_revision();
 
-void button_callback_test(uint8_t ubButtonID);
+void touch_button_callback(uint8_t ubButtonID);
+void mag_trigger_callback();
 
 // Variables
 static uint8_t ubScreenNum = 0;
@@ -379,6 +381,11 @@ int init()
     else
         DBGPRINTLN_CTX("SI7021 init NOK!");
 
+    if(si7210_init())
+        DBGPRINTLN_CTX("SI7210 init OK!");
+    else
+        DBGPRINTLN_CTX("SI7210 init NOK!");
+
     if(ili9488_init())
         DBGPRINTLN_CTX("ILI9488 init OK!");
     else
@@ -403,8 +410,6 @@ int main()
     play_sound(3000, 50);
     delay_ms(50);
     play_sound(3000, 50);
-
-    ws2812b_set_color(0, 0, 142, 255);
 
     // CLK OUT to check if the clock was properly calibrated
     //CMU->ROUTELOC0 = CMU_ROUTELOC0_CLKOUT1LOC_LOC1;
@@ -470,6 +475,11 @@ int main()
     si7021_write_user(SI7021_USER_RES_RH12_T14 | SI7021_USER_HEATER_OFF);
     DBGPRINTLN_CTX("SI7021 write user register!");
 
+    // SI7210 info & configuration
+    DBGPRINTLN_CTX("SI7210 ID: 0x%04X", si7210_get_chip_id());
+    DBGPRINTLN_CTX("SI7210 SN: 0x%08lX", si7210_get_serial_num());
+    si7210_set_trigger_callback(mag_trigger_callback);
+
     // QSPI Flash info
     uint8_t ubFlashUID[8];
 
@@ -478,13 +488,15 @@ int main()
     DBGPRINTLN_CTX("QSPI Flash UID: %02X%02X%02X%02X%02X%02X%02X%02X", ubFlashUID[0], ubFlashUID[1], ubFlashUID[2], ubFlashUID[3], ubFlashUID[4], ubFlashUID[5], ubFlashUID[6], ubFlashUID[7]);
     DBGPRINTLN_CTX("QSPI Flash JEDEC ID: %06X", qspi_flash_read_jedec_id());
 
+    // Wifi init
     WIFI_SELECT();
     WIFI_RESET();
     delay_ms(10);
     WIFI_UNRESET();
     delay_ms(100);
-    //WIFI_UNSELECT();
+    WIFI_UNSELECT();
 
+    // GSM init
     GSM_PWR_KEY_SET();
     delay_ms(1000);
     GSM_PWR_KEY_RSET();
@@ -497,9 +509,9 @@ int main()
     DBGPRINTLN_CTX("FT6236 Chip ID: 0x%02X", ft6x36_get_chip_id());
     DBGPRINTLN_CTX("FT6236 Firmware V: 0x%02X", ft6x36_get_firmware_version());
 
-    // TFT Config
+    /* - - - - - - - - TFT init - - - - - - - - -*/
     tft_init();
-    tft_set_button_callback(button_callback_test);
+    tft_set_button_callback(touch_button_callback);
     tft_bl_init(2000); // Init backlight PWM at 2 kHz
     tft_bl_set(0); // Set backlight to 0%
     tft_display_on(); // Turn display on
@@ -562,9 +574,11 @@ int main()
         while(1);
     }
 
-    button_callback_test(4);
+    touch_button_callback(4);
 
     tft_bl_set(0.5f); // Set backlight to 50%
+
+    /* - - - - - - - - TFT init - - - - - - - - -*/
 
     while(1)
     {
@@ -611,7 +625,8 @@ int main()
                     break;
 
                 case 2: // terminal
-                    tft_terminal_printf(pTerminal, 1, "Free RAM: %lu\n", get_free_ram());
+                    if(pTerminal->ubUpdatePending)
+                        tft_terminal_update(pTerminal);
                     break;
 
                 case 3: // text box
@@ -704,8 +719,8 @@ int main()
             float fTemp = bmp280_read_temperature();
             float fPress = bmp280_read_pressure();
 
-            //tft_terminal_printf(terminal, 0, "\nBMP280 Temperature: %.2f C", fTemp);
-            //tft_terminal_printf(terminal, 0, "\nBMP280 Pressure: %.2f hPa", fPress);
+            tft_terminal_printf(pTerminal, 0, "BMP280 Temperature: %.2f C\n", fTemp);
+            tft_terminal_printf(pTerminal, 0, "BMP280 Pressure: %.2f hPa\n", fPress);
 
             DBGPRINTLN_CTX("BMP280 Temperature: %.2f C", fTemp);
             DBGPRINTLN_CTX("BMP280 Pressure: %.2f hPa", fPress);
@@ -713,8 +728,8 @@ int main()
             uint16_t usETVOC = ccs811_read_etvoc();
             uint16_t usECO2 = ccs811_read_eco2();
 
-            //tft_terminal_printf(terminal, 0, "\nCCS811 eTVOC: %hu ppb", usETVOC);
-            //tft_terminal_printf(terminal, 0, "\nCCS811 eCO2: %hu ppm", usECO2);
+            tft_terminal_printf(pTerminal, 0, "CCS811 eTVOC: %hu ppb\n", usETVOC);
+            tft_terminal_printf(pTerminal, 0, "CCS811 eCO2: %hu ppm\n", usECO2);
 
             DBGPRINTLN_CTX("CCS811 eTVOC: %hu ppb", usETVOC);
             DBGPRINTLN_CTX("CCS811 eCO2: %hu ppm", usECO2);
@@ -722,14 +737,21 @@ int main()
             float fSITemp = si7021_read_temperature();
             float fSIHumid = si7021_read_humidity();
 
-            //tft_terminal_printf(terminal, 0, "\nSI7021 Temperature: %.2f C", fSITemp);
-            //tft_terminal_printf(terminal, 0, "\nSI7021 Humidity: %.1f %%RH", fSIHumid);
+            tft_terminal_printf(pTerminal, 0, "SI7021 Temperature: %.2f C\n", fSITemp);
+            tft_terminal_printf(pTerminal, 0, "SI7021 Humidity: %.1f %%RH\n", fSIHumid);
 
             DBGPRINTLN_CTX("SI7021 Temperature: %.2f C", fSITemp);
             DBGPRINTLN_CTX("SI7021 Humidity: %.1f %%RH", fSIHumid);
 
-            //play_sound(2700, 10);
-            //tft_terminal_printf(terminal, 1, "\nFree RAM: %lu KiB", get_free_ram() >> 10);
+            float fMagField = si7210_get_data();
+
+            tft_terminal_printf(pTerminal, 0, "SI7210 Field: %.2f mT\n", fMagField);
+
+            DBGPRINTLN_CTX("SI7210 Field: %.2f mT", fMagField);
+
+            tft_terminal_printf(pTerminal, 0, "Free RAM: %lu KiB\n", get_free_ram() >> 10);
+
+            play_sound(2700, 10);
 
             ullLastSwoPrint = g_ullSystemTick;
         }
@@ -805,7 +827,7 @@ int main()
     return 0;
 }
 
-void button_callback_test(uint8_t ubButtonID)
+void touch_button_callback(uint8_t ubButtonID)
 {
     switch(ubButtonID)
     {
@@ -895,4 +917,9 @@ void button_callback_test(uint8_t ubButtonID)
             DBGPRINTLN_CTX("Sum Ting Wong");
             break;
     }
+}
+void mag_trigger_callback()
+{
+    DBGPRINTLN_CTX("Mag Switch Triggered!");
+    DBGPRINTLN_CTX("SI7210 Field: %.5f mT", si7210_get_data());
 }
