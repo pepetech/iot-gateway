@@ -1,4 +1,4 @@
-Partlist exported from /home/jsilva/Development/iot-gateway/pcb/iot_gateway.sch at 25/03/19 11:12
+Partlist exported from E:/Projetos/ARM/ARMdev/projects/iot-gateway/pcb/iot_gateway.sch at 06/05/2019 23:54
 
 Part   Value              Device                            Package                     Description                                                 
 B1     BUZZER-SMD         BUZZER-SMD                        SMD                                                                                     
@@ -59,7 +59,7 @@ C54    100nF              CAPACITOR-0603                    CAP0603
 CON1   6P-SH-TOP          6P-SH-TOP                         SH-06-TOP                   Disconnectable Crimp style connector, 1.0mm pitch6 contacts 
 CON2   6P-SH-TOP          6P-SH-TOP                         SH-06-TOP                   Disconnectable Crimp style connector, 1.0mm pitch6 contacts 
 CON3   2P-PH-TOP          2P-PH-TOP                         PH-02-TOP                   Disconnectable Crimp style connector, 1.0mm pitch2 contacts 
-D1     WS2812B            WS2812B-SMD                       WS2812B-SMD                                                                             
+D1     WS2812B            WS2812B-SMD5050                   WS2812B-SMD5050                                                                         
 D2     RED                LED1206                           1206                                                                                    
 D3     SMAJ12A            SMAJ12A                           DO214AC                     SMAJ Series TVS Diodes                                      
 D4     SK54L              SK54L                             DO214AA                                                                                 
@@ -77,11 +77,12 @@ Q1     AO3401             AO3401                            SOT23
 Q2     AO3401             AO3401                            SOT23                                                                                   
 Q3     AO3400             AO3400                            SOT23                                                                                   
 Q4     AO3400             AO3400                            SOT23                                                                                   
+Q5     AO3400             AO3400                            SOT23                                                                                   
 R1     10K Ohms           RESISTOR-0603                     RES0603                                                                                 
-R2     10K Ohms           RESISTOR-0603                     RES0603                                                                                 
+R2     22 Ohms            RESISTOR-0603                     RES0603                                                                                 
 R3     1K Ohms            RESISTOR-0603                     RES0603                                                                                 
 R4     10K Ohms           RESISTOR-0603                     RES0603                                                                                 
-R5     100K Ohms          RESISTOR-0603                     RES0603                                                                                 
+R5     1K Ohms            RESISTOR-0603                     RES0603                                                                                 
 R6     10K Ohms           RESISTOR-0603                     RES0603                                                                                 
 R7     10K Ohms           RESISTOR-0603                     RES0603                                                                                 
 R8     100K Ohms          RESISTOR-0603                     RES0603                                                                                 
@@ -154,8 +155,8 @@ S2                        TAC_SWITCHSMD_4.5X4.5             TAC_SW_SMD_4.5X4.5  
 S3                        TAC_SWITCHSMD_4.5X4.5             TAC_SW_SMD_4.5X4.5          Momentary Switch                                            
 S4                        TAC_SWITCHSMD_4.5X4.5             TAC_SW_SMD_4.5X4.5          Momentary Switch                                            
 SIM1   SIMHOLDER-SMD      SIMHOLDER-SMD                     SIMHOLDER-SMD                                                                           
+SJ1                       SJS                               SJ_S                                                                                    
 T1     BC817              BC817                             SOT23                                                                                   
-T2     BC817              BC817                             SOT23                                                                                   
 T3     BC817              BC817                             SOT23                                                                                   
 T4     BC817              BC817                             SOT23                                                                                   
 T5     BC817              BC817                             SOT23                                                                                   
@@ -164,6 +165,7 @@ TP2    TESTPOINT          TESTPOINT                         PAD1.27MM
 TP3    TESTPOINT          TESTPOINT                         PAD1.27MM                                                                               
 TP4    TESTPOINT          TESTPOINT                         PAD1.27MM                                                                               
 TP5    TESTPOINT          TESTPOINT                         PAD1.27MM                                                                               
+U$1    GECKO              GECKO                             GECKO                                                                                   
 U1     EFM32GG11B4XX_Q100 EFM32GG11B4XX_Q100                QFP100                                                                                  
 U2     SST26VF064B        SST26VF064B                       WSOIC8                                                                                  
 U3     SST26VF016B        SST26VF016B                       WSOIC8                                                                                  
