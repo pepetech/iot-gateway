@@ -92,8 +92,8 @@ OBJECTS = $(ASOBJECTS) $(COBJECTS) $(CXXOBJECTS)
 all: clean-bin make-dir version compile mem-usage
 
 compile:
-	@$(MAKE) --no-print-directory -j${MAX_PARALLEL} $(TARGET).elf
-	@$(MAKE) --no-print-directory -j${MAX_PARALLEL} $(TARGET).bin $(TARGET).hex $(TARGET).lss
+	@$(MAKE) INC_VERSION=n --no-print-directory -j${MAX_PARALLEL} $(TARGET).elf
+	@$(MAKE) INC_VERSION=n --no-print-directory -j${MAX_PARALLEL} $(TARGET).bin $(TARGET).hex $(TARGET).lss
 
 $(TARGET).lss: $(TARGET).elf
 	@echo Creating LSS file \'$@\'...
