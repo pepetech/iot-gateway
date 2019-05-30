@@ -88,7 +88,7 @@ void emu_dcdc_init(float fTargetVoltage, float fMaxLNCurrent, float fMaxLPCurren
     if(fMaxLPCurrent <= 0.f || fMaxLPCurrent > 10000.f)
         return;
 
-    if(fMaxReverseCurrent <= 0.f || fMaxReverseCurrent > 160.f)
+    if(fMaxReverseCurrent < 0.f || fMaxReverseCurrent > 160.f)
         return;
 
     // Low Power & Low Noise current limit
