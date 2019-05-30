@@ -110,8 +110,9 @@ $(TARGET).bin: $(TARGET).elf
 $(TARGET).hex: $(TARGET).elf
 	@echo Creating HEX file \'$@\'...
 	@$(OBJCOPY) -O ihex --remove-section=.irom2.text --remove-section=.drom1.data $< $@
-	@$(OBJCOPY) -O ihex --only-section=.isr_vector --only-section=.text --only-section=.ARM --only-section=.iram0.text --only-section=.data --only-section=.drom0.data $< $(TARGET).flash.hex
+	@$(OBJCOPY) -O ihex --only-section=.isr_vector --only-section=.text --only-section=.ARM --only-section=.iram0.text --only-section=.data $< $(TARGET).flash.hex
 	@$(OBJCOPY) -O ihex --only-section=.irom1.text $< $(TARGET).boot.hex
+	@$(OBJCOPY) -O ihex --only-section=.drom0.data $< $(TARGET).userdata.hex
 	@$(OBJCOPY) -O ihex --only-section=.irom2.text --only-section=.drom1.data $< $(TARGET).qspi.hex
 
 $(TARGET).elf: $(OBJECTS)
