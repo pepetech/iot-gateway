@@ -376,10 +376,10 @@ uint8_t rfm69_init(uint8_t ubNodeID, uint8_t ubNetID, const void *pvEncKey)
 		return 0;
 	}
 
-	memset(pbRadioATCPowerLevel, RFM69_MAXIMUM_TX_POWER, sizeof(pbRadioATCPowerLevel));
-	memset(pbRadioATCTargetRemoteRSSI, 0, sizeof(pbRadioATCTargetRemoteRSSI));
-	memset(pbRadioATCRemoteRSSI, -128, sizeof(pbRadioATCRemoteRSSI));
-	memset(pbRadioLastRSSI, -128, sizeof(pbRadioLastRSSI));
+	memset(pbRadioATCPowerLevel, RFM69_MAXIMUM_TX_POWER, 256);
+	memset(pbRadioATCTargetRemoteRSSI, 0, 256);
+	memset(pbRadioATCRemoteRSSI, -128, 256);
+	memset(pbRadioLastRSSI, -128, 256);
 
 	RFM69_RESET();
 	delay_ms(10);
