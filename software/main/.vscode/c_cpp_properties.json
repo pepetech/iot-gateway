@@ -9,8 +9,8 @@
                 "D:/Program Files (x86)/GNU Tools ARM Embedded/8 2018-q4-major/arm-none-eabi/include",
                 "D:/Program Files (x86)/GNU Tools ARM Embedded/8 2018-q4-major/arm-none-eabi/include/c++/8.2.1",
                 "D:/Program Files (x86)/GNU Tools ARM Embedded/8 2018-q4-major/arm-none-eabi/include/c++/8.2.1/backward",
-                "E:/Projetos/ARM/ARMdev/lib/ARM.CMSIS.5.4.0/CMSIS/Include",
-                "E:/Projetos/ARM/ARMdev/lib/SiliconLabs.EFM32GG11B_DFP.5.7.0/Device/SiliconLabs/EFM32GG11B/Include"
+                "E:/Projetos/ARM/ARMdev/lib/ARM.CMSIS.5.5.1/CMSIS/Include",
+                "E:/Projetos/ARM/ARMdev/lib/SiliconLabs.EFM32GG11B_DFP.5.8.0/Device/SiliconLabs/EFM32GG11B/Include"
             ],
             "defines": [
                 "__ACCUM_EPSILON__=0x1P-15K",
@@ -459,8 +459,8 @@
                 "/opt/gcc-arm-none-eabi/arm-none-eabi/include",
                 "/opt/gcc-arm-none-eabi/arm-none-eabi/include/c++/8.2.1",
                 "/opt/gcc-arm-none-eabi/arm-none-eabi/include/c++/8.2.1/backward",
-                "${env:ARM_LIBROOT}/ARM.CMSIS.5.4.0/CMSIS/Include",
-                "${env:ARM_LIBROOT}/SiliconLabs.EFM32GG11B_DFP.5.7.0/Device/SiliconLabs/EFM32GG11B/Include"
+                "${env:ARM_LIBROOT}/ARM.CMSIS.5.5.1/CMSIS/Include",
+                "${env:ARM_LIBROOT}/SiliconLabs.EFM32GG11B_DFP.5.8.0/Device/SiliconLabs/EFM32GG11B/Include"
             ],
             "defines": [
                 "__ACCUM_EPSILON__=0x1P-15K",

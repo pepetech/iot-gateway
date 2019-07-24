@@ -277,6 +277,7 @@ int init()
 
     get_device_name(szDeviceName, 32);
 
+    DBGPRINTLN_CTX("IoT Gateway v%lu (%s %s)!", BUILD_VERSION, __DATE__, __TIME__);
     DBGPRINTLN_CTX("Device: %s", szDeviceName);
     DBGPRINTLN_CTX("Device Revision: 0x%04X", get_device_revision());
     DBGPRINTLN_CTX("Calibration temperature: %hhu C", (DEVINFO->CAL & _DEVINFO_CAL_TEMP_MASK) >> _DEVINFO_CAL_TEMP_SHIFT);
