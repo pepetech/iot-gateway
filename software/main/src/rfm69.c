@@ -410,8 +410,8 @@ uint8_t rfm69_init(uint8_t ubNodeID, uint8_t ubNetID, const void *pvEncKey)
 		rfm69_write_register(RFM69_REG_FRFMID, RFM69_RF_FRFMID_868 + 0x0C); // RegFrfMid
 		rfm69_write_register(RFM69_REG_FRFLSB, RFM69_RF_FRFLSB_868 + 0xCC); // RegFrfLsb
 		rfm69_write_register(RFM69_REG_AFCCTRL, RFM69_RF_AFCCTRL_LOWBETA_OFF); // RegAfcCtrl: Disable Low beta AFC
-		rfm69_write_register(RFM69_REG_LISTEN1, RFM69_RF_LISTEN1_RESOL_IDLE_4100 | RFM69_RF_LISTEN1_RESOL_RX_64 | RFM69_RF_LISTEN1_CRITERIA_RSSIANDSYNC | RFM69_RF_LISTEN1_END_10); // RegListen1: Idle resolution 4.1ms, RX resolution 64us, RSSI and Sync to receive packet, stay in listen mode after IRQ
-		rfm69_write_register(RFM69_REG_LISTEN2, 0xC8); // RegListen2: 820 ms idle (200 * 4,1 ms)
+		rfm69_write_register(RFM69_REG_LISTEN1, RFM69_RF_LISTEN1_RESOL_IDLE_262000 | RFM69_RF_LISTEN1_RESOL_RX_64 | RFM69_RF_LISTEN1_CRITERIA_RSSIANDSYNC | RFM69_RF_LISTEN1_END_10); // RegListen1: Idle resolution 4.1ms, RX resolution 64us, RSSI and Sync to receive packet, stay in listen mode after IRQ
+		rfm69_write_register(RFM69_REG_LISTEN2, 0x06); // RegListen2: 1572 ms idle (6 * 262 ms)
 		rfm69_write_register(RFM69_REG_LISTEN3, 0x50); // RegListen3: 5120 us RX (80 * 64 us)
 		rfm69_write_register(RFM69_REG_PALEVEL, RFM69_RF_PALEVEL_PA1_ON | RFM69_RF_PALEVEL_OUTPUTPOWER_10000); // RegPaLevel: Enable PA1 with minimum power
 		rfm69_write_register(RFM69_REG_PARAMP, RFM69_RF_PARAMP_40); // RegPaRamp: 40us PA Ramp time
@@ -437,7 +437,8 @@ uint8_t rfm69_init(uint8_t ubNodeID, uint8_t ubNetID, const void *pvEncKey)
 		rfm69_write_register(RFM69_REG_BROADCASTADRS, 0xFF); // RegBroadcastAdrs: Broadcast Address
 		rfm69_write_register(RFM69_REG_FIFOTHRESH, RFM69_RF_FIFOTHRESH_TXSTART_FIFONOTEMPTY | 0x0F); // RegFifoThresh: TxStart on FifoNotEmpty, 15 bytes FifoLevel
 		rfm69_write_register(RFM69_REG_PACKETCONFIG2, RFM69_RF_PACKET2_RXRESTARTDELAY_2BITS | RFM69_RF_PACKET2_AUTORXRESTART_ON | (pvEncKey == 0 ? RFM69_RF_PACKET2_AES_OFF : RFM69_RF_PACKET2_AES_ON)); // RegPacketConfig2: RX restart delay exp = 2, Auto RX restart, AES on/off
-		rfm69_write_register(RFM69_REG_TESTDAGC, RFM69_RF_DAGC_IMPROVED_LOWBETA0); // RegTestDagc: Recommended value
+        rfm69_write_register(RFM69_REG_TESTLNA, RFM69_RF_TESTLNA_NORMAL); // RegTestLna: Recommended value
+        rfm69_write_register(RFM69_REG_TESTDAGC, RFM69_RF_DAGC_IMPROVED_LOWBETA0); // RegTestDagc: Recommended value
 		rfm69_write_register(RFM69_REG_TESTAFC, 0x03); // RegTestAfc: Recommended AFC offset 10% Fdev. Unit: 488 Hz (AfcOffset > DCCFreqAfc)
 
 		if(pvEncKey != 0)
@@ -571,7 +572,7 @@ void rfm69_tick()
 		pPacket->ubInTX = 1;
 	}
 
-	if(!blob_fifo_is_empty(pRadioTXPacketFIFO) && g_ullSystemTick - ullLastTX >= 5)
+	if(!blob_fifo_is_empty(pRadioTXPacketFIFO) && g_ullSystemTick - ullLastTX >= 30)
 	{
 		ullLastTX = g_ullSystemTick;
 
