@@ -5,8 +5,6 @@ static ldma_descriptor_t __attribute__ ((aligned (4))) pDMADescriptor[4];
 
 void ws2812b_init()
 {
-    CMU->HFPERCLKEN0 |= CMU_HFPERCLKEN0_TIMER1;
-
     free(pusBuffer);
 
     pusBuffer = (uint16_t *)malloc(WS2812B_NUM_LEDS * 3 * 8 * sizeof(uint16_t)); // 3 = Colors, 8 = Bits per color
@@ -15,6 +13,9 @@ void ws2812b_init()
         return;
 
     memset(pusBuffer, 0, WS2812B_NUM_LEDS * 3 * 8 * sizeof(uint16_t));
+
+    // TIMER0
+    CMU->HFPERCLKEN0 |= CMU_HFPERCLKEN0_TIMER1;
 
     TIMER1->CTRL = TIMER_CTRL_RSSCOIST | TIMER_CTRL_PRESC_DIV1 | TIMER_CTRL_CLKSEL_PRESCHFPERCLK | TIMER_CTRL_FALLA_NONE | TIMER_CTRL_RISEA_NONE | TIMER_CTRL_DMACLRACT | TIMER_CTRL_MODE_UP;
     TIMER1->TOP = (HFPER_CLOCK_FREQ / WS2812B_FREQ) - 1;
@@ -25,6 +26,7 @@ void ws2812b_init()
     TIMER1->ROUTELOC0 = TIMER_ROUTELOC0_CC0LOC_LOC2;
     TIMER1->ROUTEPEN |= TIMER_ROUTEPEN_CC0PEN;
 
+    // DMA
     ldma_ch_disable(WS2812B_DMA_CHANNEL);
     ldma_ch_peri_req_disable(WS2812B_DMA_CHANNEL);
     ldma_ch_req_clear(WS2812B_DMA_CHANNEL);
