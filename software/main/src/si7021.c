@@ -2,47 +2,47 @@
 
 static uint8_t si7021_read_register(uint8_t ubRegister)
 {
-	ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
-	{
-		i2c0_write_byte(SI7021_I2C_ADDR, ubRegister, I2C_RESTART);
-		return i2c0_read_byte(SI7021_I2C_ADDR, I2C_STOP);
-	}
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+    {
+        i2c0_write_byte(SI7021_I2C_ADDR, ubRegister, I2C_RESTART);
+        return i2c0_read_byte(SI7021_I2C_ADDR, I2C_STOP);
+    }
 }
 static uint16_t si7021_read_register16(uint8_t ubRegister)
 {
-	uint16_t usValue = 0;
+    uint16_t usValue = 0;
 
-	ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
-	{
-		i2c0_write_byte(SI7021_I2C_ADDR, ubRegister, I2C_RESTART);
-		i2c0_read(SI7021_I2C_ADDR, (uint8_t *)&usValue, 2, I2C_STOP);
-	}
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+    {
+        i2c0_write_byte(SI7021_I2C_ADDR, ubRegister, I2C_RESTART);
+        i2c0_read(SI7021_I2C_ADDR, (uint8_t *)&usValue, 2, I2C_STOP);
+    }
 
-	return (usValue << 8) | (usValue >> 8);
+    return (usValue << 8) | (usValue >> 8);
 }
 static void si7021_write_register(uint8_t ubRegister, uint8_t ubValue)
 {
-	uint8_t pubBuffer[2];
+    uint8_t pubBuffer[2];
 
     pubBuffer[0] = ubRegister;
     pubBuffer[1] = ubValue;
 
-	ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
-	{
-		i2c0_write(SI7021_I2C_ADDR, pubBuffer, 2, I2C_STOP);
-	}
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+    {
+        i2c0_write(SI7021_I2C_ADDR, pubBuffer, 2, I2C_STOP);
+    }
 }
 static void si7021_rmw_register(uint8_t ubRegister, uint8_t ubMask, uint8_t ubValue)
 {
-	si7021_write_register(ubRegister, (si7021_read_register(ubRegister) & ubMask) | ubValue);
+    si7021_write_register(ubRegister, (si7021_read_register(ubRegister) & ubMask) | ubValue);
 }
 
 uint8_t si7021_init()
 {
-	delay_ms(SI7021_T_START);
+    delay_ms(SI7021_T_START);
 
-	if(!i2c0_write(SI7021_I2C_ADDR, NULL, 0, I2C_STOP)) // Check ACK from the expected address
-		return 0;
+    if(!i2c0_write(SI7021_I2C_ADDR, NULL, 0, I2C_STOP)) // Check ACK from the expected address
+        return 0;
 
     si7021_software_reset();
 
@@ -51,12 +51,12 @@ uint8_t si7021_init()
 
 void si7021_software_reset()
 {
-	ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
-	{
-		i2c0_write_byte(SI7021_I2C_ADDR, SI7021_CMD_RESET, I2C_STOP);
-	}
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+    {
+        i2c0_write_byte(SI7021_I2C_ADDR, SI7021_CMD_RESET, I2C_STOP);
+    }
 
-	delay_ms(SI7021_T_START);
+    delay_ms(SI7021_T_START);
 }
 
 float si7021_read_temperature()
@@ -100,8 +100,8 @@ uint8_t si7021_read_firmware_version()
 
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
     {
-		i2c0_write(SI7021_I2C_ADDR, pubBuffer, 2, I2C_RESTART);
-		return i2c0_read_byte(SI7021_I2C_ADDR, I2C_STOP);
+        i2c0_write(SI7021_I2C_ADDR, pubBuffer, 2, I2C_RESTART);
+        return i2c0_read_byte(SI7021_I2C_ADDR, I2C_STOP);
     }
 }
 uint64_t si7021_read_unique_id()
@@ -114,8 +114,8 @@ uint64_t si7021_read_unique_id()
 
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
     {
-		i2c0_write(SI7021_I2C_ADDR, pubBuffer, 2, I2C_RESTART);
-		i2c0_read(SI7021_I2C_ADDR, pubSNA, 8, I2C_STOP);
+        i2c0_write(SI7021_I2C_ADDR, pubBuffer, 2, I2C_RESTART);
+        i2c0_read(SI7021_I2C_ADDR, pubSNA, 8, I2C_STOP);
     }
 
     uint8_t pubSNB[6];
@@ -125,8 +125,8 @@ uint64_t si7021_read_unique_id()
 
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
     {
-		i2c0_write(SI7021_I2C_ADDR, pubBuffer, 2, I2C_RESTART);
-		i2c0_read(SI7021_I2C_ADDR, pubSNB, 6, I2C_STOP);
+        i2c0_write(SI7021_I2C_ADDR, pubBuffer, 2, I2C_RESTART);
+        i2c0_read(SI7021_I2C_ADDR, pubSNB, 6, I2C_STOP);
     }
 
     return ((uint64_t)pubSNA[0] << 56) | ((uint64_t)pubSNA[2] << 48) | ((uint64_t)pubSNA[4] << 40) | ((uint64_t)pubSNA[6] << 32) | ((uint64_t)pubSNB[0] << 24) | ((uint64_t)pubSNB[1] << 16) | ((uint64_t)pubSNB[3] << 8) | ((uint64_t)pubSNB[4] << 0);

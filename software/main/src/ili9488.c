@@ -1,55 +1,56 @@
 #include "ili9488.h"
 
-uint8_t gubIli9488Rotation;
+uint8_t g_ubILI9488Rotation;
 static uint16_t usMaxWidth;
 static uint16_t usMaxHeigth;
 
-static void ili9488_send_cmd(uint8_t ubCmd, uint8_t *pubParam, uint8_t ubNParam)
+static void ili9488_send_cmd(uint8_t ubCmd, uint8_t *pubParam, uint8_t ubCount)
 {
     ILI9488_SELECT();
     ILI9488_SETUP_CMD();
 
     usart1_spi_transfer_byte(ubCmd);
 
-    if(pubParam && ubNParam)
+    if(pubParam && ubCount)
     {
         ILI9488_SETUP_DAT();
 
-        usart1_spi_write(pubParam, ubNParam, 1);
+        usart1_spi_write(pubParam, ubCount, 1);
     }
 
     ILI9488_UNSELECT();
 }
-static void ili9488_read_data(uint8_t ubCmd, uint8_t *pubData, uint8_t ubNData)
+static void ili9488_read_data(uint8_t ubCmd, uint8_t *pubData, uint8_t ubCount)
 {
     ILI9488_SELECT();
     ILI9488_SETUP_CMD();
 
     usart1_spi_transfer_byte(ubCmd);
 
-    if(pubData && ubNData)
+    if(pubData && ubCount)
     {
         ILI9488_SETUP_DAT();
 
-        //usart1_spi_transfer_byte(0x00); // dummy byte
-        usart1_spi_read(pubData, ubNData, 0x00);
-
-        ILI9488_UNSELECT();
+        usart1_spi_transfer_byte(0x00); // dummy byte
+        usart1_spi_read(pubData, ubCount, 0x00);
     }
+
+    ILI9488_UNSELECT();
 }
 
 uint8_t ili9488_init()
 {
-    // TODO: Add ili9844_read_id() and check if it is valid, otherwise return 0
-
-    ILI9488_RESET();
+    TFT_RESET();
     delay_ms(10);
-    ILI9488_UNRESET();
+    TFT_UNRESET();
     delay_ms(120);
+
+    if(ili9488_read_id() != 0x009488)
+        return 0;
 
     uint8_t ubBuf[15];
 
-    gubIli9488Rotation = 0;
+    g_ubILI9488Rotation = 0;
 
     ubBuf[0] =  0x00;
     ubBuf[1] =  0x03;
@@ -83,58 +84,58 @@ uint8_t ili9488_init()
     ubBuf[12] = 0x35;
     ubBuf[13] = 0x37;
     ubBuf[14] = 0x0F;
-	ili9488_send_cmd(ILI9488_NGAMCTRL, ubBuf, 15); // NGAMCTRL(Negative Gamma Control)
+    ili9488_send_cmd(ILI9488_NGAMCTRL, ubBuf, 15); // NGAMCTRL(Negative Gamma Control)
 
     ubBuf[0] = 0x17; // VReg1out
     ubBuf[1] = 0x15; // VReg2out
-	ili9488_send_cmd(ILI9488_POW_CTL_1, ubBuf, 2); // Power Control 1
+    ili9488_send_cmd(ILI9488_POW_CTL_1, ubBuf, 2); // Power Control 1
 
     ubBuf[0] = 0x41; // VGH,VGL
-	ili9488_send_cmd(ILI9488_POW_CTL_2, ubBuf, 1); // Power Control 2
+    ili9488_send_cmd(ILI9488_POW_CTL_2, ubBuf, 1); // Power Control 2
 
     ubBuf[0] = 0x00;
-	ubBuf[0] = 0x12; // VCom
-	ubBuf[0] = 0x80;
-	ili9488_send_cmd(ILI9488_VCOM_CTL_1, ubBuf, 3); // Power Control 3
+    ubBuf[0] = 0x12; // VCom
+    ubBuf[0] = 0x80;
+    ili9488_send_cmd(ILI9488_VCOM_CTL_1, ubBuf, 3); // Power Control 3
 
     ubBuf[0] = 0x48; // MX | BGR
-	ili9488_send_cmd(ILI9488_MEM_A_CTL, ubBuf, 1); // Memory Access
+    ili9488_send_cmd(ILI9488_MEM_A_CTL, ubBuf, 1); // Memory Access
 
     ubBuf[0] = 0x66; // 18 bit
-	ili9488_send_cmd(ILI9488_PIX_FMT, ubBuf, 1); // Interface Pixel Format
+    ili9488_send_cmd(ILI9488_PIX_FMT, ubBuf, 1); // Interface Pixel Format
 
     ubBuf[0] = 0x00;
-	ili9488_send_cmd(ILI9488_IF_MD_CTL, ubBuf, 1); // Interface Mode Control
+    ili9488_send_cmd(ILI9488_IF_MD_CTL, ubBuf, 1); // Interface Mode Control
 
     ubBuf[0] = 0xA0; // 60Hz
-	ili9488_send_cmd(ILI9488_FRMRT_CTL_1, ubBuf, 1); // Frame rate
+    ili9488_send_cmd(ILI9488_FRMRT_CTL_1, ubBuf, 1); // Frame rate
 
     ubBuf[0] = 0x02; // 2-dot
-	ili9488_send_cmd(ILI9488_INV_CTL, ubBuf, 1); // Display Inversion Control
+    ili9488_send_cmd(ILI9488_INV_CTL, ubBuf, 1); // Display Inversion Control
 
     ubBuf[0] = 0x02; // MCU
     ubBuf[1] = 0x02; // Source, Gate scan dieection
-	ili9488_send_cmd(ILI9488_DISP_FUNC_CTL, ubBuf, 2); // Display Function Control RGB/MCU Interface Control
+    ili9488_send_cmd(ILI9488_DISP_FUNC_CTL, ubBuf, 2); // Display Function Control RGB/MCU Interface Control
 
     ubBuf[0] = 0x00; // Disable 24 bit data
-	ili9488_send_cmd(ILI9488_SET_IMG_FUNC, ubBuf, 1); // Set Image Functio
+    ili9488_send_cmd(ILI9488_SET_IMG_FUNC, ubBuf, 1); // Set Image Functio
 
     ubBuf[0] = 0xA9;
     ubBuf[1] = 0x51;
     ubBuf[2] = 0x2C;
     ubBuf[3] = 0x82; // D7 stream, loose
-	ili9488_send_cmd(ILI9488_ADJ_CTL_3, ubBuf, 4); // Adjust Control
+    ili9488_send_cmd(ILI9488_ADJ_CTL_3, ubBuf, 4); // Adjust Control
 
-	ili9488_wakeup(0); // Wake up controller, leave display off
+    ili9488_wakeup(0); // Wake up controller, leave display off
 
     return 1;
 }
 
-uint32_t ili9488_read_id() // FIXME: returns 000000
+uint32_t ili9488_read_id()
 {
     uint8_t ubBuf[3];
 
-    ili9488_read_data(ILI9488_RD_DISP_ID, ubBuf, 3);
+    ili9488_read_data(ILI9488_RD_ID_4, ubBuf, 3);
 
     return ((uint32_t)ubBuf[0] << 16) | ((uint32_t)ubBuf[1] << 8) | (uint32_t)ubBuf[2];
 }
@@ -149,7 +150,7 @@ void ili9488_sleep()
 void ili9488_wakeup(uint8_t ubDisplayOn)
 {
     ili9488_send_cmd(ILI9488_SLP_OUT, NULL, 0); // Sleep out
-	delay_ms(120);
+    delay_ms(120);
 
     if(ubDisplayOn)
         ili9488_display_on();
@@ -187,14 +188,14 @@ void ili9488_set_rotation(uint8_t ubRotation)
             break;
         case 3:
             ubBuf = ILI9488_MADCTL_MX | ILI9488_MADCTL_MY | ILI9488_MADCTL_MV | ILI9488_MADCTL_BGR;
-            usMaxWidth = ILI9488_TFTHEIGHT - 1;
+            usMaxWidth = ILI9488_TFTWIDTH - 1;
             usMaxHeigth = ILI9488_TFTHEIGHT - 1;
             break;
         default:
             return;
     }
 
-    gubIli9488Rotation = ubRotation;
+    g_ubILI9488Rotation = ubRotation;
 
     ili9488_send_cmd(ILI9488_MEM_A_CTL, &ubBuf, 1);
 }

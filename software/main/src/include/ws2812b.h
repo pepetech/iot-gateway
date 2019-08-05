@@ -8,12 +8,12 @@
 #include "ldma.h"
 #include "utils.h"
 
-#define WS2812B_NUM_LEDS		1
+#define WS2812B_NUM_LEDS        1
 #define WS2812B_FREQ            800000UL
 #define WS2812B_T0H             0.000000400f // 400 ns
 #define WS2812B_T1H             0.000000800f // 800 ns
 #define WS2812B_INV             1
-#define WS2812B_DMA_CHANNEL		12
+#define WS2812B_DMA_CHANNEL     12
 
 void ws2812b_init();
 

@@ -188,22 +188,22 @@ void qspi_flash_write_status_config(uint8_t ubStatus, uint8_t ubConfig)
 }
 void qspi_flash_busy_wait()
 {
-	while(qspi_flash_read_status() & BIT(0))
-		delay_ms(1);
+    while(qspi_flash_read_status() & BIT(0))
+        delay_ms(1);
 }
 void qspi_flash_write_enable()
 {
     qspi_flash_cmd(QSPI_FLASH_CMD_WRITE_ENABLE, 0x00000000, 0, 0, 0, NULL, 0, NULL, 0);
 
-	while(!(qspi_flash_read_status() & BIT(1)))
-		delay_ms(1);
+    while(!(qspi_flash_read_status() & BIT(1)))
+        delay_ms(1);
 }
 void qspi_flash_write_disable()
 {
     qspi_flash_cmd(QSPI_FLASH_CMD_WRITE_DISABLE, 0x00000000, 0, 0, 0, NULL, 0, NULL, 0);
 
-	while(qspi_flash_read_status() & BIT(1))
-		delay_ms(1);
+    while(qspi_flash_read_status() & BIT(1))
+        delay_ms(1);
 }
 void qspi_flash_block_erase(uint32_t ulAddress)
 {
@@ -228,11 +228,11 @@ void qspi_flash_chip_erase()
 }
 uint32_t qspi_flash_read_jedec_id()
 {
-	uint8_t ubBuf[] = { 0x00, 0x00, 0x00 };
+    uint8_t ubBuf[] = { 0x00, 0x00, 0x00 };
 
     qspi_flash_cmd(QSPI_FLASH_CMD_JEDEC_READ_ID, 0x00000000, 0, 0, 0, NULL, 0, ubBuf, 3);
 
-	return ((uint32_t)ubBuf[0] << 16) | ((uint32_t)ubBuf[1] << 8) | (uint32_t)ubBuf[2];
+    return ((uint32_t)ubBuf[0] << 16) | ((uint32_t)ubBuf[1] << 8) | (uint32_t)ubBuf[2];
 }
 void qspi_flash_read_security(uint16_t usAddress, uint8_t *pubDst, uint8_t ubCount)
 {
@@ -245,6 +245,6 @@ void qspi_flash_write_security(uint16_t usAddress, uint8_t *pubSrc, uint8_t ubCo
 }
 void qspi_flash_unprotect_all_blocks()
 {
-	qspi_flash_write_enable();
+    qspi_flash_write_enable();
     qspi_flash_cmd(QSPI_FLASH_CMD_UNLOCK_PROTECTION, 0x00000000, 0, 0, 0, NULL, 0, NULL, 0);
 }

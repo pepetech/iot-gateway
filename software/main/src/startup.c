@@ -64,7 +64,6 @@ void _reset_isr()
     SCB->VTOR = (uint32_t)&_svect; // ISR Vectors offset
     SCB->AIRCR = 0x05FA0000 | (5 << 8); // Interrupt priority - 2 bits Group, 1 bit Sub-group
     SCB->SHCSR = SCB_SHCSR_USGFAULTENA_Msk | SCB_SHCSR_BUSFAULTENA_Msk | SCB_SHCSR_MEMFAULTENA_Msk; // Enable separate fault handlers
-    SCB->SCR |= SCB_SCR_SEVONPEND_Msk; // Pending disabled interrupt generates event
     SCB->CCR |= SCB_CCR_DIV_0_TRP_Msk; // Enable division by zero faults
     SCB->CPACR |= 0xF << 20; // Enable CP10 & CP11 (FPU) in priv. and non priv. mode
 

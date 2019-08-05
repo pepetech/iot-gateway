@@ -14,21 +14,21 @@ typedef void (* ldma_ch_isr_t)(uint8_t);
 
 struct ldma_descriptor_t
 {
-	volatile uint32_t CTRL;
+    volatile uint32_t CTRL;
     union
     {
-	    volatile void * volatile SRC;
-	    volatile uint32_t IMMVAL;
-	    volatile uint16_t SYNC;
+        volatile void * volatile SRC;
+        volatile uint32_t IMMVAL;
+        volatile uint16_t SYNC;
     };
 
     union
     {
-	    volatile void * volatile DST;
-	    volatile uint16_t MATCH;
+        volatile void * volatile DST;
+        volatile uint16_t MATCH;
     };
 
-	volatile uint32_t LINK;
+    volatile uint32_t LINK;
 };
 
 void ldma_init();

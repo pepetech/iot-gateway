@@ -69,13 +69,13 @@ void _usart0_rx_isr()
             volatile uint8_t *pubDMANextDst = (volatile uint8_t *)ldma_ch_get_next_dst_addr(USART0_DMA_CHANNEL);
             volatile uint8_t *pubDMABufferReadPos = pubDMANextDst >= (pubUSART0DMABuffer + (USART0_DMA_RX_BUFFER_SIZE >> 1)) ? (pubUSART0DMABuffer + (USART0_DMA_RX_BUFFER_SIZE >> 1)) : pubUSART0DMABuffer;
 
-    		while(ulSize--)
-    		{
-    			pubUSART0FIFO[usUSART0FIFOWritePos++] = *pubDMABufferReadPos++;
+            while(ulSize--)
+            {
+                pubUSART0FIFO[usUSART0FIFOWritePos++] = *pubDMABufferReadPos++;
 
-    			if(usUSART0FIFOWritePos >= USART0_FIFO_SIZE)
-    				usUSART0FIFOWritePos = 0;
-    		}
+                if(usUSART0FIFOWritePos >= USART0_FIFO_SIZE)
+                    usUSART0FIFOWritePos = 0;
+            }
 
         }
 
@@ -298,13 +298,13 @@ void _usart1_rx_isr()
             volatile uint8_t *pubDMANextDst = (volatile uint8_t *)ldma_ch_get_next_dst_addr(USART1_DMA_CHANNEL);
             volatile uint8_t *pubDMABufferReadPos = pubDMANextDst >= (pubUSART1DMABuffer + (USART1_DMA_RX_BUFFER_SIZE >> 1)) ? (pubUSART1DMABuffer + (USART1_DMA_RX_BUFFER_SIZE >> 1)) : pubUSART1DMABuffer;
 
-    		while(ulSize--)
-    		{
-    			pubUSART1FIFO[usUSART1FIFOWritePos++] = *pubDMABufferReadPos++;
+            while(ulSize--)
+            {
+                pubUSART1FIFO[usUSART1FIFOWritePos++] = *pubDMABufferReadPos++;
 
-    			if(usUSART1FIFOWritePos >= USART1_FIFO_SIZE)
-    				usUSART1FIFOWritePos = 0;
-    		}
+                if(usUSART1FIFOWritePos >= USART1_FIFO_SIZE)
+                    usUSART1FIFOWritePos = 0;
+            }
 
         }
 
@@ -527,13 +527,13 @@ void _usart2_rx_isr()
             volatile uint8_t *pubDMANextDst = (volatile uint8_t *)ldma_ch_get_next_dst_addr(USART2_DMA_CHANNEL);
             volatile uint8_t *pubDMABufferReadPos = pubDMANextDst >= (pubUSART2DMABuffer + (USART2_DMA_RX_BUFFER_SIZE >> 1)) ? (pubUSART2DMABuffer + (USART2_DMA_RX_BUFFER_SIZE >> 1)) : pubUSART2DMABuffer;
 
-    		while(ulSize--)
-    		{
-    			pubUSART2FIFO[usUSART2FIFOWritePos++] = *pubDMABufferReadPos++;
+            while(ulSize--)
+            {
+                pubUSART2FIFO[usUSART2FIFOWritePos++] = *pubDMABufferReadPos++;
 
-    			if(usUSART2FIFOWritePos >= USART2_FIFO_SIZE)
-    				usUSART2FIFOWritePos = 0;
-    		}
+                if(usUSART2FIFOWritePos >= USART2_FIFO_SIZE)
+                    usUSART2FIFOWritePos = 0;
+            }
 
         }
 
@@ -756,13 +756,13 @@ void _usart3_rx_isr()
             volatile uint8_t *pubDMANextDst = (volatile uint8_t *)ldma_ch_get_next_dst_addr(USART3_DMA_CHANNEL);
             volatile uint8_t *pubDMABufferReadPos = pubDMANextDst >= (pubUSART3DMABuffer + (USART3_DMA_RX_BUFFER_SIZE >> 1)) ? (pubUSART3DMABuffer + (USART3_DMA_RX_BUFFER_SIZE >> 1)) : pubUSART3DMABuffer;
 
-    		while(ulSize--)
-    		{
-    			pubUSART3FIFO[usUSART3FIFOWritePos++] = *pubDMABufferReadPos++;
+            while(ulSize--)
+            {
+                pubUSART3FIFO[usUSART3FIFOWritePos++] = *pubDMABufferReadPos++;
 
-    			if(usUSART3FIFOWritePos >= USART3_FIFO_SIZE)
-    				usUSART3FIFOWritePos = 0;
-    		}
+                if(usUSART3FIFOWritePos >= USART3_FIFO_SIZE)
+                    usUSART3FIFOWritePos = 0;
+            }
 
         }
 
@@ -985,13 +985,13 @@ void _usart4_rx_isr()
             volatile uint8_t *pubDMANextDst = (volatile uint8_t *)ldma_ch_get_next_dst_addr(USART4_DMA_CHANNEL);
             volatile uint8_t *pubDMABufferReadPos = pubDMANextDst >= (pubUSART4DMABuffer + (USART4_DMA_RX_BUFFER_SIZE >> 1)) ? (pubUSART4DMABuffer + (USART4_DMA_RX_BUFFER_SIZE >> 1)) : pubUSART4DMABuffer;
 
-    		while(ulSize--)
-    		{
-    			pubUSART4FIFO[usUSART4FIFOWritePos++] = *pubDMABufferReadPos++;
+            while(ulSize--)
+            {
+                pubUSART4FIFO[usUSART4FIFOWritePos++] = *pubDMABufferReadPos++;
 
-    			if(usUSART4FIFOWritePos >= USART4_FIFO_SIZE)
-    				usUSART4FIFOWritePos = 0;
-    		}
+                if(usUSART4FIFOWritePos >= USART4_FIFO_SIZE)
+                    usUSART4FIFOWritePos = 0;
+            }
 
         }
 
@@ -1214,13 +1214,13 @@ void _usart5_rx_isr()
             volatile uint8_t *pubDMANextDst = (volatile uint8_t *)ldma_ch_get_next_dst_addr(USART5_DMA_CHANNEL);
             volatile uint8_t *pubDMABufferReadPos = pubDMANextDst >= (pubUSART5DMABuffer + (USART5_DMA_RX_BUFFER_SIZE >> 1)) ? (pubUSART5DMABuffer + (USART5_DMA_RX_BUFFER_SIZE >> 1)) : pubUSART5DMABuffer;
 
-    		while(ulSize--)
-    		{
-    			pubUSART5FIFO[usUSART5FIFOWritePos++] = *pubDMABufferReadPos++;
+            while(ulSize--)
+            {
+                pubUSART5FIFO[usUSART5FIFOWritePos++] = *pubDMABufferReadPos++;
 
-    			if(usUSART5FIFOWritePos >= USART5_FIFO_SIZE)
-    				usUSART5FIFOWritePos = 0;
-    		}
+                if(usUSART5FIFOWritePos >= USART5_FIFO_SIZE)
+                    usUSART5FIFOWritePos = 0;
+            }
 
         }
 

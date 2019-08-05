@@ -35,10 +35,10 @@
 
 typedef struct
 {
-	uint32_t lo, hi;
-	uint32_t a, b, c, d;
-	unsigned char buffer[64];
-	uint32_t block[16];
+    uint32_t lo, hi;
+    uint32_t a, b, c, d;
+    unsigned char buffer[64];
+    uint32_t block[16];
 } md5_context_t;
 
 extern void md5_init(md5_context_t *ctx);

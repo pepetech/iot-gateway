@@ -18,42 +18,42 @@ static int32_t T_FINE;
 
 static uint8_t bmp280_read_register(uint8_t ubRegister)
 {
-	ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
-	{
-		i2c0_write_byte(BMP280_I2C_ADDR, ubRegister, I2C_RESTART);
-		return i2c0_read_byte(BMP280_I2C_ADDR, I2C_STOP);
-	}
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+    {
+        i2c0_write_byte(BMP280_I2C_ADDR, ubRegister, I2C_RESTART);
+        return i2c0_read_byte(BMP280_I2C_ADDR, I2C_STOP);
+    }
 }
 static void bmp280_write_register(uint8_t ubRegister, uint8_t ubValue)
 {
-	uint8_t pubBuffer[2];
+    uint8_t pubBuffer[2];
 
     pubBuffer[0] = ubRegister;
     pubBuffer[1] = ubValue;
 
-	ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
-	{
-		i2c0_write(BMP280_I2C_ADDR, pubBuffer, 2, I2C_STOP);
-	}
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+    {
+        i2c0_write(BMP280_I2C_ADDR, pubBuffer, 2, I2C_STOP);
+    }
 }
 static void bmp280_rmw_register(uint8_t ubRegister, uint8_t ubMask, uint8_t ubValue)
 {
-	bmp280_write_register(ubRegister, (bmp280_read_register(ubRegister) & ubMask) | ubValue);
+    bmp280_write_register(ubRegister, (bmp280_read_register(ubRegister) & ubMask) | ubValue);
 }
 
 uint8_t bmp280_init()
 {
-	delay_ms(BMP280_T_START_PON);
+    delay_ms(BMP280_T_START_PON);
 
-	if(!i2c0_write(BMP280_I2C_ADDR, NULL, 0, I2C_STOP)) // Check ACK from the expected address
-		return 0;
+    if(!i2c0_write(BMP280_I2C_ADDR, NULL, 0, I2C_STOP)) // Check ACK from the expected address
+        return 0;
 
-	if(bmp280_read_id() != 0x58)
+    if(bmp280_read_id() != 0x58)
         return 0;
 
     bmp280_software_reset();
 
-    while(bmp280_read_status() & BMP280_READING_CALIB)
+    while(bmp280_read_status() & BMP280_REG_STATUS_READING_CALIB)
         delay_ms(BMP280_T_CALIB_READ);
 
     uint8_t pubBuffer[24];
@@ -106,125 +106,125 @@ uint8_t bmp280_init()
 
 void bmp280_software_reset()
 {
-	bmp280_write_register(BMP280_REG_SW_RESET, 0xB6);
-	delay_ms(BMP280_T_START_RESET);
+    bmp280_write_register(BMP280_REG_SW_RESET, 0xB6);
+    delay_ms(BMP280_T_START_RESET);
 }
 
 float bmp280_read_temperature()
 {
-	uint8_t pubBuffer[3];
+    uint8_t pubBuffer[3];
 
     pubBuffer[0] = BMP280_REG_TEMP_H;
     pubBuffer[1] = BMP280_REG_TEMP_L;
     pubBuffer[2] = BMP280_REG_TEMP_XL;
 
-	for(uint8_t i = 0; i < 3; i++)
-		pubBuffer[i] = bmp280_read_register(pubBuffer[i]);
+    for(uint8_t i = 0; i < 3; i++)
+        pubBuffer[i] = bmp280_read_register(pubBuffer[i]);
 
-	int32_t var1, var2, T, adc_T;
+    int32_t var1, var2, T, adc_T;
 
-	adc_T = pubBuffer[0];
-	adc_T <<= 8;
-	adc_T |= pubBuffer[1];
-	adc_T <<= 4;
-	adc_T |= pubBuffer[2] >> 4;
+    adc_T = pubBuffer[0];
+    adc_T <<= 8;
+    adc_T |= pubBuffer[1];
+    adc_T <<= 4;
+    adc_T |= pubBuffer[2] >> 4;
 
-	if(adc_T == 0x80000)
-		return 0.f;
+    if(adc_T == 0x80000)
+        return 0.f;
 
-	var1 = ((((adc_T >> 3) - ((int32_t)DIG_T1 << 1))) * ((int32_t)DIG_T2)) >> 11;
-	var2 = (((((adc_T >> 4) - ((int32_t)DIG_T1)) * ((adc_T >> 4) - ((int32_t)DIG_T1))) >> 12) * ((int32_t)DIG_T3)) >> 14;
-	T_FINE = var1 + var2;
-	T = (T_FINE * 5 + 128) >> 8;
+    var1 = ((((adc_T >> 3) - ((int32_t)DIG_T1 << 1))) * ((int32_t)DIG_T2)) >> 11;
+    var2 = (((((adc_T >> 4) - ((int32_t)DIG_T1)) * ((adc_T >> 4) - ((int32_t)DIG_T1))) >> 12) * ((int32_t)DIG_T3)) >> 14;
+    T_FINE = var1 + var2;
+    T = (T_FINE * 5 + 128) >> 8;
 
-	return (float)T / 100.f;
+    return (float)T / 100.f;
 }
 float bmp280_read_pressure()
 {
-	uint8_t pubBuffer[3];
+    uint8_t pubBuffer[3];
 
     pubBuffer[0] = BMP280_REG_PRESSURE_H;
     pubBuffer[1] = BMP280_REG_PRESSURE_L;
     pubBuffer[2] = BMP280_REG_PRESSURE_XL;
 
-	for(uint8_t i = 0; i < 3; i++)
-		pubBuffer[i] = bmp280_read_register(pubBuffer[i]);
+    for(uint8_t i = 0; i < 3; i++)
+        pubBuffer[i] = bmp280_read_register(pubBuffer[i]);
 
-	int32_t adc_P;
-	int64_t var1, var2, p;
+    int32_t adc_P;
+    int64_t var1, var2, p;
 
-	adc_P = pubBuffer[0];
-	adc_P <<= 8;
-	adc_P |= pubBuffer[1];
-	adc_P <<= 4;
-	adc_P |= pubBuffer[2] >> 4;
+    adc_P = pubBuffer[0];
+    adc_P <<= 8;
+    adc_P |= pubBuffer[1];
+    adc_P <<= 4;
+    adc_P |= pubBuffer[2] >> 4;
 
-	if(adc_P == 0x80000)
-		return 0.f;
+    if(adc_P == 0x80000)
+        return 0.f;
 
-	bmp280_read_temperature();
+    bmp280_read_temperature();
 
-	var1 = ((int64_t)T_FINE) - 128000;
-	var2 = var1 * var1 * (int64_t)DIG_P6;
-	var2 = var2 + ((var1*(int64_t)DIG_P5)<<17);
-	var2 = var2 + (((int64_t)DIG_P4)<<35);
-	var1 = ((var1 * var1 * (int64_t)DIG_P3)>>8) + ((var1 * (int64_t)DIG_P2)<<12);
-	var1 = (((((int64_t)1)<<47)+var1))*((int64_t)DIG_P1)>>33;
+    var1 = ((int64_t)T_FINE) - 128000;
+    var2 = var1 * var1 * (int64_t)DIG_P6;
+    var2 = var2 + ((var1*(int64_t)DIG_P5)<<17);
+    var2 = var2 + (((int64_t)DIG_P4)<<35);
+    var1 = ((var1 * var1 * (int64_t)DIG_P3)>>8) + ((var1 * (int64_t)DIG_P2)<<12);
+    var1 = (((((int64_t)1)<<47)+var1))*((int64_t)DIG_P1)>>33;
 
-	if (var1 == 0)
-	{
-		return 0.f; // avoid exception caused by division by zero
-	}
+    if (var1 == 0)
+    {
+        return 0.f; // avoid exception caused by division by zero
+    }
 
-	p = 1048576-adc_P;
-	p = (((p<<31)-var2)*3125)/var1;
-	var1 = (((int64_t)DIG_P9) * (p>>13) * (p>>13)) >> 25;
-	var2 = (((int64_t)DIG_P8) * p) >> 19;
-	p = ((p + var1 + var2) >> 8) + (((int64_t)DIG_P7)<<4);
+    p = 1048576-adc_P;
+    p = (((p<<31)-var2)*3125)/var1;
+    var1 = (((int64_t)DIG_P9) * (p>>13) * (p>>13)) >> 25;
+    var2 = (((int64_t)DIG_P8) * p) >> 19;
+    p = ((p + var1 + var2) >> 8) + (((int64_t)DIG_P7)<<4);
 
-	return (float)p / 25600.f;
+    return (float)p / 25600.f;
 }
 
 void bmp280_take_forced_meas()
 {
-	uint16_t usCurrentControl = bmp280_read_control();
+    uint16_t usCurrentControl = bmp280_read_control();
 
-	if(!(usCurrentControl & BMP280_MODE_NORMAL))
-	{
-		bmp280_write_control(usCurrentControl | BMP280_MODE_FORCED);
+    if(!(usCurrentControl & BMP280_REG_CONTROL_MODE_NORMAL))
+    {
+        bmp280_write_control(usCurrentControl | BMP280_REG_CONTROL_MODE_FORCED);
 
-		while(bmp280_read_status() & BMP280_MEASURING)
-			delay_ms(1);
-	}
+        while(bmp280_read_status() & BMP280_REG_STATUS_MEASURING)
+            delay_ms(1);
+    }
 }
 
 uint8_t bmp280_read_status()
 {
-	return bmp280_read_register(BMP280_REG_STATUS);
+    return bmp280_read_register(BMP280_REG_STATUS);
 }
 uint8_t bmp280_read_id()
 {
-	return bmp280_read_register(BMP280_REG_HW_ID);
+    return bmp280_read_register(BMP280_REG_HW_ID);
 }
 uint8_t bmp280_read_version()
 {
-	return bmp280_read_register(BMP280_REG_VERSION);
+    return bmp280_read_register(BMP280_REG_VERSION);
 }
 
 void bmp280_write_control(uint8_t ubControl)
 {
-	bmp280_write_register(BMP280_REG_CONTROL, ubControl);
+    bmp280_write_register(BMP280_REG_CONTROL, ubControl);
 }
 uint8_t bmp280_read_control()
 {
-	return bmp280_read_register(BMP280_REG_CONTROL);
+    return bmp280_read_register(BMP280_REG_CONTROL);
 }
 
 void bmp280_write_config(uint8_t ubConfig)
 {
-	bmp280_write_register(BMP280_REG_CONFIG, ubConfig);
+    bmp280_write_register(BMP280_REG_CONFIG, ubConfig);
 }
 uint8_t bmp280_read_config()
 {
-	return bmp280_read_register(BMP280_REG_CONFIG);
+    return bmp280_read_register(BMP280_REG_CONFIG);
 }

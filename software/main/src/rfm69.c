@@ -2,7 +2,7 @@
 
 static uint16_t usRadioPacketID = 0;
 static uint8_t ubRadioNodeID = 0;
-static volatile uint8_t ubRadioCurrentMode = RFM69_RF_OPMODE_STANDBY;
+static volatile uint8_t ubRadioCurrentMode = RFM69_REG_OPMODE_STANDBY;
 static int8_t bRadioCurrentPowerLevel = RFM69_MAXIMUM_TX_POWER;
 static int8_t *pbRadioATCPowerLevel = NULL;
 static int8_t *pbRadioATCTargetRemoteRSSI = NULL;
@@ -400,45 +400,45 @@ uint8_t rfm69_init(uint8_t ubNodeID, uint8_t ubNetID, const void *pvEncKey)
 		// 4)  RxBwAfc >=  Fdev + (BR / 2) + LOoffset	(receiver AFC bandwidth)
 		// 5)  Fdev + (BR / 2) < 500kHz					(maximum RxBw setting)
 
-		rfm69_write_register(RFM69_REG_OPMODE, RFM69_RF_OPMODE_STANDBY); // RegOpMode: Standby
-		rfm69_write_register(RFM69_REG_DATAMODUL, RFM69_RF_DATAMODUL_DATAMODE_PACKET | RFM69_RF_DATAMODUL_MODULATIONTYPE_FSK | RFM69_RF_DATAMODUL_MODULATIONSHAPING_00); // RegDataModul: Packet mode, FSK, no shaping
-		rfm69_write_register(RFM69_REG_BITRATEMSB, RFM69_RF_BITRATEMSB_25000); // RegBitrateMsb: 25,000 bps
-		rfm69_write_register(RFM69_REG_BITRATELSB, RFM69_RF_BITRATELSB_25000); // RegBitrateLsb
-		rfm69_write_register(RFM69_REG_FDEVMSB, RFM69_RF_FDEVMSB_20000); // RegFdevMsb: 20 kHz Single-side TX Deviation
-		rfm69_write_register(RFM69_REG_FDEVLSB, RFM69_RF_FDEVLSB_20000); // RegFdevLsb
-		rfm69_write_register(RFM69_REG_FRFMSB, RFM69_RF_FRFMSB_868 + 0x00); // RegFrfMsb: 868,2 MHz
-		rfm69_write_register(RFM69_REG_FRFMID, RFM69_RF_FRFMID_868 + 0x0C); // RegFrfMid
-		rfm69_write_register(RFM69_REG_FRFLSB, RFM69_RF_FRFLSB_868 + 0xCC); // RegFrfLsb
-		rfm69_write_register(RFM69_REG_AFCCTRL, RFM69_RF_AFCCTRL_LOWBETA_OFF); // RegAfcCtrl: Disable Low beta AFC
-		rfm69_write_register(RFM69_REG_LISTEN1, RFM69_RF_LISTEN1_RESOL_IDLE_262000 | RFM69_RF_LISTEN1_RESOL_RX_64 | RFM69_RF_LISTEN1_CRITERIA_RSSIANDSYNC | RFM69_RF_LISTEN1_END_10); // RegListen1: Idle resolution 4.1ms, RX resolution 64us, RSSI and Sync to receive packet, stay in listen mode after IRQ
+		rfm69_write_register(RFM69_REG_OPMODE, RFM69_REG_OPMODE_STANDBY); // RegOpMode: Standby
+		rfm69_write_register(RFM69_REG_DATAMODUL, RFM69_REG_DATAMODUL_DATAMODE_PACKET | RFM69_REG_DATAMODUL_MODULATIONTYPE_FSK | RFM69_REG_DATAMODUL_MODULATIONSHAPING_00); // RegDataModul: Packet mode, FSK, no shaping
+		rfm69_write_register(RFM69_REG_BITRATEMSB, RFM69_REG_BITRATEMSB_25000); // RegBitrateMsb: 25,000 bps
+		rfm69_write_register(RFM69_REG_BITRATELSB, RFM69_REG_BITRATELSB_25000); // RegBitrateLsb
+		rfm69_write_register(RFM69_REG_FDEVMSB, RFM69_REG_FDEVMSB_20000); // RegFdevMsb: 20 kHz Single-side TX Deviation
+		rfm69_write_register(RFM69_REG_FDEVLSB, RFM69_REG_FDEVLSB_20000); // RegFdevLsb
+		rfm69_write_register(RFM69_REG_FRFMSB, RFM69_REG_FRFMSB_868 + 0x00); // RegFrfMsb: 868,2 MHz
+		rfm69_write_register(RFM69_REG_FRFMID, RFM69_REG_FRFMID_868 + 0x0C); // RegFrfMid
+		rfm69_write_register(RFM69_REG_FRFLSB, RFM69_REG_FRFLSB_868 + 0xCC); // RegFrfLsb
+		rfm69_write_register(RFM69_REG_AFCCTRL, RFM69_REG_AFCCTRL_LOWBETA_OFF); // RegAfcCtrl: Disable Low beta AFC
+		rfm69_write_register(RFM69_REG_LISTEN1, RFM69_REG_LISTEN1_RESOL_IDLE_262000 | RFM69_REG_LISTEN1_RESOL_RX_64 | RFM69_REG_LISTEN1_CRITERIA_RSSIANDSYNC | RFM69_REG_LISTEN1_END_10); // RegListen1: Idle resolution 4.1ms, RX resolution 64us, RSSI and Sync to receive packet, stay in listen mode after IRQ
 		rfm69_write_register(RFM69_REG_LISTEN2, 0x06); // RegListen2: 1572 ms idle (6 * 262 ms)
 		rfm69_write_register(RFM69_REG_LISTEN3, 0x50); // RegListen3: 5120 us RX (80 * 64 us)
-		rfm69_write_register(RFM69_REG_PALEVEL, RFM69_RF_PALEVEL_PA1_ON | RFM69_RF_PALEVEL_OUTPUTPOWER_10000); // RegPaLevel: Enable PA1 with minimum power
-		rfm69_write_register(RFM69_REG_PARAMP, RFM69_RF_PARAMP_40); // RegPaRamp: 40us PA Ramp time
-		rfm69_write_register(RFM69_REG_OCP, RFM69_RF_OCP_OFF); // RegOcp: OCP off because we only use H (High Power) devices
-		rfm69_write_register(RFM69_REG_LNA, RFM69_RF_LNA_ZIN_50 | RFM69_RF_LNA_GAINSELECT_AUTO); // RegLNA: 50 Ohm impedance, gain set by AGC loop
-		rfm69_write_register(RFM69_REG_RXBW, RFM69_RF_RXBW_DCCFREQ_010 | RFM69_RF_RXBW_MANT_24 | RFM69_RF_RXBW_EXP_3); // RegRxBw: DCCFreq = 4% RxBw, 41,7 kHz Single-side RX Bandwidth
-		rfm69_write_register(RFM69_REG_AFCBW, RFM69_RF_AFCBW_DCCFREQAFC_100 | RFM69_RF_AFCBW_MANTAFC_16 | RFM69_RF_AFCBW_EXPAFC_2); // RegAfcBw: DCCFreqAfc = 1% RxBwAfc, 125 kHz Single-side RX Bandwidth during AFC
-		rfm69_write_register(RFM69_REG_AFCFEI, RFM69_RF_AFCFEI_AFCAUTO_OFF | RFM69_RF_AFCFEI_AFCAUTOCLEAR_OFF); // RegAfcFei: Disable auto AFC on receiver startup
-		rfm69_write_register(RFM69_REG_DIOMAPPING1, RFM69_RF_DIOMAPPING1_DIO0_01); // RegDioMapping1: Pin DIO0 outputs PayloadReady
-		rfm69_write_register(RFM69_REG_DIOMAPPING2, RFM69_RF_DIOMAPPING2_CLKOUT_OFF); // RegDioMapping2: Disable CLKOUT on DIO5 to save power
+		rfm69_write_register(RFM69_REG_PALEVEL, RFM69_REG_PALEVEL_PA1_ON | RFM69_REG_PALEVEL_OUTPUTPOWER_10000); // RegPaLevel: Enable PA1 with minimum power
+		rfm69_write_register(RFM69_REG_PARAMP, RFM69_REG_PARAMP_40); // RegPaRamp: 40us PA Ramp time
+		rfm69_write_register(RFM69_REG_OCP, RFM69_REG_OCP_OFF); // RegOcp: OCP off because we only use H (High Power) devices
+		rfm69_write_register(RFM69_REG_LNA, RFM69_REG_LNA_ZIN_50 | RFM69_REG_LNA_GAINSELECT_AUTO); // RegLNA: 50 Ohm impedance, gain set by AGC loop
+		rfm69_write_register(RFM69_REG_RXBW, RFM69_REG_RXBW_DCCFREQ_010 | RFM69_REG_RXBW_MANT_24 | RFM69_REG_RXBW_EXP_3); // RegRxBw: DCCFreq = 4% RxBw, 41,7 kHz Single-side RX Bandwidth
+		rfm69_write_register(RFM69_REG_AFCBW, RFM69_REG_AFCBW_DCCFREQAFC_100 | RFM69_REG_AFCBW_MANTAFC_16 | RFM69_REG_AFCBW_EXPAFC_2); // RegAfcBw: DCCFreqAfc = 1% RxBwAfc, 125 kHz Single-side RX Bandwidth during AFC
+		rfm69_write_register(RFM69_REG_AFCFEI, RFM69_REG_AFCFEI_AFCAUTO_OFF | RFM69_REG_AFCFEI_AFCAUTOCLEAR_OFF); // RegAfcFei: Disable auto AFC on receiver startup
+		rfm69_write_register(RFM69_REG_DIOMAPPING1, RFM69_REG_DIOMAPPING1_DIO0_01); // RegDioMapping1: Pin DIO0 outputs PayloadReady
+		rfm69_write_register(RFM69_REG_DIOMAPPING2, RFM69_REG_DIOMAPPING2_CLKOUT_OFF); // RegDioMapping2: Disable CLKOUT on DIO5 to save power
 		rfm69_write_register(RFM69_REG_RSSITHRESH, -(RFM69_NORMAL_RX_SENSITIVITY) << 1); // RegRssiThresh: Min RSSI to start receiving
 		rfm69_write_register(RFM69_REG_RXTIMEOUT1, 0x00); // RegRxTimeout1: No timeout if no RSSI detected
 		rfm69_write_register(RFM69_REG_RXTIMEOUT2, 0x57); // RegRxTimeout2: Timeout after Rssi interrupt and no PayloadReady interrupt (~55ms)
 		rfm69_write_register(RFM69_REG_PREAMBLEMSB, 0x00); // RegPreambleMsb: 5 bytes preamble
 		rfm69_write_register(RFM69_REG_PREAMBLELSB, 0x05); // RegPreambleLsb
-		rfm69_write_register(RFM69_REG_SYNCCONFIG, RFM69_RF_SYNC_ON | RFM69_RF_SYNC_SIZE_3); // RegSyncConfig: Enable sync word, 3 bytes sync word
+		rfm69_write_register(RFM69_REG_SYNCCONFIG, RFM69_REG_SYNC_ON | RFM69_REG_SYNC_SIZE_3); // RegSyncConfig: Enable sync word, 3 bytes sync word
 		rfm69_write_register(RFM69_REG_SYNCVALUE1, 0x21); // RegSyncValue1: 0x21 (Hardcoded)
 		rfm69_write_register(RFM69_REG_SYNCVALUE2, 0x29); // RegSyncValue2: 0x29 (Hardcoded)
 		rfm69_write_register(RFM69_REG_SYNCVALUE3, ubNetID); // RegSyncValue3: Network ID
-		rfm69_write_register(RFM69_REG_PACKETCONFIG1, RFM69_RF_PACKET1_FORMAT_VARIABLE | RFM69_RF_PACKET1_DCFREE_WHITENING | RFM69_RF_PACKET1_CRC_ON); // RegPacketConfig1: Variable length, CRC on, whitening, Address match off
+		rfm69_write_register(RFM69_REG_PACKETCONFIG1, RFM69_REG_PACKET1_FORMAT_VARIABLE | RFM69_REG_PACKET1_DCFREE_WHITENING | RFM69_REG_PACKET1_CRC_ON); // RegPacketConfig1: Variable length, CRC on, whitening, Address match off
 		rfm69_write_register(RFM69_REG_PAYLOADLENGTH, 0x41); // RegPayloadLength: 65 bytes max payload (length byte)
 		rfm69_write_register(RFM69_REG_NODEADRS, 0x00); // RegNodeAdrs: Node Address (Not used)
 		rfm69_write_register(RFM69_REG_BROADCASTADRS, 0xFF); // RegBroadcastAdrs: Broadcast Address
-		rfm69_write_register(RFM69_REG_FIFOTHRESH, RFM69_RF_FIFOTHRESH_TXSTART_FIFONOTEMPTY | 0x0F); // RegFifoThresh: TxStart on FifoNotEmpty, 15 bytes FifoLevel
-		rfm69_write_register(RFM69_REG_PACKETCONFIG2, RFM69_RF_PACKET2_RXRESTARTDELAY_2BITS | RFM69_RF_PACKET2_AUTORXRESTART_ON | (pvEncKey == 0 ? RFM69_RF_PACKET2_AES_OFF : RFM69_RF_PACKET2_AES_ON)); // RegPacketConfig2: RX restart delay exp = 2, Auto RX restart, AES on/off
-        rfm69_write_register(RFM69_REG_TESTLNA, RFM69_RF_TESTLNA_NORMAL); // RegTestLna: Recommended value
-        rfm69_write_register(RFM69_REG_TESTDAGC, RFM69_RF_DAGC_IMPROVED_LOWBETA0); // RegTestDagc: Recommended value
+		rfm69_write_register(RFM69_REG_FIFOTHRESH, RFM69_REG_FIFOTHRESH_TXSTART_FIFONOTEMPTY | 0x0F); // RegFifoThresh: TxStart on FifoNotEmpty, 15 bytes FifoLevel
+		rfm69_write_register(RFM69_REG_PACKETCONFIG2, RFM69_REG_PACKET2_RXRESTARTDELAY_2BITS | RFM69_REG_PACKET2_AUTORXRESTART_ON | (pvEncKey == 0 ? RFM69_REG_PACKET2_AES_OFF : RFM69_REG_PACKET2_AES_ON)); // RegPacketConfig2: RX restart delay exp = 2, Auto RX restart, AES on/off
+        rfm69_write_register(RFM69_REG_TESTLNA, RFM69_REG_TESTLNA_NORMAL); // RegTestLna: Recommended value
+        rfm69_write_register(RFM69_REG_TESTDAGC, RFM69_REG_DAGC_IMPROVED_LOWBETA0); // RegTestDagc: Recommended value
 		rfm69_write_register(RFM69_REG_TESTAFC, 0x03); // RegTestAfc: Recommended AFC offset 10% Fdev. Unit: 488 Hz (AfcOffset > DCCFreqAfc)
 
 		if(pvEncKey != 0)
@@ -454,11 +454,11 @@ uint8_t rfm69_init(uint8_t ubNodeID, uint8_t ubNetID, const void *pvEncKey)
 			}
 		}
 
-		while(!(rfm69_read_register(RFM69_REG_IRQFLAGS1) & RFM69_RF_IRQFLAGS1_MODEREADY)); // Wait for ModeReady
+		while(!(rfm69_read_register(RFM69_REG_IRQFLAGS1) & RFM69_REG_IRQFLAGS1_MODEREADY)); // Wait for ModeReady
 
-		rfm69_write_register(RFM69_REG_OSC1, RFM69_RF_OSC1_RCCAL_START); // Start RC calibration
+		rfm69_write_register(RFM69_REG_OSC1, RFM69_REG_OSC1_RCCAL_START); // Start RC calibration
 
-		while(!(rfm69_read_register(RFM69_REG_OSC1) & RFM69_RF_OSC1_RCCAL_DONE)); // Wait for RC calibration
+		while(!(rfm69_read_register(RFM69_REG_OSC1) & RFM69_REG_OSC1_RCCAL_DONE)); // Wait for RC calibration
 
 		rfm69_clear_fifo();
 
@@ -471,9 +471,9 @@ void rfm69_isr()
 {
 	uint8_t ubIRQFlags = rfm69_read_register(RFM69_REG_IRQFLAGS2);
 
-	if(ubIRQFlags & RFM69_RF_IRQFLAGS2_PAYLOADREADY) // PayloadReady
+	if(ubIRQFlags & RFM69_REG_IRQFLAGS2_PAYLOADREADY) // PayloadReady
 	{
-		rfm69_set_mode(RFM69_RF_OPMODE_STANDBY); // Standby
+		rfm69_set_mode(RFM69_REG_OPMODE_STANDBY); // Standby
 
 		int8_t bRSSI = rfm69_read_rssi();
 
@@ -504,7 +504,7 @@ void rfm69_isr()
 			RFM69_UNSELECT();
 		}
 
-		rfm69_set_mode(RFM69_RF_OPMODE_RECEIVER); // RX
+		rfm69_set_mode(RFM69_REG_OPMODE_RECEIVER); // RX
 	}
 }
 void rfm69_tick()
@@ -512,8 +512,8 @@ void rfm69_tick()
 	uint8_t pubTXBuffer[RFM69_MAX_PAYLOAD_SIZE];
 	uint8_t pubRXBuffer[RFM69_MAX_PAYLOAD_SIZE + 1];
 
-	if(ubRadioCurrentMode == RFM69_RF_OPMODE_STANDBY)
-		rfm69_set_mode(RFM69_RF_OPMODE_RECEIVER); // RX
+	if(ubRadioCurrentMode == RFM69_REG_OPMODE_STANDBY)
+		rfm69_set_mode(RFM69_REG_OPMODE_RECEIVER); // RX
 
 	for(rfm69_pending_packet_t *pPacket = pRadioRELPending; pPacket; pPacket = pPacket->pNext)
 	{
@@ -588,9 +588,9 @@ void rfm69_tick()
 				{
 					if(rfm69_unpack_header(pHeader, pubTXBuffer, RFM69_PACKET_HEADER_SIZE))
 					{
-						rfm69_set_mode(RFM69_RF_OPMODE_STANDBY); // Standby
+						rfm69_set_mode(RFM69_REG_OPMODE_STANDBY); // Standby
 
-						while (!(rfm69_read_register(RFM69_REG_IRQFLAGS1) & RFM69_RF_IRQFLAGS1_MODEREADY)); // Wait for ModeReady
+						while (!(rfm69_read_register(RFM69_REG_IRQFLAGS1) & RFM69_REG_IRQFLAGS1_MODEREADY)); // Wait for ModeReady
 
 						rfm69_clear_fifo();
 
@@ -607,9 +607,9 @@ void rfm69_tick()
 
 						bRadioCurrentPowerLevel = pbRadioATCPowerLevel[pHeader->ubReceiverNodeID]; // Set the power needed to this target node ID
 
-						rfm69_set_mode(RFM69_RF_OPMODE_TRANSMITTER); // TX (Send the packet)
-						while (!(rfm69_read_register(RFM69_REG_IRQFLAGS2) & RFM69_RF_IRQFLAGS2_PACKETSENT)); // Wait for PacketSent
-						rfm69_set_mode(RFM69_RF_OPMODE_RECEIVER); // RX
+						rfm69_set_mode(RFM69_REG_OPMODE_TRANSMITTER); // TX (Send the packet)
+						while (!(rfm69_read_register(RFM69_REG_IRQFLAGS2) & RFM69_REG_IRQFLAGS2_PACKETSENT)); // Wait for PacketSent
+						rfm69_set_mode(RFM69_REG_OPMODE_RECEIVER); // RX
 
 						rfm69_pending_packet_t *pPendingPacket = NULL;
 						rfm69_pending_packet_t **ppPendingList = NULL;
@@ -659,12 +659,12 @@ void rfm69_tick()
 		}
 		else
 		{
-			rfm69_rmw_register(RFM69_REG_PACKETCONFIG2, 0xFB, RFM69_RF_PACKET2_RXRESTART); // Restart RX (WAIT mode to setup new gain through the AGC)
+			rfm69_rmw_register(RFM69_REG_PACKETCONFIG2, 0xFB, RFM69_REG_PACKET2_RXRESTART); // Restart RX (WAIT mode to setup new gain through the AGC)
 		}
 	}
 	else
 	{
-		rfm69_set_mode(RFM69_RF_OPMODE_RECEIVER); // RX
+		rfm69_set_mode(RFM69_REG_OPMODE_RECEIVER); // RX
 	}
 
 	if(!blob_fifo_is_empty(pRadioRXPacketFIFO))
@@ -908,7 +908,7 @@ uint32_t rfm69_get_rx_bandwidth()
 }
 void rfm69_set_carrier(uint32_t ulCarrier)
 {
-	rfm69_set_mode(RFM69_RF_OPMODE_STANDBY); // Standby
+	rfm69_set_mode(RFM69_REG_OPMODE_STANDBY); // Standby
 
 	ulCarrier /= 61.03515625;
 
@@ -919,11 +919,11 @@ void rfm69_set_carrier(uint32_t ulCarrier)
 	rfm69_write_register(RFM69_REG_FRFMID, ulCarrier >> 8);
 	rfm69_write_register(RFM69_REG_FRFLSB, ulCarrier);
 
-	rfm69_set_mode(RFM69_RF_OPMODE_SYNTHESIZER); // Frequency Synthetizer
+	rfm69_set_mode(RFM69_REG_OPMODE_SYNTHESIZER); // Frequency Synthetizer
 
-	while (!(rfm69_read_register(RFM69_REG_IRQFLAGS1) & RFM69_RF_IRQFLAGS1_PLLLOCK)); // Wait for PllLock
+	while (!(rfm69_read_register(RFM69_REG_IRQFLAGS1) & RFM69_REG_IRQFLAGS1_PLLLOCK)); // Wait for PllLock
 
-	rfm69_set_mode(RFM69_RF_OPMODE_STANDBY); // Standby
+	rfm69_set_mode(RFM69_REG_OPMODE_STANDBY); // Standby
 }
 uint32_t rfm69_get_carrier()
 {
@@ -935,7 +935,7 @@ uint32_t rfm69_get_carrier()
 }
 void rfm69_set_deviation(uint32_t ulDeviation)
 {
-	rfm69_set_mode(RFM69_RF_OPMODE_STANDBY); // Standby
+	rfm69_set_mode(RFM69_REG_OPMODE_STANDBY); // Standby
 
 	ulDeviation /= 61.03515625;
 
@@ -945,11 +945,11 @@ void rfm69_set_deviation(uint32_t ulDeviation)
 	rfm69_write_register(RFM69_REG_FDEVMSB, ulDeviation >> 8);
 	rfm69_write_register(RFM69_REG_FDEVLSB, ulDeviation);
 
-	rfm69_set_mode(RFM69_RF_OPMODE_SYNTHESIZER); // Frequency Synthetizer
+	rfm69_set_mode(RFM69_REG_OPMODE_SYNTHESIZER); // Frequency Synthetizer
 
-	while (!(rfm69_read_register(RFM69_REG_IRQFLAGS1) & RFM69_RF_IRQFLAGS1_PLLLOCK)); // Wait for PllLock
+	while (!(rfm69_read_register(RFM69_REG_IRQFLAGS1) & RFM69_REG_IRQFLAGS1_PLLLOCK)); // Wait for PllLock
 
-	rfm69_set_mode(RFM69_RF_OPMODE_STANDBY); // Standby
+	rfm69_set_mode(RFM69_REG_OPMODE_STANDBY); // Standby
 }
 uint32_t rfm69_get_deviation()
 {
@@ -961,7 +961,7 @@ uint32_t rfm69_get_deviation()
 }
 void rfm69_set_bit_rate(uint32_t ulBitRate)
 {
-	rfm69_set_mode(RFM69_RF_OPMODE_STANDBY); // Standby
+	rfm69_set_mode(RFM69_REG_OPMODE_STANDBY); // Standby
 
 	ulBitRate = 32000000.f / ulBitRate;
 
@@ -995,11 +995,11 @@ void rfm69_set_aes_key(const void *pvEncKey)
 {
 	if(!pvEncKey)
 	{
-		rfm69_rmw_register(RFM69_REG_PACKETCONFIG2, 0xFE, RFM69_RF_PACKET2_AES_OFF);
+		rfm69_rmw_register(RFM69_REG_PACKETCONFIG2, 0xFE, RFM69_REG_PACKET2_AES_OFF);
 	}
 	else
 	{
-		rfm69_rmw_register(RFM69_REG_PACKETCONFIG2, 0xFE, RFM69_RF_PACKET2_AES_ON);
+		rfm69_rmw_register(RFM69_REG_PACKETCONFIG2, 0xFE, RFM69_REG_PACKET2_AES_ON);
 
 		ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
 		{
@@ -1019,11 +1019,11 @@ void rfm69_set_network_id(uint8_t ubNetID)
 
 void rfm69_listen_mode()
 {
-	rfm69_set_mode(RFM69_RF_OPMODE_STANDBY); // Standby
+	rfm69_set_mode(RFM69_REG_OPMODE_STANDBY); // Standby
 
-	rfm69_write_register(RFM69_REG_DIOMAPPING1, RFM69_RF_DIOMAPPING1_DIO0_01); // Make sure we will get the PayloadReady interrupt
+	rfm69_write_register(RFM69_REG_DIOMAPPING1, RFM69_REG_DIOMAPPING1_DIO0_01); // Make sure we will get the PayloadReady interrupt
 	rfm69_write_register(RFM69_REG_RSSITHRESH, -(RFM69_LISTEN_RX_SENSITIVITY) << 1); // Change the sensitivity
-	rfm69_rmw_register(RFM69_REG_OPMODE, 0xA3, RFM69_RF_OPMODE_LISTEN_ON | RFM69_RF_OPMODE_STANDBY); // Enable listen mode, set standby as next mode
+	rfm69_rmw_register(RFM69_REG_OPMODE, 0xA3, RFM69_REG_OPMODE_LISTEN_ON | RFM69_REG_OPMODE_STANDBY); // Enable listen mode, set standby as next mode
 }
 
 void rfm69_set_power_level(int8_t bPowerLevel)
@@ -1032,19 +1032,19 @@ void rfm69_set_power_level(int8_t bPowerLevel)
 
 	if(bPowerLevel <= 13)
 	{
-		rfm69_write_register(RFM69_REG_PALEVEL, RFM69_RF_PALEVEL_PA1_ON | (bPowerLevel + 18));
+		rfm69_write_register(RFM69_REG_PALEVEL, RFM69_REG_PALEVEL_PA1_ON | (bPowerLevel + 18));
 		rfm69_write_register(RFM69_REG_TESTPA1, 0x55); // Disable PA1 boost
 		rfm69_write_register(RFM69_REG_TESTPA2, 0x70); // Disable PA2 boost
 	}
 	else if(bPowerLevel <= 17)
 	{
-		rfm69_write_register(RFM69_REG_PALEVEL, RFM69_RF_PALEVEL_PA1_ON | RFM69_RF_PALEVEL_PA2_ON | (bPowerLevel + 14));
+		rfm69_write_register(RFM69_REG_PALEVEL, RFM69_REG_PALEVEL_PA1_ON | RFM69_REG_PALEVEL_PA2_ON | (bPowerLevel + 14));
 		rfm69_write_register(RFM69_REG_TESTPA1, 0x55); // Disable PA1 boost
 		rfm69_write_register(RFM69_REG_TESTPA2, 0x70); // Disable PA2 boost
 	}
 	else
 	{
-		rfm69_write_register(RFM69_REG_PALEVEL, RFM69_RF_PALEVEL_PA1_ON | RFM69_RF_PALEVEL_PA2_ON | (bPowerLevel + 11));
+		rfm69_write_register(RFM69_REG_PALEVEL, RFM69_REG_PALEVEL_PA1_ON | RFM69_REG_PALEVEL_PA2_ON | (bPowerLevel + 11));
 		rfm69_write_register(RFM69_REG_TESTPA1, 0x5D); // Enable PA1 boost
 		rfm69_write_register(RFM69_REG_TESTPA2, 0x7C); // Enable PA2 boost
 	}
@@ -1061,14 +1061,14 @@ void rfm69_set_atc_target_rssi(uint8_t ubNodeID, int8_t bRSSI)
 
 void rfm69_set_mode(uint8_t ubMode)
 {
-	uint8_t ubListenOn = rfm69_read_register(RFM69_REG_OPMODE) & RFM69_RF_OPMODE_LISTEN_ON;
+	uint8_t ubListenOn = rfm69_read_register(RFM69_REG_OPMODE) & RFM69_REG_OPMODE_LISTEN_ON;
 
 	if(ubRadioCurrentMode != ubMode || ubListenOn)
 	{
 		if(ubListenOn)
 		{
-			rfm69_rmw_register(RFM69_REG_OPMODE, 0x83, RFM69_RF_OPMODE_LISTEN_OFF | RFM69_RF_OPMODE_LISTENABORT | ubMode); // Disable listen mode, abort listen mode, set desired mode
-			rfm69_rmw_register(RFM69_REG_OPMODE, 0x83, RFM69_RF_OPMODE_LISTEN_OFF | ubMode); // Disable listen mode, disable abort listen mode, set desired mode
+			rfm69_rmw_register(RFM69_REG_OPMODE, 0x83, RFM69_REG_OPMODE_LISTEN_OFF | RFM69_REG_OPMODE_LISTENABORT | ubMode); // Disable listen mode, abort listen mode, set desired mode
+			rfm69_rmw_register(RFM69_REG_OPMODE, 0x83, RFM69_REG_OPMODE_LISTEN_OFF | ubMode); // Disable listen mode, disable abort listen mode, set desired mode
 			rfm69_write_register(RFM69_REG_RSSITHRESH, -(RFM69_NORMAL_RX_SENSITIVITY) << 1); // Change the sensitivity back to normal
 		}
 		else
@@ -1076,13 +1076,13 @@ void rfm69_set_mode(uint8_t ubMode)
 			rfm69_rmw_register(RFM69_REG_OPMODE, 0xE3, ubMode);
 		}
 
-		if(ubMode == RFM69_RF_OPMODE_TRANSMITTER)
+		if(ubMode == RFM69_REG_OPMODE_TRANSMITTER)
 			rfm69_set_power_level(bRadioCurrentPowerLevel);
 		else
 			rfm69_set_power_level(RFM69_MINIMUM_TX_POWER);
 
-		if(ubRadioCurrentMode == RFM69_RF_OPMODE_SLEEP)
-			while(!(rfm69_read_register(RFM69_REG_IRQFLAGS1) & RFM69_RF_IRQFLAGS1_MODEREADY));
+		if(ubRadioCurrentMode == RFM69_REG_OPMODE_SLEEP)
+			while(!(rfm69_read_register(RFM69_REG_IRQFLAGS1) & RFM69_REG_IRQFLAGS1_MODEREADY));
 
 		ubRadioCurrentMode = ubMode;
 	}
@@ -1093,14 +1093,14 @@ int8_t rfm69_read_rssi()
 }
 uint8_t rfm69_read_temperature(uint8_t ubCalFactor)
 {
-	rfm69_set_mode(RFM69_RF_OPMODE_STANDBY); // Standby
-	rfm69_write_register(RFM69_REG_TEMP1, RFM69_RF_TEMP1_MEAS_START);
+	rfm69_set_mode(RFM69_REG_OPMODE_STANDBY); // Standby
+	rfm69_write_register(RFM69_REG_TEMP1, RFM69_REG_TEMP1_MEAS_START);
 
-	while ((rfm69_read_register(RFM69_REG_TEMP1) & RFM69_RF_TEMP1_MEAS_RUNNING));
+	while ((rfm69_read_register(RFM69_REG_TEMP1) & RFM69_REG_TEMP1_MEAS_RUNNING));
 
 	return ~rfm69_read_register(RFM69_REG_TEMP2) + 90 + ubCalFactor;
 }
 void rfm69_clear_fifo()
 {
-	rfm69_write_register(RFM69_REG_IRQFLAGS2, RFM69_RF_IRQFLAGS2_FIFOOVERRUN);
+	rfm69_write_register(RFM69_REG_IRQFLAGS2, RFM69_REG_IRQFLAGS2_FIFOOVERRUN);
 }

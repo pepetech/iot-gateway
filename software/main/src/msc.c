@@ -121,10 +121,10 @@ void msc_flash_page_write(uint32_t ulAddress, uint8_t *pubData, uint32_t ulSize)
 
     msc_flash_lock();
 
-	if(!ulSize)
-		return;
+    if(!ulSize)
+        return;
 
-	msc_flash_page_write(ulAddress, pubData, ulSize);
+    msc_flash_page_write(ulAddress, pubData, ulSize);
 }
 void msc_flash_word_write(uint32_t ulAddress, uint32_t ulData)
 {

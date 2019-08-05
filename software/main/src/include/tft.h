@@ -29,31 +29,31 @@ struct tft_button_t
 };
 struct tft_graph_t
 {
-    uint8_t ubDrawLabelsFlag;
-    uint8_t ubRedrawFlag;
-    uint16_t dOldX;
-    uint16_t dOldY;
+    uint8_t ubDrawLabelsFlag : 1;
+    uint8_t ubRedrawFlag : 1;
+    uint16_t usOldX;
+    uint16_t usOldY;
     uint16_t usOriginX;
     uint16_t usOriginY;
     uint16_t usWidth;
     uint16_t usHeigth;
-    float fXLowBound;
-    float fXUppBound;
-    float fXInc;
-    float fYLowBound;
-    float fYUppBound;
-    float fYInc;
-    char *pubXfmt;
-    char *pubYfmt;
-    char *pubTitle;
-    char *pubXLabel;
-    char *pubYLabel;
+    float fXScaleMin;
+    float fXScaleMax;
+    float fXScaleInc;
+    float fYScaleMin;
+    float fYScaleMax;
+    float fYScaleInc;
+    char *pszXScaleFmt;
+    char *pszYScaleFmt;
+    char *pszTitle;
+    char *pszXLabel;
+    char *pszYLabel;
     const font_t *pFont;
-    rgb565_t xGColor;
-    rgb565_t xAColor;
-    rgb565_t xPColor;
-    rgb565_t xTColor;
-    rgb565_t xBColor;
+    rgb565_t xGridColor;
+    rgb565_t xAxisColor;
+    rgb565_t xDataLineColor;
+    rgb565_t xTextColor;
+    rgb565_t xBackColor;
 };
 struct tft_textbox_t
 {
@@ -73,7 +73,7 @@ struct tft_terminal_t
 {
     tft_textbox_t *pTextbox;
     char **ppszBuf;
-    uint8_t ubUpdatePending;
+    uint8_t ubUpdatePending : 1;
 };
 
 static inline void tft_display_on()
@@ -112,25 +112,25 @@ void tft_draw_circle(uint16_t usX, uint16_t usY, uint16_t usR, rgb565_t xColor, 
 void tft_draw_image(const image_t *pImage, uint16_t usX, uint16_t usY);
 void tft_draw_bitmap(const uint8_t *pubBitmap, uint16_t usX, uint16_t usY, uint16_t usW, uint16_t usH, rgb565_t xColor, rgb565_t usBackColor);
 
-tft_button_t *tft_button_create(uint8_t ubID, uint16_t usX, uint16_t usY, uint16_t usWidth, uint16_t usHeight);
+uint16_t tft_get_text_height(const font_t *pFont, uint16_t usNumLines);
+
+tft_button_t* tft_button_create(uint8_t ubID, uint16_t usX, uint16_t usY, uint16_t usWidth, uint16_t usHeight);
 void tft_button_delete(tft_button_t *pxButton);
 void tft_button_clear();
 void tft_set_button_callback(tft_button_callback_fn_t pfFunc);
 void tft_button_draw(tft_button_t *pButton, const uint8_t *pubStr, const font_t *pxFont, rgb565_t xBColor, rgb565_t xTColor);
 
-tft_graph_t *tft_graph_create(float fGx, float fGy, float fW, float fH, float fXlo, float fXhi, float fXinc, float fYlo, float fYhi, float fYinc, uint8_t ubDrawLabels, const char *xlabelfmt, const char *ylabelfmt, const char *title, const char *xlabel, const char *ylabel, const font_t *pFont, rgb565_t gcolor, rgb565_t acolor, rgb565_t pcolor, rgb565_t tcolor, rgb565_t bcolor);
+tft_graph_t* tft_graph_create(uint16_t usX, uint16_t usY, uint16_t usWidth, uint16_t usHeight, float fXScaleMin, float fXScaleMax, float fXScaleInc, float fYScaleMin, float fYScaleMax, float fYScaleInc, uint8_t ubDrawLabels, const char *pszXScaleFmt, const char *pszYScaleFmt, const char *pszTitle, const char *pszXLabel, const char *pszYLabel, const font_t *pFont, rgb565_t xGridColor, rgb565_t xAxisColor, rgb565_t xDataLineColor, rgb565_t xTextColor, rgb565_t xBackColor);
 void tft_graph_delete(tft_graph_t *pxGraph);
 void tft_graph_clear(tft_graph_t *pxGraph);
 void tft_graph_draw_frame(tft_graph_t *pxGraph);
-void tft_graph_draw_data(tft_graph_t *pxGraph, float *pfXData, float *pfYData, uint16_t usDataPoints);
+void tft_graph_draw_data(tft_graph_t *pxGraph, float *pfXData, float *pfYData, uint16_t usDataSize);
 
 uint8_t tft_draw_char(char cChar, const font_t *xFont, uint16_t usX, uint16_t usY, rgb565_t xColor, rgb565_t xBackColor);
 void tft_draw_string(char *pszStr, const font_t *pFont, uint16_t usX, uint16_t usY, rgb565_t xColor, rgb565_t xBackColor);
 void tft_printf(const font_t *pFont, uint16_t usX, uint16_t usY, rgb565_t xColor, rgb565_t usBackColor, const char* pszFmt, ...);
 
-uint16_t tft_get_text_height(const font_t *pFont, uint16_t usNumLines);
-
-tft_textbox_t *tft_textbox_create(uint16_t usX, uint16_t usY, uint16_t usNumLines, uint16_t usLenght, uint8_t ubLineWrapping, uint8_t ubCursorWrapping, const font_t *pFont, rgb565_t xColor, rgb565_t xBackColor);
+tft_textbox_t* tft_textbox_create(uint16_t usX, uint16_t usY, uint16_t usNumLines, uint16_t usLenght, uint8_t ubLineWrapping, uint8_t ubCursorWrapping, const font_t *pFont, rgb565_t xColor, rgb565_t xBackColor);
 void tft_textbox_delete(tft_textbox_t *pTextbox);
 void tft_textbox_set_color(tft_textbox_t *pTextbox, rgb565_t xColor, rgb565_t xBackColor);
 void tft_textbox_clear(tft_textbox_t *pTextbox);
@@ -139,7 +139,7 @@ void tft_textbox_goto(tft_textbox_t *pTextbox, uint16_t usCursor, uint16_t usLin
 void tft_textbox_draw_string(tft_textbox_t *pTextbox, char *pszStr);
 void tft_textbox_printf(tft_textbox_t *pTextbox, const char* pszFmt, ...);
 
-tft_terminal_t *tft_terminal_create(uint16_t usX, uint16_t usY, uint16_t usNumLines, uint16_t usLenght, const font_t *pFont, rgb565_t xColor, rgb565_t xBackColor);
+tft_terminal_t* tft_terminal_create(uint16_t usX, uint16_t usY, uint16_t usNumLines, uint16_t usLenght, const font_t *pFont, rgb565_t xColor, rgb565_t xBackColor);
 void tft_terminal_delete(tft_terminal_t *pTerminal);
 void tft_terminal_draw_string(tft_terminal_t *pTerminal, char *pszStr);
 void tft_terminal_update(tft_terminal_t *pTerminal);

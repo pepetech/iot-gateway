@@ -449,8 +449,8 @@ int main()
     // BMP280 info & configuration
     DBGPRINTLN_CTX("BMP280 version: 0x%02X", bmp280_read_version());
 
-    bmp280_write_config(BMP280_STANDBY_1000MS | BMP280_FILTER_8);
-    bmp280_write_control(BMP280_TEMP_OS4 | BMP280_PRESSURE_OS16 | BMP280_MODE_NORMAL);
+    bmp280_write_config(BMP280_REG_CONFIG_STANDBY_1000MS | BMP280_REG_CONFIG_FILTER_8);
+    bmp280_write_control(BMP280_REG_CONTROL_TEMP_OS4 | BMP280_REG_CONTROL_PRESSURE_OS16 | BMP280_REG_CONTROL_MODE_NORMAL);
     DBGPRINTLN_CTX("BMP280 write control & config!");
 
     // CCS811 info & configuration
@@ -466,7 +466,7 @@ int main()
 
     DBGPRINTLN_CTX("CCS811 App version: %hu.%hu.%hu", CCS811_SW_VERSION_MAJOR(usCCSAppVersion), CCS811_SW_VERSION_MINOR(usCCSAppVersion), CCS811_SW_VERSION_TRIVIAL(usCCSAppVersion));
 
-    ccs811_write_meas_mode(CCS811_DRIVE_MODE_1S);
+    ccs811_write_meas_mode(CCS811_REG_MEAS_MODE_DRIVE_MODE_1S);
     DBGPRINTLN_CTX("CCS811 Meas. mode config!");
 
     // SI7021 info & configuration
@@ -516,7 +516,7 @@ int main()
     tft_bl_init(2000); // Init backlight PWM at 2 kHz
     tft_bl_set(0); // Set backlight to 0%
     tft_display_on(); // Turn display on
-    tft_set_rotation(ILI9488_VERTICAL); // Set rotation 1 (horizontal, ribbon to the right)
+    tft_set_rotation(ILI9488_ROTATION_VERTICAL); // Set rotation 1 (horizontal, ribbon to the right)
     tft_fill_screen(RGB565_BLACK); // Fill display
 
     pGraph = tft_graph_create(60, 30, 220, 360, 0, 30, 5, 25, 35, 0.5, 1, "%.0f", "%.2f", "Temperature", "t", "C", &xSans9pFont, RGB565_WHITE, RGB565_BLACK, RGB565_YELLOW, RGB565_BLACK, RGB565_DARKGREY);
@@ -744,7 +744,7 @@ int main()
             DBGPRINTLN_CTX("SI7021 Temperature: %.2f C", fSITemp);
             DBGPRINTLN_CTX("SI7021 Humidity: %.1f %%RH", fSIHumid);
 
-            float fMagField = si7210_get_data();
+            float fMagField = si7210_read_mag_field();
 
             tft_terminal_printf(pTerminal, 0, "SI7210 Field: %.2f mT\n", fMagField);
 
@@ -922,5 +922,5 @@ void touch_button_callback(uint8_t ubButtonID)
 void mag_trigger_callback()
 {
     DBGPRINTLN_CTX("Mag Switch Triggered!");
-    DBGPRINTLN_CTX("SI7210 Field: %.5f mT", si7210_get_data());
+    DBGPRINTLN_CTX("SI7210 Field: %.5f mT", si7210_read_mag_field());
 }
