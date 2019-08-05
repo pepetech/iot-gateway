@@ -2,7 +2,7 @@
 
 static uint8_t ccs811_read_register(uint8_t ubRegister)
 {
-	uint8_t ubValue;
+	uint8_t ubValue = 0;
 
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
 	{

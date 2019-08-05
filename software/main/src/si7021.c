@@ -10,7 +10,7 @@ static uint8_t si7021_read_register(uint8_t ubRegister)
 }
 static uint16_t si7021_read_register16(uint8_t ubRegister)
 {
-	uint16_t usValue;
+	uint16_t usValue = 0;
 
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
 	{
