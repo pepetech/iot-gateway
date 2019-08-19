@@ -72,11 +72,9 @@ void tft_bl_init(uint32_t ulFrequency)
     WTIMER2->CC[1].CCV = 0x00000000;
 
     WTIMER2->ROUTELOC0 = WTIMER_ROUTELOC0_CC1LOC_LOC2;
-    WTIMER2->ROUTEPEN |= TIMER_ROUTEPEN_CC1PEN;
+    WTIMER2->ROUTEPEN |= WTIMER_ROUTEPEN_CC1PEN;
 
     WTIMER2->CMD = WTIMER_CMD_START;
-
-    WTIMER2->CC[1].CCVB = 0;
 }
 void tft_bl_set(float fBrightness)
 {
@@ -333,7 +331,7 @@ tft_button_t* tft_button_create(uint8_t ubID, uint16_t usX, uint16_t usY, uint16
     if(!pNewButton)
         return NULL;
 
-    memset(pNewButton, 0, sizeof(rfm69_pending_packet_t));
+    memset(pNewButton, 0, sizeof(tft_button_t));
 
     pNewButton->ubID = ubID;
     pNewButton->usOriginX = usX;
