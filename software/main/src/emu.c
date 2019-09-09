@@ -121,7 +121,7 @@ void emu_dcdc_init(float fTargetVoltage, float fMaxLNCurrent, float fMaxLPCurren
     EMU->DCDCMISCCTRL = (EMU->DCDCMISCCTRL & ~_EMU_DCDCMISCCTRL_PFETCNT_MASK) | ((uint32_t)(ubFETCount - 1) << _EMU_DCDCMISCCTRL_PFETCNT_SHIFT);
 
     uint8_t ubLNCurrentLimit = (((fMaxLNCurrent + 40.f) * 1.5f) / (5.f * ubFETCount)) - 1;
-    uint8_t ubLPCurrentLimit = (fMaxLPCurrent / 40.f) - 1;
+    uint8_t ubLPCurrentLimit = 1; // Recommended value
 
     EMU->DCDCMISCCTRL = (EMU->DCDCMISCCTRL & ~(_EMU_DCDCMISCCTRL_LNCLIMILIMSEL_MASK | _EMU_DCDCMISCCTRL_LPCLIMILIMSEL_MASK)) | ((uint32_t)ubLNCurrentLimit << _EMU_DCDCMISCCTRL_LNCLIMILIMSEL_SHIFT) | ((uint32_t)ubLPCurrentLimit << _EMU_DCDCMISCCTRL_LPCLIMILIMSEL_SHIFT);
 
