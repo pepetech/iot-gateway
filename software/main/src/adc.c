@@ -30,8 +30,7 @@ float adc_get_avdd()
 
     while(!(ADC0->IF & ADC_IF_SINGLE));
 
-    float fADCCode = ADC0->SINGLEDATA >> 4;
-    float fAVDD = fADCCode * 5000.f / 4095.f;
+    float fAVDD = ADC0->SINGLEDATA * 5000.f / 65535.f;
 
     return fAVDD;
 }
@@ -50,8 +49,7 @@ float adc_get_dvdd()
 
     while(!(ADC0->IF & ADC_IF_SINGLE));
 
-    float fADCCode = ADC0->SINGLEDATA >> 4;
-    float fDVDD = fADCCode * 5000.f / 4095.f;
+    float fDVDD = ADC0->SINGLEDATA * 5000.f / 65535.f;
 
     return fDVDD;
 }
@@ -70,8 +68,7 @@ float adc_get_iovdd()
 
     while(!(ADC0->IF & ADC_IF_SINGLE));
 
-    float fADCCode = ADC0->SINGLEDATA >> 4;
-    float fIOVDD = fADCCode * 5000.f / 4095.f;
+    float fIOVDD = ADC0->SINGLEDATA * 5000.f / 65535.f;
 
     return fIOVDD;
 }
@@ -90,8 +87,7 @@ float adc_get_corevdd()
 
     while(!(ADC0->IF & ADC_IF_SINGLE));
 
-    float fADCCode = ADC0->SINGLEDATA >> 4;
-    float fDECOUPLE = fADCCode * 2500.f / 4095.f;
+    float fDECOUPLE = ADC0->SINGLEDATA * 2500.f / 65535.f;
 
     return fDECOUPLE;
 }
@@ -110,8 +106,7 @@ float adc_get_5v0()
 
     while(!(ADC0->IF & ADC_IF_SINGLE));
 
-    float fADCCode = ADC0->SINGLEDATA >> 4;
-    float f5V0 = fADCCode * 2500.f / 4095.f;
+    float f5V0 = ADC0->SINGLEDATA * 2500.f / 65535.f;
 
     return f5V0 * ADC_5V0_DIV;
 }
@@ -130,8 +125,7 @@ float adc_get_4v2()
 
     while(!(ADC0->IF & ADC_IF_SINGLE));
 
-    float fADCCode = ADC0->SINGLEDATA >> 4;
-    float f4V2 = fADCCode * 2500.f / 4095.f;
+    float f4V2 = ADC0->SINGLEDATA * 2500.f / 65535.f;
 
     return f4V2 * ADC_4V2_DIV;
 }
@@ -150,8 +144,7 @@ float adc_get_vbat()
 
     while(!(ADC0->IF & ADC_IF_SINGLE));
 
-    float fADCCode = ADC0->SINGLEDATA >> 4;
-    float fVBAT = fADCCode * 2500.f / 4095.f;
+    float fVBAT = ADC0->SINGLEDATA * 2500.f / 65535.f;
 
     return fVBAT * ADC_VBAT_DIV;
 }
@@ -170,8 +163,7 @@ float adc_get_vin()
 
     while(!(ADC0->IF & ADC_IF_SINGLE));
 
-    float fADCCode = ADC0->SINGLEDATA >> 4;
-    float fVIN = fADCCode * 2500.f / 4095.f;
+    float fVIN = ADC0->SINGLEDATA * 2500.f / 65535.f;
 
     return fVIN * ADC_VIN_DIV;
 }
@@ -191,7 +183,7 @@ float adc_get_temperature()
 
     while(!(ADC0->IF & ADC_IF_SINGLE));
 
-    float fADCCode = ADC0->SINGLEDATA >> 4;
+    float fADCCode = ADC0->SINGLEDATA / 16.f;
     float fCalibrationTemp = (DEVINFO->CAL & _DEVINFO_CAL_TEMP_MASK) >> _DEVINFO_CAL_TEMP_SHIFT;
     float fADCCalibrationTemp = (DEVINFO->ADC0CAL3 & _DEVINFO_ADC0CAL3_TEMPREAD1V25_MASK) >> _DEVINFO_ADC0CAL3_TEMPREAD1V25_SHIFT;
     float fADCTemp = fCalibrationTemp - (fADCCalibrationTemp - fADCCode) * 1250.f / (4095.f * -1.84f);

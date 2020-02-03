@@ -10219,7 +10219,7 @@ design rules under a new name.</description>
 <wire x1="112" y1="92.8" x2="112.0108" y2="92.8108" width="0.254" layer="1"/>
 <wire x1="112.0108" y1="92.8108" x2="112.0108" y2="94.6398" width="0.254" layer="1"/>
 </signal>
-<signal name="N$37">
+<signal name="5V0_GATE">
 <contactref element="U24" pad="15"/>
 <contactref element="Q3" pad="1"/>
 <wire x1="100.4" y1="93.9" x2="100.4" y2="94.7" width="0.254" layer="1"/>

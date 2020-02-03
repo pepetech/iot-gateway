@@ -20069,8 +20069,8 @@ Zu.fl: 50 Ohm</text>
 </instance>
 <instance part="F1" gate="G$1" x="48.26" y="50.8" smashed="yes">
 <attribute name="OCLCSC" x="48.26" y="50.8" size="1.778" layer="96" display="off"/>
-<attribute name="HOLD" x="48.26" y="46.736" size="1.778" layer="97" align="top-left"/>
-<attribute name="TRIP" x="48.26" y="44.196" size="1.778" layer="97" align="top-left"/>
+<attribute name="HOLD" x="48.26" y="46.736" size="1.778" layer="97" align="top-left" display="both"/>
+<attribute name="TRIP" x="48.26" y="44.196" size="1.778" layer="97" align="top-left" display="both"/>
 <attribute name="NAME" x="48.26" y="55.6006" size="1.778" layer="95" ratio="10" rot="SR0"/>
 </instance>
 <instance part="GND105" gate="G$1" x="43.18" y="25.4" smashed="yes">
@@ -21802,7 +21802,7 @@ For Li-ion use DW01A-G</text>
 <junction x="436.88" y="337.82"/>
 </segment>
 </net>
-<net name="N$37" class="0">
+<net name="5V0_GATE" class="0">
 <segment>
 <pinref part="U24" gate="G$1" pin="IGATE"/>
 <pinref part="Q3" gate="G$1" pin="G"/>
