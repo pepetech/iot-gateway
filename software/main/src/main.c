@@ -103,13 +103,21 @@ void sleep()
 
 uint32_t get_free_ram()
 {
-    void *pCurrentHeap = malloc(1);
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+    {
+        extern void *_sbrk(int);
 
-    uint32_t ulFreeRAM = (uint32_t)__get_MSP() - (uint32_t)pCurrentHeap;
+        void *pCurrentHeap = _sbrk(1);
 
-    free(pCurrentHeap);
+        if(!pCurrentHeap)
+            return 0;
 
-    return ulFreeRAM;
+        uint32_t ulFreeRAM = (uint32_t)__get_MSP() - (uint32_t)pCurrentHeap;
+
+        _sbrk(-1);
+
+        return ulFreeRAM;
+    }
 }
 
 void get_device_name(char *pszDeviceName, uint32_t ulDeviceNameSize)
