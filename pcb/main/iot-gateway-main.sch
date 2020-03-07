@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="9.5.1">
+<eagle version="9.5.2">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -13663,43 +13663,53 @@ Logo</text>
 <smd name="5" x="1.475" y="0" dx="0.8" dy="0.25" layer="1" rot="R180"/>
 <smd name="6" x="1.475" y="0.5" dx="0.8" dy="0.25" layer="1" rot="R180"/>
 </package>
-<package name="QFN20_ASYM_CORNER">
-<smd name="1" x="-1.4" y="1.25" dx="0.7" dy="0.25" layer="1"/>
-<circle x="-2.169" y="2.236" radius="0.2" width="0" layer="21"/>
-<text x="-1.47" y="2.54" size="0.4064" layer="25">&gt;NAME</text>
-<text x="-1.47" y="-2.995" size="0.4064" layer="27">&gt;VALUE</text>
-<smd name="2" x="-1.4" y="0.75" dx="0.7" dy="0.25" layer="1"/>
-<smd name="3" x="-1.4" y="0.25" dx="0.7" dy="0.25" layer="1"/>
-<smd name="4" x="-1.4" y="-0.25" dx="0.7" dy="0.25" layer="1"/>
-<smd name="5" x="-1.4" y="-0.75" dx="0.7" dy="0.25" layer="1"/>
-<smd name="6" x="-1.4" y="-1.25" dx="0.7" dy="0.25" layer="1"/>
-<smd name="7" x="-0.75" y="-1.9" dx="0.7" dy="0.25" layer="1" rot="R90"/>
-<smd name="8" x="-0.25" y="-1.9" dx="0.7" dy="0.25" layer="1" rot="R90"/>
-<smd name="9" x="0.25" y="-1.9" dx="0.7" dy="0.25" layer="1" rot="R90"/>
-<smd name="10" x="0.75" y="-1.9" dx="0.7" dy="0.25" layer="1" rot="R90"/>
-<smd name="17" x="0.75" y="1.9" dx="0.7" dy="0.25" layer="1" rot="R270"/>
-<smd name="18" x="0.25" y="1.9" dx="0.7" dy="0.25" layer="1" rot="R270"/>
-<smd name="19" x="-0.25" y="1.9" dx="0.7" dy="0.25" layer="1" rot="R270"/>
-<smd name="20" x="-0.75" y="1.9" dx="0.7" dy="0.25" layer="1" rot="R270"/>
-<wire x1="-1.5" y1="2" x2="1.5" y2="2" width="0.127" layer="51"/>
-<wire x1="1.5" y1="2" x2="1.5" y2="-2" width="0.127" layer="51"/>
-<wire x1="1.5" y1="-2" x2="-1.5" y2="-2" width="0.127" layer="51"/>
-<wire x1="-1.5" y1="-2" x2="-1.5" y2="2" width="0.127" layer="51"/>
-<smd name="11" x="1.4" y="-1.25" dx="0.7" dy="0.25" layer="1" rot="R180"/>
-<smd name="12" x="1.4" y="-0.75" dx="0.7" dy="0.25" layer="1" rot="R180"/>
-<smd name="13" x="1.4" y="-0.25" dx="0.7" dy="0.25" layer="1" rot="R180"/>
-<smd name="14" x="1.4" y="0.25" dx="0.7" dy="0.25" layer="1" rot="R180"/>
-<smd name="15" x="1.4" y="0.75" dx="0.7" dy="0.25" layer="1" rot="R180"/>
-<smd name="16" x="1.4" y="1.25" dx="0.7" dy="0.25" layer="1" rot="R180"/>
-<smd name="21" x="0" y="0" dx="1.65" dy="2.65" layer="1" cream="no"/>
-<rectangle x1="-0.7" y1="0.1" x2="-0.1" y2="1.2" layer="31"/>
-<rectangle x1="0.1" y1="0.1" x2="0.7" y2="1.2" layer="31"/>
-<rectangle x1="0.1" y1="-1.2" x2="0.7" y2="-0.1" layer="31"/>
-<rectangle x1="-0.7" y1="-1.2" x2="-0.1" y2="-0.1" layer="31"/>
-<smd name="M1" x="-1.3125" y="1.8125" dx="0.375" dy="0.375" layer="1"/>
-<smd name="M2" x="1.3125" y="1.8125" dx="0.375" dy="0.375" layer="1"/>
-<smd name="M4" x="1.3125" y="-1.8125" dx="0.375" dy="0.375" layer="1"/>
-<smd name="M3" x="-1.3125" y="-1.8125" dx="0.375" dy="0.375" layer="1"/>
+<package name="QFN24_CORNER">
+<smd name="1" x="-1.9" y="1.25" dx="0.25" dy="0.7" layer="1" rot="R270"/>
+<wire x1="2" y1="2" x2="2" y2="-2" width="0.127" layer="51"/>
+<wire x1="2" y1="-2" x2="-2" y2="-2" width="0.127" layer="51"/>
+<wire x1="-2" y1="-2" x2="-2" y2="2" width="0.127" layer="51"/>
+<wire x1="-2" y1="2" x2="2" y2="2" width="0.127" layer="51"/>
+<text x="-2" y="2.969" size="0.8" layer="25" font="vector" ratio="15">&gt;NAME</text>
+<circle x="-2.54" y="2.413" radius="0.1016" width="0.2032" layer="21"/>
+<wire x1="-2" y1="1.7" x2="-2" y2="2" width="0.127" layer="21"/>
+<wire x1="-2" y1="2" x2="-1.7" y2="2" width="0.127" layer="21"/>
+<wire x1="-1.7" y1="-2" x2="-2" y2="-2" width="0.127" layer="21"/>
+<wire x1="-2" y1="-2" x2="-2" y2="-1.7" width="0.127" layer="21"/>
+<wire x1="2" y1="-1.7" x2="2" y2="-2" width="0.127" layer="21"/>
+<wire x1="2" y1="-2" x2="1.7" y2="-2" width="0.127" layer="21"/>
+<wire x1="1.7" y1="2" x2="2" y2="2" width="0.127" layer="21"/>
+<wire x1="2" y1="2" x2="2" y2="1.7" width="0.127" layer="21"/>
+<smd name="2" x="-1.9" y="0.75" dx="0.25" dy="0.7" layer="1" rot="R270"/>
+<smd name="3" x="-1.9" y="0.25" dx="0.25" dy="0.7" layer="1" rot="R270"/>
+<smd name="4" x="-1.9" y="-0.25" dx="0.25" dy="0.7" layer="1" rot="R270"/>
+<smd name="5" x="-1.9" y="-0.75" dx="0.25" dy="0.7" layer="1" rot="R270"/>
+<smd name="6" x="-1.9" y="-1.25" dx="0.25" dy="0.7" layer="1" rot="R270"/>
+<smd name="7" x="-1.25" y="-1.9" dx="0.25" dy="0.7" layer="1"/>
+<smd name="8" x="-0.75" y="-1.9" dx="0.25" dy="0.7" layer="1"/>
+<smd name="9" x="-0.25" y="-1.9" dx="0.25" dy="0.7" layer="1"/>
+<smd name="10" x="0.25" y="-1.9" dx="0.25" dy="0.7" layer="1"/>
+<smd name="11" x="0.75" y="-1.9" dx="0.25" dy="0.7" layer="1"/>
+<smd name="12" x="1.25" y="-1.9" dx="0.25" dy="0.7" layer="1"/>
+<smd name="13" x="1.9" y="-1.25" dx="0.25" dy="0.7" layer="1" rot="R90"/>
+<smd name="14" x="1.9" y="-0.75" dx="0.25" dy="0.7" layer="1" rot="R90"/>
+<smd name="15" x="1.9" y="-0.25" dx="0.25" dy="0.7" layer="1" rot="R90"/>
+<smd name="16" x="1.9" y="0.25" dx="0.25" dy="0.7" layer="1" rot="R90"/>
+<smd name="17" x="1.9" y="0.75" dx="0.25" dy="0.7" layer="1" rot="R90"/>
+<smd name="18" x="1.9" y="1.25" dx="0.25" dy="0.7" layer="1" rot="R90"/>
+<smd name="19" x="1.25" y="1.9" dx="0.25" dy="0.7" layer="1" rot="R180"/>
+<smd name="20" x="0.75" y="1.9" dx="0.25" dy="0.7" layer="1" rot="R180"/>
+<smd name="21" x="0.25" y="1.9" dx="0.25" dy="0.7" layer="1" rot="R180"/>
+<smd name="22" x="-0.25" y="1.9" dx="0.25" dy="0.7" layer="1" rot="R180"/>
+<smd name="23" x="-0.75" y="1.9" dx="0.25" dy="0.7" layer="1" rot="R180"/>
+<smd name="24" x="-1.25" y="1.9" dx="0.25" dy="0.7" layer="1" rot="R180"/>
+<smd name="25" x="-0.6625" y="0.6625" dx="1.125" dy="1.125" layer="1" rot="R180"/>
+<smd name="26" x="0.6625" y="0.6625" dx="1.125" dy="1.125" layer="1" rot="R180"/>
+<smd name="28" x="0.6625" y="-0.6625" dx="1.125" dy="1.125" layer="1"/>
+<smd name="27" x="-0.6625" y="-0.6625" dx="1.125" dy="1.125" layer="1"/>
+<smd name="29" x="-1.8125" y="1.8125" dx="0.375" dy="0.375" layer="1" rot="R180"/>
+<smd name="30" x="1.8125" y="1.8125" dx="0.375" dy="0.375" layer="1" rot="R180"/>
+<smd name="31" x="1.8125" y="-1.8125" dx="0.375" dy="0.375" layer="1"/>
+<smd name="32" x="-1.8125" y="-1.8125" dx="0.375" dy="0.375" layer="1"/>
 </package>
 <package name="DFN8">
 <smd name="9" x="0" y="0" dx="2.38" dy="1.65" layer="1" rot="R270"/>
@@ -13766,7 +13776,7 @@ Logo</text>
 <pin name="SCL" x="-35.56" y="-10.16" length="middle"/>
 <pin name="!AL!/CC" x="-35.56" y="-2.54" length="middle"/>
 </symbol>
-<symbol name="LT8636">
+<symbol name="LT8640S">
 <wire x1="-25.4" y1="0" x2="0" y2="0" width="0.254" layer="94"/>
 <wire x1="0" y1="0" x2="0" y2="-40.64" width="0.254" layer="94"/>
 <wire x1="0" y1="-40.64" x2="-25.4" y2="-40.64" width="0.254" layer="94"/>
@@ -13865,26 +13875,26 @@ Logo</text>
 </device>
 </devices>
 </deviceset>
-<deviceset name="LT8636" prefix="U">
+<deviceset name="LT8640S" prefix="U">
 <gates>
-<gate name="G$1" symbol="LT8636" x="0" y="0"/>
+<gate name="G$1" symbol="LT8640S" x="0" y="0"/>
 </gates>
 <devices>
-<device name="" package="QFN20_ASYM_CORNER">
+<device name="" package="QFN24_CORNER">
 <connects>
-<connect gate="G$1" pin="BIAS" pad="2"/>
+<connect gate="G$1" pin="BIAS" pad="1"/>
 <connect gate="G$1" pin="BST" pad="7"/>
-<connect gate="G$1" pin="CLKOUT" pad="16"/>
-<connect gate="G$1" pin="EN/UV" pad="14"/>
-<connect gate="G$1" pin="FB" pad="19 20"/>
-<connect gate="G$1" pin="GND" pad="4 5 12 13 21 M1 M2 M3 M4"/>
-<connect gate="G$1" pin="INTVCC" pad="3"/>
-<connect gate="G$1" pin="PG" pad="1"/>
-<connect gate="G$1" pin="RT" pad="17"/>
-<connect gate="G$1" pin="SW" pad="8 9 10"/>
-<connect gate="G$1" pin="SYNC/MODE" pad="15"/>
-<connect gate="G$1" pin="TR/SS" pad="18"/>
-<connect gate="G$1" pin="VIN" pad="6 11"/>
+<connect gate="G$1" pin="CLKOUT" pad="19"/>
+<connect gate="G$1" pin="EN/UV" pad="17"/>
+<connect gate="G$1" pin="FB" pad="24"/>
+<connect gate="G$1" pin="GND" pad="3 16 22 25 26 27 28 29 30 31 32"/>
+<connect gate="G$1" pin="INTVCC" pad="2"/>
+<connect gate="G$1" pin="PG" pad="23"/>
+<connect gate="G$1" pin="RT" pad="18"/>
+<connect gate="G$1" pin="SW" pad="8 9 10 11 12"/>
+<connect gate="G$1" pin="SYNC/MODE" pad="20"/>
+<connect gate="G$1" pin="TR/SS" pad="21"/>
+<connect gate="G$1" pin="VIN" pad="5 6 13 14" route="any"/>
 </connects>
 <technologies>
 <technology name=""/>
@@ -15001,7 +15011,7 @@ Logo</text>
 <part name="GND133" library="Supply Symbol" deviceset="GND" device=""/>
 <part name="C58" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="10nF"/>
 <part name="C56" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="1uF"/>
-<part name="R71" library="Resistor" deviceset="RESISTOR" device="-0603" value="17.8K Ohms"/>
+<part name="R71" library="Resistor" deviceset="RESISTOR" device="-0603" value="41.2K Ohms"/>
 <part name="L4" library="Inductor" deviceset="INDUCTOR" device="-6X6MM" value="4.7uH">
 <attribute name="CURRENT" value="3A"/>
 <attribute name="OCLCSC" value="C326336"/>
@@ -15233,7 +15243,7 @@ Logo</text>
 <part name="C40" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="100nF"/>
 <part name="5V02" library="Supply Symbol" deviceset="5V0" device=""/>
 <part name="GND89" library="Supply Symbol" deviceset="GND" device=""/>
-<part name="U20" library="Analog Devices" deviceset="LT8636" device=""/>
+<part name="U20" library="Analog Devices" deviceset="LT8640S" device=""/>
 <part name="C52" library="Capacitor" deviceset="CAPACITOR" device="-0603" value="1uF">
 <attribute name="VOLTAGE" value="50V"/>
 </part>
@@ -20585,13 +20595,13 @@ Zu.fl: 50 Ohm</text>
 <sheet>
 <description>Power Management</description>
 <plain>
-<text x="121.92" y="269.24" size="1.4224" layer="98" rot="R90">f = 2 MHz
+<text x="121.92" y="269.24" size="1.4224" layer="98" rot="R90">f = 1 MHz
 DS. Eq. 3 &amp; Table 1</text>
 <text x="386.842" y="290.322" size="1.27" layer="98" rot="R180">VBAT = 4.1V
 DS. Page 3</text>
 <text x="485.902" y="310.642" size="1.27" layer="98" rot="R180">Vout = ((R96/R97) + 1) * 0.8</text>
 <text x="214.122" y="305.562" size="1.27" layer="98" rot="R180">Vout = ((R78/R79) + 1) * 0.97</text>
-<text x="323.342" y="320.802" size="1.27" layer="98" rot="R180">Vbkpstart = 1.19 / (R75/(R75+R76))</text>
+<text x="320.802" y="320.802" size="1.27" layer="98" rot="R180">Vbkpstart = ((R83/R84) + 1) * 1.19</text>
 <text x="485.14" y="198.12" size="1.4224" layer="98">For LiPo use FS312F-G
 For Li-ion use DW01A-G</text>
 </plain>
