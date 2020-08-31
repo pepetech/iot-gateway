@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="9.5.2">
+<eagle version="9.6.1">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -2032,6 +2032,28 @@ Package for LCSC connector C319148</description>
 <wire x1="-1.1" y1="-0.55" x2="-1.1" y2="0.55" width="0.1905" layer="21"/>
 <wire x1="-1.1" y1="0.55" x2="-0.2" y2="0.55" width="0.1905" layer="21"/>
 </package>
+<package name="RES2728">
+<smd name="1" x="-3.15" y="0" dx="2.8" dy="7.8" layer="1"/>
+<smd name="2" x="3.15" y="0" dx="2.8" dy="7.8" layer="1"/>
+<wire x1="-1.7876" y1="-3.8764" x2="-1.7876" y2="3.8764" width="0" layer="51"/>
+<wire x1="-1.7876" y1="3.8764" x2="-3.5258" y2="3.8764" width="0" layer="51"/>
+<wire x1="-3.5258" y1="-3.8764" x2="-1.7876" y2="-3.8764" width="0" layer="51"/>
+<wire x1="1.7876" y1="3.8764" x2="1.7876" y2="-3.8764" width="0" layer="51"/>
+<wire x1="1.7876" y1="-3.8764" x2="3.4258" y2="-3.8764" width="0" layer="51"/>
+<wire x1="3.4258" y1="3.8764" x2="1.7876" y2="3.8764" width="0" layer="51"/>
+<wire x1="-1.7876" y1="-3.8764" x2="1.7876" y2="-3.8764" width="0" layer="51"/>
+<wire x1="3.4258" y1="-3.8764" x2="3.4258" y2="3.8764" width="0" layer="51"/>
+<wire x1="1.7876" y1="3.8764" x2="-1.7876" y2="3.8764" width="0" layer="51"/>
+<wire x1="-3.5258" y1="3.8764" x2="-3.5258" y2="-3.8764" width="0" layer="51"/>
+<text x="-4.8544" y="4.64" size="2.0828" layer="25" ratio="10" rot="SR0">&gt;NAME</text>
+<text x="-5.4544" y="-6.645" size="2.0828" layer="27" ratio="10" rot="SR0">&gt;VALUE</text>
+<wire x1="-1.7" y1="-4.2" x2="-4.9" y2="-4.2" width="0.1905" layer="21"/>
+<wire x1="-4.9" y1="-4.2" x2="-4.9" y2="4.2" width="0.1905" layer="21"/>
+<wire x1="-4.9" y1="4.2" x2="-1.7" y2="4.2" width="0.1905" layer="21"/>
+<wire x1="1.7" y1="4.2" x2="4.9" y2="4.2" width="0.1905" layer="21"/>
+<wire x1="4.9" y1="4.2" x2="4.9" y2="-4.2" width="0.1905" layer="21"/>
+<wire x1="4.9" y1="-4.2" x2="1.7" y2="-4.2" width="0.1905" layer="21"/>
+</package>
 </packages>
 <symbols>
 <symbol name="RES">
@@ -2100,6 +2122,17 @@ Package for LCSC connector C319148</description>
 </technologies>
 </device>
 <device name="-0402" package="RES0402">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+</connects>
+<technologies>
+<technology name="">
+<attribute name="TOLERANCE" value="" constant="no"/>
+</technology>
+</technologies>
+</device>
+<device name="-2728" package="RES2728">
 <connects>
 <connect gate="G$1" pin="1" pad="1"/>
 <connect gate="G$1" pin="2" pad="2"/>
@@ -8499,8 +8532,8 @@ Logo</text>
 </instance>
 <instance part="F2" gate="G$1" x="294.64" y="48.26" smashed="yes">
 <attribute name="OCLCSC" x="294.64" y="48.26" size="1.778" layer="96" display="off"/>
-<attribute name="HOLD" x="294.64" y="44.196" size="1.778" layer="97" align="top-left"/>
-<attribute name="TRIP" x="294.64" y="41.656" size="1.778" layer="97" align="top-left"/>
+<attribute name="HOLD" x="294.64" y="44.196" size="1.778" layer="97" align="top-left" display="both"/>
+<attribute name="TRIP" x="294.64" y="41.656" size="1.778" layer="97" align="top-left" display="both"/>
 <attribute name="NAME" x="294.64" y="53.0606" size="1.778" layer="95" ratio="10" rot="SR0"/>
 </instance>
 <instance part="D3" gate="G$1" x="317.5" y="35.56" smashed="yes" rot="R90">
@@ -8524,8 +8557,8 @@ Logo</text>
 </instance>
 <instance part="F1" gate="G$1" x="96.52" y="347.98" smashed="yes">
 <attribute name="OCLCSC" x="96.52" y="347.98" size="1.778" layer="96" display="off"/>
-<attribute name="HOLD" x="96.52" y="343.916" size="1.778" layer="97" align="top-left"/>
-<attribute name="TRIP" x="96.52" y="341.376" size="1.778" layer="97" align="top-left"/>
+<attribute name="HOLD" x="96.52" y="343.916" size="1.778" layer="97" align="top-left" display="both"/>
+<attribute name="TRIP" x="96.52" y="341.376" size="1.778" layer="97" align="top-left" display="both"/>
 <attribute name="NAME" x="96.52" y="352.7806" size="1.778" layer="95" ratio="10" rot="SR0"/>
 </instance>
 <instance part="VBAT1" gate="G$1" x="218.44" y="360.68" smashed="yes">
